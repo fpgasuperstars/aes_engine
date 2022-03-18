@@ -241,7 +241,7 @@ begin
    -----------------------------------------------------------------------------------------
    -- BRAM
    -----------------------------------------------------------------------------------------
-   addra  <=  x"00" & std_logic_vector(en_cnt) when i_rst ='0' else (others  =>  '0');
+   addra  <=  x"00" & std_logic_vector(en_cnt) when i_rst ='0' else (others  =>  '0'); -- for testing only will be removed
    u_bram_keys : entity xil_defaultlib.aes_engine_key_bram_blk_mem_gen_0_0
       port map(
       addra(12 downto 0) => addra,
