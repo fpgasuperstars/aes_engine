@@ -1,0 +1,4 @@
+vhdl xil_defaultlib  \
+"../../../../aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/sim/aes_engine_key_bram.vhd" \
+
+nosort
