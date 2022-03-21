@@ -35,9 +35,7 @@ entity aes_engine_top IS
       o_t_keep          : out std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
       o_t_data          : out std_logic_vector(AXI_T_DATA-1 downto 0);
       -- Keys
-      i_key             : in  std_logic_vector(AXI_T_DATA-1 downto 0);
-      i_key_192         : in  std_logic_vector(AES192_KEY-1 downto 0);
-      i_key_256         : in  std_logic_vector(AES256_KEY-1 downto 0);
+      i_key_handle      : in  std_logic_vector(13 downto 0);
       -- control
       i_speed_sel       : in  std_logic  -- speed selection between HI and LO 
    );
@@ -60,16 +58,16 @@ architecture mixed of aes_engine_top is
    signal t_keep_q                                           : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
    signal t_valid, t_last                                    : T_AXI_STREAM;
    signal t_keep                                             : T_AXI_TKEEP;
-   signal key_128_q                                          : std_logic_vector(AXI_T_DATA-1 downto 0);
-   signal key_192_q                                          : std_logic_vector(AES192_KEY-1 downto 0);
-   signal key_256_q                                          : std_logic_vector(AES256_KEY-1 downto 0);
    
    -- BRAM
-   signal addra                                              : std_logic_vector(12 downto 0);
-   signal outdata                                            : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal addra                                              : std_logic_vector(13 downto 0);
+   signal outdata                                            : std_logic_vector(AES256_KEY-1 downto 0);
+   signal key_handle_q                                       : std_logic_vector(13 downto 0);
    
 begin
-   
+   ---------------------------------------------------------------------------------------
+   -- Engine  control state machine
+   ---------------------------------------------------------------------------------------
    p_control : process
    begin
       wait until rising_edge(i_clk);
@@ -117,9 +115,8 @@ begin
          end if;
    end process;
    
-   new_key     <= '1'      when i_key /= key_128_q or i_key_192 /= key_192_q or i_key_256 /= key_256_q else '0';
+   new_key     <= '1'      when key_handle_q /= i_key_handle else '0';
    o_t_ready   <= '0'      when state = newkey or new_key = '1' else '1';
-
 
    ---------------------------------------------------------------------------------------
    -- Speed selection control
@@ -164,9 +161,7 @@ begin
    p_outputs : process
    begin
       wait until rising_edge(i_clk);
-         key_128_q  <= i_key; 
-         key_192_q  <= i_key_192; 
-         key_256_q  <= i_key_256; 
+         key_handle_q <= i_key_handle;
          t_valid_q  <= i_t_valid;
          t_last_q   <= i_t_last; 
          t_keep_q   <= i_t_keep;
@@ -175,6 +170,7 @@ begin
          o_t_valid <= '0';
          o_t_last  <= '0';
          o_t_keep  <= (others => '0');
+         key_handle_q <= (others => '0');
          t_valid_q <= '0';  
          t_last_q  <= '0'; 
          t_keep_q  <= (others => '0');
@@ -191,7 +187,7 @@ begin
       wait until rising_edge(i_clk);
       if i_rst = '1' or state = config then
          en_cnt  <= (others  => '0');
-      elsif state = normal and en_cnt < g_Mode +1  then
+      elsif (state = normal or state = newkey) and en_cnt < g_Mode +1  then
          en_cnt  <=  en_cnt + 1;
       end if;
    end process;
@@ -204,11 +200,9 @@ begin
          g_Mode => g_Mode
       )
          port map(
-            i_key_256      => i_key_256,
-            i_key_192      => i_key_192,
             i_clk          => i_clk,
             i_rst          => i_rst,
-            i_key          => i_key,
+            i_key          => outdata,
             o_expanded_key => expanded_key
          );
          
@@ -239,17 +233,26 @@ begin
       end generate;
       
    -----------------------------------------------------------------------------------------
-   -- BRAM
+   -- BRAM containing the keys
    -----------------------------------------------------------------------------------------
-   addra  <=  x"00" & std_logic_vector(en_cnt) when i_rst ='0' else (others  =>  '0'); -- for testing only will be removed
+   p_key_select : process
+   begin
+      wait until rising_edge(i_clk);
+      if i_rst then
+         addra  <=  (others  => '0');
+      elsif  en_cnt = 0 or en_cnt >= g_mode then -- only allow a new key when engine is not filling pipeline. 
+         addra  <=  key_handle_q;
+      end if;
+   end process;
+   
    u_bram_keys : entity xil_defaultlib.aes_engine_key_bram_blk_mem_gen_0_0
       port map(
-      addra(12 downto 0) => addra,
-      clka => i_clk,
-      dina(127 downto 0) => B"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000",
-      douta(127 downto 0) => outdata,
-      ena => '1',
-      wea(0) => '0'
+          addra => addra,
+          clka  => i_clk,
+          dina  => x"0000000000000000000000000000000000000000000000000000000000000000",
+          douta => outdata,
+          ena   => '1', -- always enabled
+          wea(0)   => '0'   
       );
    
 end mixed;

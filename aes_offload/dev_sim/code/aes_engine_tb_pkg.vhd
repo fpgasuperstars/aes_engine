@@ -10,6 +10,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use STD.textio.all;
 use ieee.std_logic_textio.all;
+use ieee.numeric_std.all;
 
 package aes_engine_tb_pkg is
    
@@ -21,18 +22,18 @@ package aes_engine_tb_pkg is
    constant DATA_WIDTH_192        : natural := 192;          -- 192 key bit width
    constant DATA_WIDTH_256        : natural := 256;          -- 256 key bit width
    -- File locations
-   constant CMD_128_FILE          : string  := "C:\git\aes_offload\dev_sim\code\aes_engine_top\128.txt";
-   constant CT_128_FILE           : string  := "C:\git\aes_offload\dev_sim\code\aes_engine_top\128_ct.txt";
-   constant CMD_128_SAME_KEYFILE  : string  := "C:\git\aes_offload\dev_sim\code\aes_engine_top\128_same_key.txt";
-   constant CT_128_SAME_KEYFILE   : string  := "C:\git\aes_offload\dev_sim\code\aes_engine_top\128_same_key_ct.txt";
-   constant CMD_192_FILE          : string  := "C:\git\aes_offload\dev_sim\code\aes_engine_top\192.txt";
-   constant CT_192_FILE           : string  := "C:\git\aes_offload\dev_sim\code\aes_engine_top\192_ct.txt";
-   constant CMD_192_SAME_KEYFILE  : string  := "C:\git\aes_offload\dev_sim\code\aes_engine_top\192_same_key.txt";
-   constant CT_192_SAME_KEYFILE   : string  := "C:\git\aes_offload\dev_sim\code\aes_engine_top\192_same_key_ct.txt";
-   constant CMD_256_FILE          : string  := "C:\git\aes_offload\dev_sim\code\aes_engine_top\256.txt";
-   constant CT_256_FILE           : string  := "C:\git\aes_offload\dev_sim\code\aes_engine_top\256_ct.txt";
-   constant CMD_256_SAME_KEYFILE  : string  := "C:\git\aes_offload\dev_sim\code\aes_engine_top\256_same_key.txt";
-   constant CT_256_SAME_KEYFILE   : string  := "C:\git\aes_offload\dev_sim\code\aes_engine_top\256_same_key_ct.txt";
+   constant CMD_128_FILE          : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128.txt";
+   constant CT_128_FILE           : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128_ct.txt";
+   constant CMD_128_SAME_KEYFILE  : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128_same_key.txt";
+   constant CT_128_SAME_KEYFILE   : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128_same_key_ct.txt";
+   constant CMD_192_FILE          : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\192.txt";
+   constant CT_192_FILE           : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\192_ct.txt";
+   constant CMD_192_SAME_KEYFILE  : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\192_same_key.txt";
+   constant CT_192_SAME_KEYFILE   : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\192_same_key_ct.txt";
+   constant CMD_256_FILE          : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256.txt";
+   constant CT_256_FILE           : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256_ct.txt";
+   constant CMD_256_SAME_KEYFILE  : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256_same_key.txt";
+   constant CT_256_SAME_KEYFILE   : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256_same_key_ct.txt";
    
    function pad_string(i_s        : string; pad_char_i : character; i_n : positive) RETURN string;
    function trim(source           : string) return string;
@@ -104,15 +105,15 @@ package body aes_engine_tb_pkg is
       variable v_test_id            : string(1 to 4);
       variable v_space              : character;
       variable v_pt                 : std_logic_vector(in_word'length-1 downto 0);
-      variable v_key                : std_logic_vector(key'length-1 downto 0);
+      variable v_key                : integer;
    begin
       readline(f_vectors, v_iline);
       read(v_iline, v_test_id);
       hread(v_iline, v_pt);
       read(v_iline, v_space);           
-      hread(v_iline, v_key);   
+      read(v_iline, v_key);   
       in_word   <=  reverse_byte_order(v_pt);  -- reverse order of plain text
-      key       <=  reverse_byte_order(v_key); -- reverse order of key
+      key       <=  std_logic_vector(to_unsigned(v_key,14)); -- get key handle
    end;
 
    -- extract cipher text data from FIPS test vectors

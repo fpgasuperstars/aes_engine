@@ -20,9 +20,7 @@ entity aes_engine_key_expansion is
    port(
       i_clk             : in  std_logic;
       i_rst             : in  std_logic;
-      i_key             : in  std_logic_vector(AXI_T_DATA-1 downto 0); -- for AES128 AND 256
-      i_key_192         : in  std_logic_vector(AES192_KEY-1 downto 0); -- for AES192
-      i_key_256         : in  std_logic_vector(AES256_KEY-1 downto 0); -- for AES256
+      i_key             : in  std_logic_vector(AES256_KEY-1 downto 0);
       o_expanded_key    : out T_EXPANDED_KEYS := (others => (others => '0'))   
    );
 end entity;
@@ -40,7 +38,7 @@ begin
    ------------------------------------------------------------------------
    gen_128 : for i in 1 to g_Mode generate
       gen_128_keys : if g_Mode = AES128 generate
-         o_expanded_key(0)                                     <= i_key;
+         o_expanded_key(0)                                     <= i_key(AXI_T_DATA-1 downto 0);
          g_function_input(i-1)                                 <= o_expanded_key(i-1)(AXI_T_DATA-1  downto expanded_key(i)'length-(BYTE_WIDTH*4));
                   
          left_shift(i-1)(BYTE_WIDTH*4-1 downto BYTE_WIDTH*3)   <= g_function_input(i-1)(BYTE_WIDTH-1   downto 0);
@@ -66,7 +64,7 @@ begin
    ------------------------------------------------------------------------
    gen_192 : for i in 1 to g_Mode generate   
       gen_192_keys : if g_Mode = AES192 generate
-         expanded_key_192(0) <= i_key_192;
+         expanded_key_192(0)                                   <= i_key(AES192_KEY-1 downto 0);
          g_function_input(i-1)                                 <= expanded_key_192(i-1)(AES192_KEY-1  downto AES192_KEY-(BYTE_WIDTH*4)); -- Take the last 32 bits of the key
          
          left_shift(i-1)(BYTE_WIDTH*4-1 downto BYTE_WIDTH*3)   <= g_function_input(i-1)(BYTE_WIDTH-1   downto 0);
@@ -102,8 +100,8 @@ begin
    ------------------------------------------------------------------------
    gen_256 : for i in 1 to g_Mode-7 generate
       gen_256_keys : if g_Mode = AES256 generate
-         o_expanded_key(0)     <= i_key_256(AXI_T_DATA-1 downto 0);
-         o_expanded_key(1)     <= i_key_256(AES256_KEY-1 downto AXI_T_DATA);
+         o_expanded_key(0)     <= i_key(AXI_T_DATA-1 downto 0);
+         o_expanded_key(1)     <= i_key(AES256_KEY-1 downto AXI_T_DATA);
          -- take last 32 bits
          h_function_input(i-1) <= o_expanded_key(h(i))(AXI_T_DATA-1  downto expanded_key(i)'length-(BYTE_WIDTH*4));
          g_function_input(i-1) <= o_expanded_key(g(i-1))(AXI_T_DATA-1  downto expanded_key(i)'length-(BYTE_WIDTH*4));

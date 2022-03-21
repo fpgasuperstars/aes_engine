@@ -2,17 +2,11 @@
 <Root MajorVersion="0" MinorVersion="39">
   <CompositeFile CompositeFileTopName="aes_engine_key_bram" CanBeSetAsTop="true" CanDisplayChildGraph="true">
     <Description>Composite Fileset</Description>
-    <Generation Name="SYNTHESIS" State="GENERATED" Timestamp="1647598996"/>
-    <Generation Name="IMPLEMENTATION" State="GENERATED" Timestamp="1647598996"/>
-    <Generation Name="SIMULATION" State="GENERATED" Timestamp="1647598996"/>
-    <Generation Name="HW_HANDOFF" State="GENERATED" Timestamp="1647598996"/>
+    <Generation Name="SYNTHESIS" State="GENERATED" Timestamp="1647878066"/>
+    <Generation Name="IMPLEMENTATION" State="GENERATED" Timestamp="1647878066"/>
+    <Generation Name="SIMULATION" State="GENERATED" Timestamp="1647878066"/>
+    <Generation Name="HW_HANDOFF" State="GENERATED" Timestamp="1647878066"/>
     <FileCollection Name="SOURCES" Type="SOURCES">
-      <File Name="sim\aes_engine_key_bram.protoinst">
-        <Properties IsEditable="false" IsVisible="true" IsNetlistSimulation="false" Timestamp="0" IsTrackable="false" IsStatusTracked="false"/>
-        <Library Name="xil_defaultlib"/>
-        <UsedIn Val="SIMULATION"/>
-        <ProcessingOrder Val="NORMAL"/>
-      </File>
       <File Name="synth\aes_engine_key_bram.vhd" Type="VHDL">
         <Properties IsEditable="false" IsVisible="true" IsNetlistSimulation="false" Timestamp="0" IsTrackable="false" IsStatusTracked="false"/>
         <Library Name="xil_defaultlib"/>
@@ -49,6 +43,12 @@
         <Properties IsEditable="false" IsVisible="true" IsNetlistSimulation="false" Timestamp="0" IsTrackable="false" IsStatusTracked="false"/>
         <Library Name="xil_defaultlib"/>
         <UsedIn Val="HW_HANDOFF"/>
+        <ProcessingOrder Val="NORMAL"/>
+      </File>
+      <File Name="sim\aes_engine_key_bram.protoinst">
+        <Properties IsEditable="false" IsVisible="true" IsNetlistSimulation="false" Timestamp="0" IsTrackable="false" IsStatusTracked="false"/>
+        <Library Name="xil_defaultlib"/>
+        <UsedIn Val="SIMULATION"/>
         <ProcessingOrder Val="NORMAL"/>
       </File>
     </FileCollection>

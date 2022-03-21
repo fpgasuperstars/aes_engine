@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Fri Mar 18 10:23:16 2022" VIVADOVERSION="2021.2">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Mon Mar 21 15:54:26 2022" VIVADOVERSION="2021.2">
 
   <SYSTEMINFO ARCH="zynquplus" BOARD="xilinx.com:zcu102:part0:3.4" DEVICE="xczu9eg" NAME="aes_engine_key_bram" PACKAGE="ffvb1156" SPEEDGRADE="-2"/>
 
@@ -42,11 +42,11 @@
         <PARAMETER NAME="C_USE_BYTE_WEA" VALUE="0"/>
         <PARAMETER NAME="C_WEA_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_WRITE_MODE_A" VALUE="WRITE_FIRST"/>
-        <PARAMETER NAME="C_WRITE_WIDTH_A" VALUE="128"/>
-        <PARAMETER NAME="C_READ_WIDTH_A" VALUE="128"/>
-        <PARAMETER NAME="C_WRITE_DEPTH_A" VALUE="8192"/>
-        <PARAMETER NAME="C_READ_DEPTH_A" VALUE="8192"/>
-        <PARAMETER NAME="C_ADDRA_WIDTH" VALUE="13"/>
+        <PARAMETER NAME="C_WRITE_WIDTH_A" VALUE="256"/>
+        <PARAMETER NAME="C_READ_WIDTH_A" VALUE="256"/>
+        <PARAMETER NAME="C_WRITE_DEPTH_A" VALUE="9999"/>
+        <PARAMETER NAME="C_READ_DEPTH_A" VALUE="9999"/>
+        <PARAMETER NAME="C_ADDRA_WIDTH" VALUE="14"/>
         <PARAMETER NAME="C_HAS_RSTB" VALUE="0"/>
         <PARAMETER NAME="C_RST_PRIORITY_B" VALUE="CE"/>
         <PARAMETER NAME="C_RSTRAM_B" VALUE="0"/>
@@ -56,11 +56,11 @@
         <PARAMETER NAME="C_USE_BYTE_WEB" VALUE="0"/>
         <PARAMETER NAME="C_WEB_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_WRITE_MODE_B" VALUE="WRITE_FIRST"/>
-        <PARAMETER NAME="C_WRITE_WIDTH_B" VALUE="128"/>
-        <PARAMETER NAME="C_READ_WIDTH_B" VALUE="128"/>
-        <PARAMETER NAME="C_WRITE_DEPTH_B" VALUE="8192"/>
-        <PARAMETER NAME="C_READ_DEPTH_B" VALUE="8192"/>
-        <PARAMETER NAME="C_ADDRB_WIDTH" VALUE="13"/>
+        <PARAMETER NAME="C_WRITE_WIDTH_B" VALUE="256"/>
+        <PARAMETER NAME="C_READ_WIDTH_B" VALUE="256"/>
+        <PARAMETER NAME="C_WRITE_DEPTH_B" VALUE="9999"/>
+        <PARAMETER NAME="C_READ_DEPTH_B" VALUE="9999"/>
+        <PARAMETER NAME="C_ADDRB_WIDTH" VALUE="14"/>
         <PARAMETER NAME="C_HAS_MEM_OUTPUT_REGS_A" VALUE="1"/>
         <PARAMETER NAME="C_HAS_MEM_OUTPUT_REGS_B" VALUE="0"/>
         <PARAMETER NAME="C_HAS_MUX_OUTPUT_REGS_A" VALUE="0"/>
@@ -85,9 +85,9 @@
         <PARAMETER NAME="C_EN_SHUTDOWN_PIN" VALUE="0"/>
         <PARAMETER NAME="C_EN_SAFETY_CKT" VALUE="0"/>
         <PARAMETER NAME="C_DISABLE_WARN_BHV_RANGE" VALUE="0"/>
-        <PARAMETER NAME="C_COUNT_36K_BRAM" VALUE="28"/>
-        <PARAMETER NAME="C_COUNT_18K_BRAM" VALUE="1"/>
-        <PARAMETER NAME="C_EST_POWER_SUMMARY" VALUE="Estimated Power for IP     :     31.358264 mW"/>
+        <PARAMETER NAME="C_COUNT_36K_BRAM" VALUE="70"/>
+        <PARAMETER NAME="C_COUNT_18K_BRAM" VALUE="3"/>
+        <PARAMETER NAME="C_EST_POWER_SUMMARY" VALUE="Estimated Power for IP     :     60.411388 mW"/>
         <PARAMETER NAME="Component_Name" VALUE="aes_engine_key_bram_blk_mem_gen_0_0"/>
         <PARAMETER NAME="Interface_Type" VALUE="Native"/>
         <PARAMETER NAME="AXI_Type" VALUE="AXI4_Full"/>
@@ -113,13 +113,13 @@
         <PARAMETER NAME="Algorithm" VALUE="Minimum_Area"/>
         <PARAMETER NAME="Primitive" VALUE="8kx2"/>
         <PARAMETER NAME="Assume_Synchronous_Clk" VALUE="false"/>
-        <PARAMETER NAME="Write_Width_A" VALUE="128"/>
-        <PARAMETER NAME="Write_Depth_A" VALUE="8192"/>
-        <PARAMETER NAME="Read_Width_A" VALUE="128"/>
+        <PARAMETER NAME="Write_Width_A" VALUE="256"/>
+        <PARAMETER NAME="Write_Depth_A" VALUE="9999"/>
+        <PARAMETER NAME="Read_Width_A" VALUE="256"/>
         <PARAMETER NAME="Operating_Mode_A" VALUE="WRITE_FIRST"/>
         <PARAMETER NAME="Enable_A" VALUE="Use_ENA_Pin"/>
-        <PARAMETER NAME="Write_Width_B" VALUE="128"/>
-        <PARAMETER NAME="Read_Width_B" VALUE="128"/>
+        <PARAMETER NAME="Write_Width_B" VALUE="256"/>
+        <PARAMETER NAME="Read_Width_B" VALUE="256"/>
         <PARAMETER NAME="Operating_Mode_B" VALUE="WRITE_FIRST"/>
         <PARAMETER NAME="Enable_B" VALUE="Always_Enabled"/>
         <PARAMETER NAME="Register_PortA_Output_of_Memory_Primitives" VALUE="true"/>
@@ -166,9 +166,9 @@
         <PORT DIR="I" NAME="clka" SIGIS="clk"/>
         <PORT DIR="I" NAME="ena" SIGIS="undef"/>
         <PORT DIR="I" LEFT="0" NAME="wea" RIGHT="0" SIGIS="undef"/>
-        <PORT DIR="I" LEFT="12" NAME="addra" RIGHT="0" SIGIS="undef"/>
-        <PORT DIR="I" LEFT="127" NAME="dina" RIGHT="0" SIGIS="undef"/>
-        <PORT DIR="O" LEFT="127" NAME="douta" RIGHT="0" SIGIS="undef"/>
+        <PORT DIR="I" LEFT="13" NAME="addra" RIGHT="0" SIGIS="undef"/>
+        <PORT DIR="I" LEFT="255" NAME="dina" RIGHT="0" SIGIS="undef"/>
+        <PORT DIR="O" LEFT="255" NAME="douta" RIGHT="0" SIGIS="undef"/>
       </PORTS>
       <BUSINTERFACES>
         <BUSINTERFACE BUSNAME="__NOC__" NAME="BRAM_PORTA" TYPE="TARGET" VLNV="xilinx.com:interface:bram:1.0">

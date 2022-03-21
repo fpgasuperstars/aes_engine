@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000F00" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 
+      g_test_cases : std_ulogic_vector(31 downto 0) := x"0000000F" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 
    );
 end entity;
 
@@ -39,9 +39,7 @@ architecture sim of aes_engine_top_tb is
    
    signal test_id   : string(1 to 4);                        
    signal pt        : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
-   signal key128    : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
-   signal key192    : std_logic_vector(DATA_WIDTH_192-1 downto 0):= (others => '0');
-   signal key256    : std_logic_vector(DATA_WIDTH_256-1 downto 0):= (others => '0');
+   signal key_handle: std_logic_vector(13 downto 0):= (others => '0');
    signal exp_ct    : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
    signal test_done, t_valid, t_last : std_logic := '0';
    signal t_keep    : std_logic_vector((WIDTH_BYTE*2)-1 downto 0):= (others => '1');
@@ -69,17 +67,15 @@ architecture sim of aes_engine_top_tb is
 begin
    dut : entity aes_engine.aes_engine_top
       generic map(
-         g_Mode         => AES256 -- change this to the mode required. Note: ensure the g_test_cases is set correctly 
+         g_Mode         => AES128 -- change this to the mode required. Note: ensure the g_test_cases is set correctly 
       )
       port map(
+         i_key_handle   => key_handle,
          i_t_valid      => t_valid,
          i_t_last       => t_last,
          i_t_keep       => t_keep,
-         i_key_256      => key256,
-         i_key_192      => key192,
          i_clk          => clk,
          i_rst          => rst,
-         i_key          => key128,
          i_t_data       => in_word, 
          i_speed_sel    => speed_sel,
          o_t_data       => out_word,
@@ -104,8 +100,8 @@ begin
       ---- Test case 1
       ------------------------------------------------------------------------------------
       if g_test_cases(0) = '1' then
-         file_open(status, f_128_same_key_input_vectors, CMD_128_SAME_KEYFILE);
-         file_open(status, f_128_same_key_ct_vectors   , CT_128_SAME_KEYFILE);
+         file_open(status, f_128_vectors  , CMD_128_FILE);
+         file_open(status, f_ct_vectors   , CT_128_FILE);
 
          test_msg <= pad_string(" Test case 1 : AES128 same key HI speed ", ' ', STRING_LENGTH);
          wait for 0 ns;
@@ -116,39 +112,42 @@ begin
          rst       <= '0';  
          wait until rising_edge(clk);
          t_valid   <= '1'; 
-         get_inputs(f_128_same_key_input_vectors, in_word, key128); -- get data from test vectors
+         get_inputs(f_128_vectors, in_word, key_handle); -- get data from test vectors
+         
          -- account for delay in pipeline
          for i in 0 to AES128+1 loop
             wait until rising_edge(clk);
-            get_inputs(f_128_same_key_input_vectors, in_word, key128); -- get data from test vectors
+            get_inputs(f_128_vectors, in_word, key_handle); -- get data from test vectors
          end loop;
          
-         get_ct(f_128_same_key_ct_vectors,exp_ct); -- get data from test vectors
+         get_ct(f_ct_vectors,exp_ct); -- get data from test vectors
          wait for 2 ns;
          assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
          
-         while not endfile(f_128_same_key_input_vectors) loop -- run at full speed
+         while not endfile(f_128_vectors) loop -- run at full speed
             wait until rising_edge(clk);
             if t_ready = '1' then
-               get_inputs(f_128_same_key_input_vectors, in_word, key128); -- get data from test vectors
-               get_ct(f_128_same_key_ct_vectors, exp_ct); -- get data from test vectors
+               get_inputs(f_128_vectors, in_word, key_handle); -- get data from test vectors
+               get_ct(f_ct_vectors, exp_ct); -- get data from test vectors
                wait for 2 ns;
                assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
+               report "ready";
             else
                wait until rising_edge(clk);
+               report "not ready";
             end if;
          end loop;
          t_valid  <= '0';
-         file_close(f_128_same_key_input_vectors);
-         file_close(f_128_same_key_ct_vectors);
+         file_close(f_128_vectors);
+         file_close(f_ct_vectors);
       end if;
       
       ------------------------------------------------------------------------------------
       ---- Test case 2
       ------------------------------------------------------------------------------------
       if g_test_cases(1) = '1' then
-         file_open(status, f_128_same_key_input_vectors, CMD_128_SAME_KEYFILE);
-         file_open(status, f_128_same_key_ct_vectors   , CT_128_SAME_KEYFILE);
+         file_open(status, f_128_vectors, CMD_128_FILE);
+         file_open(status, f_ct_vectors   , CT_128_FILE);
 
          test_msg <= pad_string(" Test case 2 : AES128 same key LO speed ", ' ', STRING_LENGTH);
          wait for 0 ns;
@@ -161,37 +160,37 @@ begin
          wait until rising_edge(clk);
          t_valid  <= '1'; 
          
-         get_inputs(f_128_same_key_input_vectors, in_word, key128); -- get data from test vectors
+         get_inputs(f_128_vectors, in_word, key_handle); -- get data from test vectors
          for i in 0 to AES128+1 loop -- input next plain text inline with Lo speed 
             wait until rising_edge(clk);
          end loop;
          
-         get_ct(f_128_same_key_ct_vectors, exp_ct); -- get data from test vectors
+         get_ct(f_ct_vectors, exp_ct); -- get data from test vectors
          assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
          
-         while not endfile(f_128_same_key_input_vectors) loop 
+         while not endfile(f_128_vectors) loop 
          if t_ready = '1' then
-            get_inputs(f_128_same_key_input_vectors, in_word, key128); -- get data from test vectors
+            get_inputs(f_128_vectors, in_word, key_handle); -- get data from test vectors
             for i in 0 to AES128+1 loop -- input next plain text inline with Lo speed 
                wait until rising_edge(clk);
             end loop;
-            get_ct(f_128_same_key_ct_vectors, exp_ct); -- get data from test vectors
+            get_ct(f_ct_vectors, exp_ct); -- get data from test vectors
             assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
          else
             wait until rising_edge(clk);
          end if;
          end loop;
          t_valid  <= '0'; 
-         file_close(f_128_same_key_input_vectors);
-         file_close(f_128_same_key_ct_vectors);
+         file_close(f_128_vectors);
+         file_close(f_ct_vectors);
       end if;
       
       --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       -- TKEEP tests
       --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
       if g_test_cases(2) = '1' then
-         file_open(status, f_128_same_key_input_vectors  , CMD_128_SAME_KEYFILE);
-         file_open(status, f_128_same_key_ct_vectors     , CT_128_SAME_KEYFILE);
+         file_open(status, f_128_vectors, CMD_128_FILE);
+         file_open(status, f_ct_vectors   , CT_128_FILE);
          
          test_msg <= pad_string(" Test case 3 : TKEEP tests", ' ', STRING_LENGTH);
          wait for 0 ns;
@@ -206,20 +205,20 @@ begin
          t_valid  <= '1';
          t_keep   <= std_logic_vector(to_unsigned(1, 16)); 
          if t_ready = '1' then 
-         get_inputs(f_128_same_key_input_vectors, in_word, key128); -- get data from test vectors
+         get_inputs(f_128_vectors, in_word, key_handle); -- get data from test vectors
          for i in 0 to AES128+2 loop
             wait until rising_edge(clk);
-            get_inputs(f_128_same_key_input_vectors, in_word, key128); -- get data from test vectors
+            get_inputs(f_128_vectors, in_word, key_handle); -- get data from test vectors
          end loop;
          wait until rising_edge(clk);
-         get_ct(f_128_same_key_ct_vectors, exp_ct);
+         get_ct(f_ct_vectors, exp_ct);
          assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word); -- compare
          end if;
          t_valid  <= '0';
          
          
-         file_close(f_128_same_key_input_vectors);
-         file_close(f_128_same_key_ct_vectors);
+         file_close(f_128_vectors);
+         file_close(f_ct_vectors);
       end if;
       
       --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -241,11 +240,11 @@ begin
          rst       <= '0';  
          wait until rising_edge(clk);
          t_valid   <= '1'; 
-         get_inputs(f_192_same_key_input_vectors, in_word, key192); -- get data from test vectors
+         get_inputs(f_192_same_key_input_vectors, in_word, key_handle); -- get data from test vectors
          -- account for delay in pipeline
          for i in 0 to AES192+1 loop
             wait until rising_edge(clk);
-            get_inputs(f_192_same_key_input_vectors, in_word, key192); -- get data from test vectors
+            get_inputs(f_192_same_key_input_vectors, in_word, key_handle); -- get data from test vectors
          end loop;
          
          get_ct(f_192_same_key_ct_vectors,exp_ct); -- get data from test vectors
@@ -255,7 +254,7 @@ begin
          while not endfile(f_192_same_key_input_vectors) loop -- run at full speed
             wait until rising_edge(clk);
             if t_ready = '1' then
-               get_inputs(f_192_same_key_input_vectors, in_word, key192); -- get data from test vectors
+               get_inputs(f_192_same_key_input_vectors, in_word, key_handle); -- get data from test vectors
                get_ct(f_192_same_key_ct_vectors, exp_ct); -- get data from test vectors
                wait for 2 ns;
                assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
@@ -286,7 +285,7 @@ begin
          wait until rising_edge(clk);
          t_valid  <= '1'; 
          
-         get_inputs(f_192_same_key_input_vectors, in_word, key192); -- get data from test vectors
+         get_inputs(f_192_same_key_input_vectors, in_word, key_handle); -- get data from test vectors
          for i in 0 to AES192+1 loop -- input next plain text inline with Lo speed 
             wait until rising_edge(clk);
          end loop;
@@ -296,7 +295,7 @@ begin
          
          while not endfile(f_192_same_key_input_vectors) loop 
          if t_ready = '1' then
-            get_inputs(f_192_same_key_input_vectors, in_word, key192); -- get data from test vectors
+            get_inputs(f_192_same_key_input_vectors, in_word, key_handle); -- get data from test vectors
             for i in 0 to AES192+1 loop -- input next plain text inline with Lo speed 
                wait until rising_edge(clk);
             end loop;
@@ -330,11 +329,11 @@ begin
          rst       <= '0';  
          wait until rising_edge(clk);
          t_valid   <= '1'; 
-         get_inputs(f_256_same_key_input_vectors, in_word, key256); -- get data from test vectors
+         get_inputs(f_256_same_key_input_vectors, in_word, key_handle); -- get data from test vectors
          -- account for delay in pipeline
          for i in 0 to AES256+1 loop
             wait until rising_edge(clk);
-            get_inputs(f_256_same_key_input_vectors, in_word, key256); -- get data from test vectors
+            get_inputs(f_256_same_key_input_vectors, in_word, key_handle); -- get data from test vectors
          end loop;
          
          get_ct(f_256_same_key_ct_vectors,exp_ct); -- get data from test vectors
@@ -344,7 +343,7 @@ begin
          while not endfile(f_256_same_key_input_vectors) loop -- run at full speed
             wait until rising_edge(clk);
             if t_ready = '1' then
-               get_inputs(f_256_same_key_input_vectors, in_word, key256); -- get data from test vectors
+               get_inputs(f_256_same_key_input_vectors, in_word, key_handle); -- get data from test vectors
                get_ct(f_256_same_key_ct_vectors, exp_ct); -- get data from test vectors
                wait for 2 ns;
                assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
@@ -375,7 +374,7 @@ begin
          wait until rising_edge(clk);
          t_valid  <= '1'; 
          
-         get_inputs(f_256_same_key_input_vectors, in_word, key256); -- get data from test vectors
+         get_inputs(f_256_same_key_input_vectors, in_word, key_handle); -- get data from test vectors
          for i in 0 to AES256+1 loop -- input next plain text inline with Lo speed 
             wait until rising_edge(clk);
          end loop;
@@ -385,7 +384,7 @@ begin
          
          while not endfile(f_256_same_key_input_vectors) loop 
          if t_ready = '1' then
-            get_inputs(f_256_same_key_input_vectors, in_word, key256); -- get data from test vectors
+            get_inputs(f_256_same_key_input_vectors, in_word, key_handle); -- get data from test vectors
             for i in 0 to AES256+1 loop -- input next plain text inline with Lo speed 
                wait until rising_edge(clk);
             end loop;

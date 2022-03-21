@@ -1,0 +1,14 @@
+#-----------------------------------------------------------
+# Vivado v2021.2 (64-bit)
+# SW Build 3367213 on Tue Oct 19 02:48:09 MDT 2021
+# IP Build 3369179 on Thu Oct 21 08:25:16 MDT 2021
+# Start of session at: Mon Mar 21 09:30:58 2022
+# Process ID: 23564
+# Current directory: C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent10232 C:\git\aes_engine\aes_offload\imp\code\vendor\aes_engine_key_bram\aes_engine_key_bram.xpr
+# Log file: C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/vivado.log
+# Journal file: C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram\vivado.jou
+# Running On: EUL10-797V3J3, OS: Windows, CPU Frequency: 1690 MHz, CPU Physical cores: 4, Host memory: 33723 MB
+#-----------------------------------------------------------
+start_gui
+open_project C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.xpr
