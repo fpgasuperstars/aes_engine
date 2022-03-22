@@ -1,4 +1,4 @@
----------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
 -- Copyright nCipher Entrust 2022. All rights reserved.
 -- Filename : aes_engine_top_tb.vhd
 -- Creation date : 2022-01-21
@@ -46,6 +46,13 @@ architecture sim of aes_engine_top_tb is
    signal t_ready   : std_logic;
    signal mode      : integer;
    
+   signal en_cnt    : unsigned(4 downto 0);
+   
+   -- BRAM
+   signal keys_128  : std_logic_vector(DATA_WIDTH_128-1 downto 0);
+   signal keys_192  : std_logic_vector(DATA_WIDTH_192-1 downto 0);
+   signal keys_256  : std_logic_vector(DATA_WIDTH_256-1 downto 0);
+   
    -- Files
    -- AES 128 files
    file f_128_vectors                : text;
@@ -62,8 +69,16 @@ architecture sim of aes_engine_top_tb is
    file f_256_ct_vectors             : text;
    file f_256_same_key_input_vectors : text;
    file f_256_same_key_ct_vectors    : text;
+   -- Swap byte order of keys from FIPS test vectors
+   file f_keys_128                   : text;
+   file f_keys_192                   : text;
+   file f_keys_256                   : text;
+   file f_output_keys                : text;
+   constant header1                  : string := " ;The data memory generated is";
+   constant header2                  : string := " MEMORY_INITIALIZATION_RADIX=16;";
+   constant header3                  : string := " MEMORY_INITIALIZATION_VECTOR= 00000000000000000000000000000000,";
+   constant comma                    : string := ",";
    
-
 begin
    dut : entity aes_engine.aes_engine_top
       generic map(
@@ -89,7 +104,64 @@ begin
       clk <= '0';
       wait for clk_period/2;
    end process;
-   
+
+   -- reverse keys for initialisation file of BRAM due to key format being wrong way round MSB and LSB 
+   p_rev_keys : process
+      variable v_oline : line;
+      variable status               : file_open_status;
+   begin
+      if g_test_cases(31) = '1' then
+         file_open(status, f_keys_128   , KEYS_128_FILE);
+         file_open(status, f_keys_192   , KEYS_192_FILE);
+         file_open(status, f_keys_256   , KEYS_256_FILE);
+         file_open(status, f_output_keys, KEYS_OUT_FILE, write_mode);
+         
+         wait until rising_edge(clk);
+         
+         wait for 2 ns;
+         write(v_OLINE, header1);
+         writeline(f_output_keys, v_OLINE);
+         wait for 2 ns;
+         write(v_OLINE, header2);
+         writeline(f_output_keys, v_OLINE);
+         wait for 2 ns;
+         write(v_OLINE, header3);
+         writeline(f_output_keys, v_OLINE);
+         
+         while not endfile(f_keys_128) loop -- run at full speed
+         get_ct(f_keys_128,keys_128 ); -- get data from 128 key file and reverse the order
+         wait for 2 ns;
+            hwrite(v_OLINE, keys_128);
+            write(v_OLINE, comma);
+            writeline(f_output_keys, v_OLINE);
+         end loop;
+      
+         while not endfile(f_keys_192) loop -- run at full speed
+         get_ct(f_keys_192,keys_192 ); -- get data from 192 key file and reverse the order
+         wait for 2 ns;
+         hwrite(v_OLINE, keys_192);
+         write(v_OLINE, comma);
+            writeline(f_output_keys, v_OLINE);
+         end loop;
+         
+         while not endfile(f_keys_256) loop -- run at full speed
+         get_ct(f_keys_256,keys_256 ); -- get data from 256 key file and reverse the order
+         wait for 2 ns;
+         hwrite(v_OLINE, keys_256);
+         write(v_OLINE, comma);
+            writeline(f_output_keys, v_OLINE);
+         end loop;
+      
+         wait until rising_edge(clk);
+          
+         file_close(f_keys_128);
+         file_close(f_keys_192);
+         file_close(f_keys_256);
+         file_close(f_output_keys);
+      end if;
+      wait;
+   end process;
+
    p_main_tests : process
       variable status               : file_open_status;
    begin
@@ -102,7 +174,7 @@ begin
       if g_test_cases(0) = '1' then
          file_open(status, f_128_vectors  , CMD_128_FILE);
          file_open(status, f_ct_vectors   , CT_128_FILE);
-
+         key_handle  <= (others  =>  '0');
          test_msg <= pad_string(" Test case 1 : AES128 same key HI speed ", ' ', STRING_LENGTH);
          wait for 0 ns;
          report lf & lf & test_msg & lf;
@@ -131,10 +203,8 @@ begin
                get_ct(f_ct_vectors, exp_ct); -- get data from test vectors
                wait for 2 ns;
                assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
-               report "ready";
             else
                wait until rising_edge(clk);
-               report "not ready";
             end if;
          end loop;
          t_valid  <= '0';
@@ -148,7 +218,7 @@ begin
       if g_test_cases(1) = '1' then
          file_open(status, f_128_vectors, CMD_128_FILE);
          file_open(status, f_ct_vectors   , CT_128_FILE);
-
+         key_handle  <= (others  =>  '0');
          test_msg <= pad_string(" Test case 2 : AES128 same key LO speed ", ' ', STRING_LENGTH);
          wait for 0 ns;
          report lf & lf & test_msg & lf;
@@ -191,7 +261,7 @@ begin
       if g_test_cases(2) = '1' then
          file_open(status, f_128_vectors, CMD_128_FILE);
          file_open(status, f_ct_vectors   , CT_128_FILE);
-         
+         key_handle  <= (others  =>  '0');
          test_msg <= pad_string(" Test case 3 : TKEEP tests", ' ', STRING_LENGTH);
          wait for 0 ns;
          report lf & lf & test_msg & lf;
@@ -204,16 +274,30 @@ begin
          wait until rising_edge(clk);
          t_valid  <= '1';
          t_keep   <= std_logic_vector(to_unsigned(1, 16)); 
-         if t_ready = '1' then 
+         
          get_inputs(f_128_vectors, in_word, key_handle); -- get data from test vectors
-         for i in 0 to AES128+2 loop
+         
+         -- account for delay in pipeline
+         for i in 0 to AES128+1 loop
             wait until rising_edge(clk);
             get_inputs(f_128_vectors, in_word, key_handle); -- get data from test vectors
          end loop;
-         wait until rising_edge(clk);
-         get_ct(f_ct_vectors, exp_ct);
-         assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word); -- compare
-         end if;
+         
+         get_ct(f_ct_vectors,exp_ct); -- get data from test vectors
+         wait for 2 ns;
+         assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
+         
+         for i in 0 to AES128 loop
+            wait until rising_edge(clk);
+            if t_ready = '1' then
+               get_inputs(f_128_vectors, in_word, key_handle); -- get data from test vectors
+               get_ct(f_ct_vectors, exp_ct); -- get data from test vectors
+               wait for 2 ns;
+               assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
+            else
+               wait until rising_edge(clk);
+            end if;
+         end loop;
          t_valid  <= '0';
          
          

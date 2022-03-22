@@ -24,6 +24,7 @@ package aes_engine_tb_pkg is
    -- File locations
    constant CMD_128_FILE          : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128.txt";
    constant CT_128_FILE           : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128_ct.txt";
+   constant OUT_CT_128_FILE       : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\out_128_ct.txt";
    constant CMD_128_SAME_KEYFILE  : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128_same_key.txt";
    constant CT_128_SAME_KEYFILE   : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128_same_key_ct.txt";
    constant CMD_192_FILE          : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\192.txt";
@@ -34,6 +35,11 @@ package aes_engine_tb_pkg is
    constant CT_256_FILE           : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256_ct.txt";
    constant CMD_256_SAME_KEYFILE  : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256_same_key.txt";
    constant CT_256_SAME_KEYFILE   : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256_same_key_ct.txt";
+   --Keys
+   constant KEYS_128_FILE         : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128_keys.txt";
+   constant KEYS_192_FILE         : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\192_keys.txt";
+   constant KEYS_256_FILE         : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256_keys.txt";
+   constant KEYS_OUT_FILE         : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\keys_mem_init.coe";
    
    function pad_string(i_s        : string; pad_char_i : character; i_n : positive) RETURN string;
    function trim(source           : string) return string;
