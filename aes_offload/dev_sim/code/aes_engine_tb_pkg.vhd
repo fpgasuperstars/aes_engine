@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------
 -- Copyright nCipher Entrust 2022. All rights reserved.
--- Filename : aes_engine_sbox_tb.vhd
+-- Filename : aes_engine_tb_pkg.vhd
 -- Creation date : 2022-01-22
 -- Author(s) : okeefej
 -- Description :
@@ -22,24 +22,38 @@ package aes_engine_tb_pkg is
    constant DATA_WIDTH_192        : natural := 192;          -- 192 key bit width
    constant DATA_WIDTH_256        : natural := 256;          -- 256 key bit width
    -- File locations
+   -- commands
    constant CMD_128_FILE          : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128.txt";
    constant CT_128_FILE           : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128_ct.txt";
-   constant OUT_CT_128_FILE       : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\out_128_ct.txt";
-   constant CMD_128_SAME_KEYFILE  : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128_same_key.txt";
-   constant CT_128_SAME_KEYFILE   : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128_same_key_ct.txt";
    constant CMD_192_FILE          : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\192.txt";
    constant CT_192_FILE           : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\192_ct.txt";
-   constant CMD_192_SAME_KEYFILE  : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\192_same_key.txt";
-   constant CT_192_SAME_KEYFILE   : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\192_same_key_ct.txt";
    constant CMD_256_FILE          : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256.txt";
    constant CT_256_FILE           : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256_ct.txt";
-   constant CMD_256_SAME_KEYFILE  : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256_same_key.txt";
-   constant CT_256_SAME_KEYFILE   : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256_same_key_ct.txt";
    --Keys
    constant KEYS_128_FILE         : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128_keys.txt";
    constant KEYS_192_FILE         : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\192_keys.txt";
    constant KEYS_256_FILE         : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256_keys.txt";
    constant KEYS_OUT_FILE         : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\keys_mem_init.coe";
+   
+   -- Files
+   -- AES 128 files
+   file f_128_vectors                : text;
+   file f_ct_vectors                 : text;
+   -- AES 192 files
+   file f_192_vectors                : text;
+   file f_192_ct_vectors             : text;
+   -- AES 256 files
+   file f_256_vectors                : text;
+   file f_256_ct_vectors             : text;
+   -- Generate .coe file for BRAM
+   file f_keys_128                   : text;
+   file f_keys_192                   : text;
+   file f_keys_256                   : text;
+   file f_output_keys                : text;
+   constant header1                  : string := " ;The data memory generated is";
+   constant header2                  : string := " MEMORY_INITIALIZATION_RADIX=16;";
+   constant header3                  : string := " MEMORY_INITIALIZATION_VECTOR= 00000000000000000000000000000000,";
+   constant comma                    : string := ",";
    
    function pad_string(i_s        : string; pad_char_i : character; i_n : positive) RETURN string;
    function trim(source           : string) return string;

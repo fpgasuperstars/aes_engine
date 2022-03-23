@@ -6,30 +6,30 @@ add wave -noupdate /aes_engine_top_tb/dut/i_rst
 add wave -noupdate -expand -group IO /aes_engine_top_tb/dut/i_t_data
 add wave -noupdate -expand -group IO /aes_engine_top_tb/dut/o_t_data
 add wave -noupdate /aes_engine_top_tb/exp_ct
-add wave -noupdate -group {internal values} /aes_engine_top_tb/dut/rnd_cipher_txt
-add wave -noupdate -group {internal values} /aes_engine_top_tb/dut/expanded_key_q
-add wave -noupdate -group {internal values} /aes_engine_top_tb/dut/t_data_q
+add wave -noupdate -expand -group {internal values} -expand /aes_engine_top_tb/dut/rnd_cipher_txt
+add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/expanded_key_q
+add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/t_data_q
 add wave -noupdate -group {axi stream} /aes_engine_top_tb/dut/i_t_last
 add wave -noupdate -group {axi stream} /aes_engine_top_tb/dut/i_t_keep
 add wave -noupdate -group {axi stream} /aes_engine_top_tb/dut/i_t_valid
 add wave -noupdate -group {axi stream} /aes_engine_top_tb/dut/t_valid_q
 add wave -noupdate -group {axi stream} /aes_engine_top_tb/dut/o_t_valid
 add wave -noupdate -group {axi stream} /aes_engine_top_tb/dut/o_t_ready
-add wave -noupdate -group {control and status} /aes_engine_top_tb/dut/speed_en
-add wave -noupdate -group {control and status} /aes_engine_top_tb/dut/config_data
-add wave -noupdate -group {control and status} -radix unsigned /aes_engine_top_tb/dut/duty_cycle_cnt
-add wave -noupdate -group {control and status} -radix unsigned /aes_engine_top_tb/dut/en_cnt
-add wave -noupdate -group {control and status} /aes_engine_top_tb/dut/new_key
-add wave -noupdate -group {control and status} -radix unsigned /aes_engine_top_tb/dut/flushout_cnt
-add wave -noupdate -group {control and status} /aes_engine_top_tb/dut/state
-add wave -noupdate -group {control and status} /aes_engine_top_tb/dut/key_handle_q
+add wave -noupdate -expand -group {control and status} /aes_engine_top_tb/dut/speed_en
+add wave -noupdate -expand -group {control and status} /aes_engine_top_tb/dut/config_data
+add wave -noupdate -expand -group {control and status} -radix unsigned /aes_engine_top_tb/dut/duty_cycle_cnt
+add wave -noupdate -expand -group {control and status} -radix unsigned /aes_engine_top_tb/dut/en_cnt
+add wave -noupdate -expand -group {control and status} /aes_engine_top_tb/dut/new_key
+add wave -noupdate -expand -group {control and status} -radix unsigned /aes_engine_top_tb/dut/flushout_cnt
+add wave -noupdate -expand -group {control and status} /aes_engine_top_tb/dut/state
+add wave -noupdate -expand -group {control and status} /aes_engine_top_tb/dut/key_handle_q
 add wave -noupdate -group BRAM /aes_engine_top_tb/dut/u_bram_keys/clka
 add wave -noupdate -group BRAM /aes_engine_top_tb/dut/u_bram_keys/ena
 add wave -noupdate -group BRAM -radix unsigned /aes_engine_top_tb/dut/u_bram_keys/addra
 add wave -noupdate -group BRAM /aes_engine_top_tb/dut/u_bram_keys/douta
 add wave -noupdate -group BRAM -radix unsigned /aes_engine_top_tb/dut/i_key_handle
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {7575959 ps} 0}
+WaveRestoreCursors {{Cursor 1} {90803 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 179
 configure wave -valuecolwidth 526
@@ -45,4 +45,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {40551 ns}
+WaveRestoreZoom {0 ps} {316806 ps}

@@ -47,7 +47,7 @@ architecture mixed of aes_engine_top is
    constant DUTY_EN        : integer := 2; -- enable duty cycle counter to start so that when the speed_en signal is a 1 the initial pipeline delay is accounted for
    -- Types
    type  T_CIPHER_TXT    is array (0 to g_Mode) of std_logic_vector(AXI_T_DATA-1 downto 0); -- array containing the cipher text output from each round
-   type  T_STATES        is (newkey, normal, config) ;
+   type  T_STATES        is (newkey, normal, config, start, load_key) ;
    -- Signals
    signal state                                              : T_STATES;
    signal rnd_cipher_txt                                     : T_CIPHER_TXT;
@@ -72,11 +72,20 @@ begin
    begin
       wait until rising_edge(i_clk);
          if i_rst then
-            state  <=  config;
+            state  <=  start;
             expanded_key_q <= (others  => (others  => '0'));
             t_data_q  <= (others  => '0');
          else
          case state is
+            when start  =>
+               state  <= load_key;
+            when load_key  =>
+               state  <= config;
+               if i_t_valid then
+                  config_data <= i_t_data;
+                  expanded_key_q <= expanded_key; -- register the expanded keys
+                  state <= normal;
+               end if;
             when config =>
                if new_key = '1' then
                   state <= newkey;
@@ -116,7 +125,7 @@ begin
    end process;
    
    new_key     <= '1'      when key_handle_q /= i_key_handle else '0';
-   o_t_ready   <= '0'      when state = newkey or new_key = '1' else '1';
+   o_t_ready   <= '0'      when state = newkey or new_key = '1' or state = start else '1';
 
    ---------------------------------------------------------------------------------------
    -- Speed selection control
@@ -240,7 +249,7 @@ begin
       wait until rising_edge(i_clk);
       if i_rst then
          addra  <=  (others  => '0');
-      elsif  en_cnt = 0 or en_cnt >= g_mode then -- only allow a new key when engine is not filling pipeline. 
+      elsif  en_cnt = 0 or en_cnt >= g_mode or state = load_key then -- only allow a new key when engine is not filling pipeline or when initial load key after reset. 
          addra  <=  key_handle_q;
       end if;
    end process;

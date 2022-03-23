@@ -415,3 +415,226 @@ selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, IP Int
 selectButton(PAResourceQtoS.SimpleOutputProductDialog_GENERATE_OUTPUT_PRODUCTS_IMMEDIATELY, "Generate"); // a
 selectButton("OptionPane.button", "OK"); // JButton
 // HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/21/22, 4:04:41 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/21/22, 4:34:41 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/21/22, 5:04:41 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/21/22, 5:34:42 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/21/22, 6:04:42 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/21/22, 6:34:42 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/21/22, 7:04:43 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/21/22, 7:34:43 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 106 MB. Current time: 3/21/22, 8:04:43 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/21/22, 8:34:43 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/21/22, 9:04:44 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/21/22, 9:34:44 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 106 MB. Current time: 3/21/22, 10:04:44 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/21/22, 10:34:45 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 106 MB. Current time: 3/21/22, 11:04:45 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 106 MB. Current time: 3/21/22, 11:34:45 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 12:04:45 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 106 MB. Current time: 3/22/22, 12:34:46 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 1:04:46 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 1:34:46 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 2:04:47 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 2:34:47 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 3:04:47 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 3:34:48 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 106 MB. Current time: 3/22/22, 4:04:48 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 106 MB. Current time: 3/22/22, 4:34:48 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 106 MB. Current time: 3/22/22, 5:04:48 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 5:34:49 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 6:04:49 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 106 MB. Current time: 3/22/22, 6:34:49 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 7:04:50 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 7:34:50 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 8:04:50 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 8:34:51 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 9:04:51 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 105 MB. Current time: 3/22/22, 9:34:51 AM GMT
+// TclEventType: FILE_SET_CHANGE
+// Run Command: PAResourceCommand.PACommandNames_CUSTOMIZE_RSB_BLOC
+// Elapsed time: 64504 seconds
+selectTab(PAResourceEtoH.HACGCTabbedPane_TABBED_PANE, (HResource) null, "Other Options", 2); // bj
+selectButton(PAResourceEtoH.HACGCCoeFileWidget_BROWSE, "Browse"); // a
+dismissFileChooser();
+selectButton(RDIResource.BaseDialog_OK, "OK"); // a
+dismissDialog("Re-customize IP"); // r
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, IP Integrator, Generate Block Design]", 8, false); // n
+// Run Command: PAResourceCommand.PACommandNames_GENERATE_RSB_DESIGN
+selectButton(PAResourceQtoS.SimpleOutputProductDialog_GENERATE_OUTPUT_PRODUCTS_IMMEDIATELY, "Generate"); // a
+// 'bI' command handler elapsed time: 5 seconds
+selectButton("OptionPane.button", "OK"); // JButton
+// Run Command: PAResourceCommand.PACommandNames_CUSTOMIZE_RSB_BLOC
+selectTab(PAResourceEtoH.HACGCTabbedPane_TABBED_PANE, (HResource) null, "Other Options", 2); // bj
+selectButton(PAResourceEtoH.HACGCCoeFileWidget_BROWSE, "Browse"); // a
+selectComboBox(RDIResource.HJFileChooserRecentListPreview_RECENT_DIRECTORIES, "C:/git/aes_engine/aes_offload/imp/code/vendor/init_file", 1); // aj
+setFileChooser("C:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe");
+selectButton(RDIResource.BaseDialog_OK, "OK"); // a
+dismissDialog("Re-customize IP"); // r
+// Tcl Command: 'set_property -dict [list CONFIG.Coe_File {C:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe}] [get_bd_cells blk_mem_gen_0]'
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_REMOVE_ADDRNETWORK
+// TclEventType: RSB_INSERT_ADDRNETWORK
+// TclEventType: RSB_PROPERTY_CHANGE
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_PROPERTY_CHANGE
+// Tcl Message: set_property -dict [list CONFIG.Coe_File {C:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe}] [get_bd_cells blk_mem_gen_0] 
+// Tcl Message: INFO: [IP_Flow 19-3484] Absolute path of file 'c:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe' provided. It will be converted relative to IP Instance files '../../../../../../../init_file/keys_mem_init.coe' 
+dismissDialog("Customize IP"); // bA
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, IP Integrator, Generate Block Design]", 8, false); // n
+// Run Command: PAResourceCommand.PACommandNames_GENERATE_RSB_DESIGN
+selectButton(PAResourceQtoS.SimpleOutputProductDialog_GENERATE_OUTPUT_PRODUCTS_IMMEDIATELY, "Generate"); // a
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: RSB_SAVE_DIAGRAM
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_SAVE_DIAGRAM
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_SAVE_DIAGRAM
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: FILE_SET_CHANGE
+// Tcl Message: generate_target all [get_files  C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.srcs/sources_1/bd/aes_engine_key_bram/aes_engine_key_bram.bd] 
+// Tcl Message: Wrote  : <C:\git\aes_engine\aes_offload\imp\code\vendor\aes_engine_key_bram\aes_engine_key_bram.srcs\sources_1\bd\aes_engine_key_bram\aes_engine_key_bram.bd>  VHDL Output written to : c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/synth/aes_engine_key_bram.vhd VHDL Output written to : c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/sim/aes_engine_key_bram.vhd VHDL Output written to : c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/hdl/aes_engine_key_bram_wrapper.vhd 
+// Tcl Message: INFO: [BD 41-1029] Generation completed for the IP Integrator block blk_mem_gen_0 . 
+// Tcl Message: Exporting to file c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/hw_handoff/aes_engine_key_bram.hwh Generated Hardware Definition File c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/synth/aes_engine_key_bram.hwdef 
+// Tcl Message: export_ip_user_files -of_objects [get_files C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.srcs/sources_1/bd/aes_engine_key_bram/aes_engine_key_bram.bd] -no_script -sync -force -quiet 
+// TclEventType: PROJECT_CHANGE
+// TclEventType: PACKAGER_MESSAGE_RESET
+// TclEventType: PACKAGER_UNLOAD_CORE
+// 'bI' command handler elapsed time: 6 seconds
+selectButton("OptionPane.button", "OK"); // JButton
+// TclEventType: FILE_SET_CHANGE
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 113 MB. Current time: 3/22/22, 10:04:51 AM GMT
+// TclEventType: FILE_SET_CHANGE
+// Run Command: PAResourceCommand.PACommandNames_CUSTOMIZE_RSB_BLOC
+// Elapsed time: 710 seconds
+selectTab(PAResourceEtoH.HACGCTabbedPane_TABBED_PANE, (HResource) null, "Other Options", 2); // bj
+selectButton(PAResourceEtoH.HACGCCoeFileWidget_BROWSE, "Browse"); // a
+selectComboBox(RDIResource.HJFileChooserRecentListPreview_RECENT_DIRECTORIES, "C:/git/aes_engine/aes_offload/imp/code/vendor/init_file", 1); // aj
+setFileChooser("C:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe");
+selectButton(RDIResource.BaseDialog_OK, "OK"); // a
+dismissDialog("Re-customize IP"); // r
+// Tcl Command: 'set_property -dict [list CONFIG.Coe_File {C:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe}] [get_bd_cells blk_mem_gen_0]'
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_REMOVE_ADDRNETWORK
+// TclEventType: RSB_INSERT_ADDRNETWORK
+// TclEventType: RSB_PROPERTY_CHANGE
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: DG_GRAPH_STALE
+// Tcl Message: set_property -dict [list CONFIG.Coe_File {C:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe}] [get_bd_cells blk_mem_gen_0] 
+// Tcl Message: INFO: [IP_Flow 19-3484] Absolute path of file 'c:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe' provided. It will be converted relative to IP Instance files '../../../../../../../init_file/keys_mem_init.coe' 
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_PROPERTY_CHANGE
+dismissDialog("Customize IP"); // bA
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, IP Integrator, Generate Block Design]", 8, false); // n
+// Run Command: PAResourceCommand.PACommandNames_GENERATE_RSB_DESIGN
+selectButton(PAResourceQtoS.SimpleOutputProductDialog_GENERATE_OUTPUT_PRODUCTS_IMMEDIATELY, "Generate"); // a
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: RSB_SAVE_DIAGRAM
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_SAVE_DIAGRAM
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_SAVE_DIAGRAM
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: FILE_SET_CHANGE
+// Tcl Message: generate_target all [get_files  C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.srcs/sources_1/bd/aes_engine_key_bram/aes_engine_key_bram.bd] 
+// Tcl Message: Wrote  : <C:\git\aes_engine\aes_offload\imp\code\vendor\aes_engine_key_bram\aes_engine_key_bram.srcs\sources_1\bd\aes_engine_key_bram\aes_engine_key_bram.bd>  VHDL Output written to : c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/synth/aes_engine_key_bram.vhd VHDL Output written to : c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/sim/aes_engine_key_bram.vhd VHDL Output written to : c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/hdl/aes_engine_key_bram_wrapper.vhd 
+// Tcl Message: INFO: [BD 41-1029] Generation completed for the IP Integrator block blk_mem_gen_0 . 
+// Tcl Message: Exporting to file c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/hw_handoff/aes_engine_key_bram.hwh Generated Hardware Definition File c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/synth/aes_engine_key_bram.hwdef 
+// Tcl Message: export_ip_user_files -of_objects [get_files C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.srcs/sources_1/bd/aes_engine_key_bram/aes_engine_key_bram.bd] -no_script -sync -force -quiet 
+// TclEventType: PROJECT_CHANGE
+// TclEventType: PACKAGER_MESSAGE_RESET
+// TclEventType: PACKAGER_UNLOAD_CORE
+// 'bI' command handler elapsed time: 8 seconds
+selectButton("OptionPane.button", "OK"); // JButton
+// [GUI Memory]: 178 MB (+6176kb) [24:40:51]
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 117 MB. Current time: 3/22/22, 10:34:52 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 117 MB. Current time: 3/22/22, 11:04:52 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 117 MB. Current time: 3/22/22, 11:34:52 AM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 117 MB. Current time: 3/22/22, 12:04:53 PM GMT
+// Run Command: PAResourceCommand.PACommandNames_CUSTOMIZE_RSB_BLOC
+// Elapsed time: 7962 seconds
+selectTab(PAResourceEtoH.HACGCTabbedPane_TABBED_PANE, (HResource) null, "Other Options", 2); // bj
+selectButton(PAResourceEtoH.HACGCCoeFileWidget_BROWSE, "Browse"); // a
+selectComboBox(RDIResource.HJFileChooserRecentListPreview_RECENT_DIRECTORIES, "C:/git/aes_engine/aes_offload/imp/code/vendor/init_file", 1); // aj
+setFileChooser("C:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe");
+selectButton(RDIResource.BaseDialog_OK, "OK"); // a
+dismissDialog("Re-customize IP"); // r
+// Tcl Command: 'set_property -dict [list CONFIG.Coe_File {C:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe}] [get_bd_cells blk_mem_gen_0]'
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_REMOVE_ADDRNETWORK
+// TclEventType: RSB_INSERT_ADDRNETWORK
+// TclEventType: RSB_PROPERTY_CHANGE
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: RSB_PROPERTY_CHANGE
+// Tcl Message: set_property -dict [list CONFIG.Coe_File {C:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe}] [get_bd_cells blk_mem_gen_0] 
+// Tcl Message: INFO: [IP_Flow 19-3484] Absolute path of file 'c:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe' provided. It will be converted relative to IP Instance files '../../../../../../../init_file/keys_mem_init.coe' 
+dismissDialog("Customize IP"); // bA
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, IP Integrator, Generate Block Design]", 8, false); // n
+// Run Command: PAResourceCommand.PACommandNames_GENERATE_RSB_DESIGN
+selectButton(PAResourceQtoS.SimpleOutputProductDialog_GENERATE_OUTPUT_PRODUCTS_IMMEDIATELY, "Generate"); // a
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Tcl Message: generate_target all [get_files  C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.srcs/sources_1/bd/aes_engine_key_bram/aes_engine_key_bram.bd] 
+// Tcl Message: Exporting to file c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/hw_handoff/aes_engine_key_bram.hwh Generated Hardware Definition File c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/synth/aes_engine_key_bram.hwdef 
+// Tcl Message: export_ip_user_files -of_objects [get_files C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.srcs/sources_1/bd/aes_engine_key_bram/aes_engine_key_bram.bd] -no_script -sync -force -quiet 
+// TclEventType: PROJECT_CHANGE
+// TclEventType: PACKAGER_MESSAGE_RESET
+// TclEventType: PACKAGER_UNLOAD_CORE
+// 'bI' command handler elapsed time: 5 seconds
+selectButton("OptionPane.button", "OK"); // JButton
+// TclEventType: FILE_SET_CHANGE
+// Run Command: PAResourceCommand.PACommandNames_CUSTOMIZE_RSB_BLOC
+// Elapsed time: 89 seconds
+selectTab(PAResourceEtoH.HACGCTabbedPane_TABBED_PANE, (HResource) null, "Other Options", 2); // bj
+selectButton(PAResourceEtoH.HACGCCoeFileWidget_BROWSE, "Browse"); // a
+selectComboBox(RDIResource.HJFileChooserRecentListPreview_RECENT_DIRECTORIES, "C:/git/aes_engine/aes_offload/imp/code/vendor/init_file", 1); // aj
+setFileChooser("C:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe");
+selectButton(RDIResource.BaseDialog_OK, "OK"); // a
+dismissDialog("Re-customize IP"); // r
+// Tcl Command: 'set_property -dict [list CONFIG.Coe_File {C:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe}] [get_bd_cells blk_mem_gen_0]'
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_REMOVE_ADDRNETWORK
+// TclEventType: RSB_INSERT_ADDRNETWORK
+// TclEventType: RSB_PROPERTY_CHANGE
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_PROPERTY_CHANGE
+// Tcl Message: set_property -dict [list CONFIG.Coe_File {C:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe}] [get_bd_cells blk_mem_gen_0] 
+// Tcl Message: INFO: [IP_Flow 19-3484] Absolute path of file 'c:/git/aes_engine/aes_offload/imp/code/vendor/init_file/keys_mem_init.coe' provided. It will be converted relative to IP Instance files '../../../../../../../init_file/keys_mem_init.coe' 
+dismissDialog("Customize IP"); // bA
+// Elapsed time: 39 seconds
+selectTree(PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, "[, IP Integrator, Generate Block Design]", 8, false); // n
+// Run Command: PAResourceCommand.PACommandNames_GENERATE_RSB_DESIGN
+selectButton(PAResourceQtoS.SimpleOutputProductDialog_GENERATE_OUTPUT_PRODUCTS_IMMEDIATELY, "Generate"); // a
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: RSB_SAVE_DIAGRAM
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_SAVE_DIAGRAM
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_SAVE_DIAGRAM
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: RSB_SCRIPT_TASK
+// TclEventType: FILE_SET_CHANGE
+// Tcl Message: generate_target all [get_files  C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.srcs/sources_1/bd/aes_engine_key_bram/aes_engine_key_bram.bd] 
+// Tcl Message: Wrote  : <C:\git\aes_engine\aes_offload\imp\code\vendor\aes_engine_key_bram\aes_engine_key_bram.srcs\sources_1\bd\aes_engine_key_bram\aes_engine_key_bram.bd>  VHDL Output written to : c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/synth/aes_engine_key_bram.vhd VHDL Output written to : c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/sim/aes_engine_key_bram.vhd VHDL Output written to : c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/hdl/aes_engine_key_bram_wrapper.vhd 
+// Tcl Message: INFO: [BD 41-1029] Generation completed for the IP Integrator block blk_mem_gen_0 . 
+// Tcl Message: Exporting to file c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/hw_handoff/aes_engine_key_bram.hwh Generated Hardware Definition File c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/synth/aes_engine_key_bram.hwdef 
+// Tcl Message: export_ip_user_files -of_objects [get_files C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.srcs/sources_1/bd/aes_engine_key_bram/aes_engine_key_bram.bd] -no_script -sync -force -quiet 
+// TclEventType: PROJECT_CHANGE
+// TclEventType: PACKAGER_MESSAGE_RESET
+// TclEventType: PACKAGER_UNLOAD_CORE
+// 'bI' command handler elapsed time: 7 seconds
+selectButton("OptionPane.button", "OK"); // JButton
+// HMemoryUtils.trashcanNow. Engine heap size: 1,497 MB. GUI used memory: 124 MB. Current time: 3/22/22, 12:34:53 PM GMT
