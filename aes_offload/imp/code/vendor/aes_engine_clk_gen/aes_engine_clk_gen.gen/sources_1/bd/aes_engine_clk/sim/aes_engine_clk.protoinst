@@ -1,0 +1,9 @@
+{
+	"version": "1.0",
+	"modules": {
+		"aes_engine_clk": {
+			"proto_instances": {
+			}
+		}
+	}
+}

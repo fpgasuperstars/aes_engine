@@ -1,0 +1,1 @@
+build {-no_id_update -ins_ila} generates, synth, imp and bitstream, bin file and implements ila on chip scope

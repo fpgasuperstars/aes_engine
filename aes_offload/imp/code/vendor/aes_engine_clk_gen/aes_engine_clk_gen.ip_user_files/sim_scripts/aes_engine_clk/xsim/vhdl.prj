@@ -1,0 +1,4 @@
+vhdl xil_defaultlib  \
+"../../../bd/aes_engine_clk/sim/aes_engine_clk.vhd" \
+
+nosort

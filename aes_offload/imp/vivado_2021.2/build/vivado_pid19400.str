@@ -1,0 +1,293 @@
+/*
+
+Xilinx Vivado v2021.2 (64-bit) [Major: 2021, Minor: 2]
+SW Build: 3367213 on Tue Oct 19 02:48:09 MDT 2021
+IP Build: 3369179 on Thu Oct 21 08:25:16 MDT 2021
+
+Process ID (PID): 19400
+License: Customer
+Mode: GUI Mode
+
+Current time: 	Wed Mar 23 16:11:10 GMT 2022
+Time zone: 	Greenwich Mean Time (Europe/London)
+
+OS: Windows 10
+OS Version: 10.0
+OS Architecture: amd64
+Available processors (cores): 8
+
+Screen size: 3440x1440
+Screen resolution (DPI): 100
+Available screens: 1
+Default font: family=Dialog,name=Dialog,style=plain,size=12
+Scale size: 12
+
+Java version: 	11.0.11 64-bit
+Java home: 	C:/Xilinx/Vivado/2021.2/tps/win64/jre11.0.11_9
+Java executable: 	C:/Xilinx/Vivado/2021.2/tps/win64/jre11.0.11_9/bin/java.exe
+Java arguments: 	[-Dsun.java2d.pmoffscreen=false, -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2, -Dsun.java2d.xrender=false, -Dsun.java2d.d3d=false, -Dsun.awt.nopixfmt=true, -Dsun.java2d.dpiaware=true, -Dsun.java2d.uiScale.enabled=false, -Xverify:none, -Dswing.aatext=true, -XX:-UsePerfData, -Djdk.map.althashing.threshold=512, -XX:StringTableSize=4072, --add-opens=java.base/java.nio=ALL-UNNAMED, --add-opens=java.desktop/sun.swing=ALL-UNNAMED, --add-opens=java.desktop/javax.swing=ALL-UNNAMED, --add-opens=java.desktop/javax.swing.tree=ALL-UNNAMED, --add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED, --add-opens=java.desktop/javax.swing.plaf.synth=ALL-UNNAMED, --add-opens=java.desktop/com.sun.awt=ALL-UNNAMED, -XX:NewSize=60m, -XX:MaxNewSize=60m, -Xms256m, -Xmx3072m, -Xss5m]
+Java initial memory (-Xms): 	256 MB
+Java maximum memory (-Xmx):	 3 GB
+
+
+User name: 	okeefej1
+User home directory: C:/Users/okeefej1
+User working directory: C:/git/aes_engine/aes_offload/imp/vivado_2021.2/build
+User country: 	GB
+User language: 	en
+User locale: 	en_GB
+
+RDI_BASEROOT: C:/Xilinx/Vivado
+HDI_APPROOT: C:/Xilinx/Vivado/2021.2
+RDI_DATADIR: C:/Xilinx/Vivado/2021.2/data
+RDI_BINDIR: C:/Xilinx/Vivado/2021.2/bin
+
+Vivado preferences file: C:/Users/okeefej1/AppData/Roaming/Xilinx/Vivado/2021.2/vivado.xml
+Vivado preferences directory: C:/Users/okeefej1/AppData/Roaming/Xilinx/Vivado/2021.2/
+Vivado layouts directory: C:/Users/okeefej1/AppData/Roaming/Xilinx/Vivado/2021.2/data/layouts
+PlanAhead jar file: 	C:/Xilinx/Vivado/2021.2/lib/classes/planAhead.jar
+Vivado log file: 	C:/git/aes_engine/aes_offload/imp/vivado_2021.2/build/vivado.log
+Vivado journal file: 	C:/git/aes_engine/aes_offload/imp/vivado_2021.2/build/vivado.jou
+Engine tmp dir: 	C:/git/aes_engine/aes_offload/imp/vivado_2021.2/build/.Xil/Vivado-19400-EUL10-797V3J3
+
+Xilinx Environment Variables
+----------------------------
+XILINX: C:/Xilinx/Vivado/2021.2/ids_lite/ISE
+XILINX_DSP: C:/Xilinx/Vivado/2021.2/ids_lite/ISE
+XILINX_HLS: C:/Xilinx/Vitis_HLS/2021.2
+XILINX_PLANAHEAD: C:/Xilinx/Vivado/2021.2
+XILINX_SDK: C:/Xilinx/Vitis/2021.2
+XILINX_VITIS: C:/Xilinx/Vitis/2021.2
+XILINX_VIVADO: C:/Xilinx/Vivado/2021.2
+XILINX_VIVADO_HLS: C:/Xilinx/Vivado/2021.2
+
+
+GUI allocated memory:	370 MB
+GUI max memory:		3,072 MB
+Engine allocated memory: 4,423 MB
+
+Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
+
+*/
+
+// TclEventType: START_GUI
+// [GUI Memory]: 80 MB (+80943kb) [00:00:02]
+// [Engine Memory]: 3,971 MB (+4012132kb) [00:00:02]
+// [GUI Memory]: 84 MB (+599kb) [00:00:02]
+// [GUI Memory]: 89 MB (+364kb) [00:00:02]
+// Xgd.load filename: C:/Xilinx/Vivado/2021.2/data/parts/xilinx/zynquplus/devint/zynquplus/xczu9eg/xczu9eg.xgd; ZipEntry: xczu9eg_detail.xgd elapsed time: 0.6s
+// DeviceModel: Load Xgds SwingWorker Join Forever elapsed time: 0.8s
+// TclEventType: HFED_INIT_ROUTE_STORAGE_COMPLETED
+// RouteApi::loadEngineXgdAndInitRouteStorage elapsed time: 1.8s
+// [GUI Memory]: 111 MB (+19026kb) [00:00:04]
+// [Engine Memory]: 4,221 MB (+54326kb) [00:00:04]
+// [GUI Memory]: 125 MB (+8503kb) [00:00:06]
+// [GUI Memory]: 141 MB (+10159kb) [00:00:07]
+// DeviceView Instantiated
+// Tcl Message: source build.tcl -notrace 
+// Tcl Message: build{-no_impl -no_bits} 
+// Tcl Message: invalid command name "build{-no_impl" Vivado% 
+// Tcl Message: build {-no_impl -no_bits} 
+// Tcl Message: INFO: [Project 1-571] Translating synthesized netlist 
+// Tcl Message: Netlist sorting complete. Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.211 . Memory (MB): peak = 3949.867 ; gain = 0.000 
+// Tcl Message: INFO: [Netlist 29-17] Analyzing 4513 Unisim elements for replacement INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds INFO: [Project 1-570] Preparing netlist for logic optimization 
+// Tcl Message: Parsing XDC File [C:/git/aes_engine/aes_offload/imp/vivado_2021.2/constraints/aes_engine_synth.xdc] Finished Parsing XDC File [C:/git/aes_engine/aes_offload/imp/vivado_2021.2/constraints/aes_engine_synth.xdc] 
+// Tcl Message: Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.003 . Memory (MB): peak = 3961.027 ; gain = 0.000 
+// Tcl Message: INFO: [Project 1-111] Unisim Transformation Summary:   A total of 164 instances were transformed.   BUFG => BUFGCE: 1 instance    IBUF => IBUF (IBUFCTRL, INBUF): 163 instances  
+// Tcl Message: Synth Design complete, checksum: ba8dff36 
+// Tcl Message: INFO: [Common 17-83] Releasing license: Synthesis 
+// Tcl Message: 64 Infos, 16562 Warnings, 0 Critical Warnings and 0 Errors encountered. synth_design completed successfully 
+// Tcl Message: synth_design: Time (s): cpu = 00:04:51 ; elapsed = 00:04:57 . Memory (MB): peak = 3961.027 ; gain = 89.371 
+// Tcl Message: INFO: [Common 17-600] The following parameters have non-default value. general.maxThreads 
+// Tcl Message:  ==========================================  Writing reports ========================================== 
+// Tcl Message: INFO: [Timing 38-480] Writing timing data to binary archive. INFO: [Common 17-1381] The checkpoint 'C:/git/aes_engine/aes_offload/imp/vivado_2021.2/checkpoints/post_synth.dcp' has been generated. INFO: [Timing 38-35] Done setting XDC timing constraints. INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Temperature grade: E, Delay Type: min_max. INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs 
+// Tcl Message: start gui 
+// Tcl Message: child process exited abnormally ambiguous command name "start": start_gui start_ip_gui startgroup Vivado% 
+// Tcl Message: start_gui 
+// [GUI Memory]: 165 MB (+18009kb) [00:00:09]
+// Tcl Message:  ==========================================  Reading source files ========================================== 
+// Tcl Message: INFO: [IP_Flow 19-234] Refreshing IP repositories INFO: [IP_Flow 19-1704] No user IP repositories specified INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2021.2/data/ip'. 
+// Tcl Message:  Updating version.  Package Name   : ../../../imp/code/devlib/id/id_pkg.vhd Vendor         : Jack O'Keefe Ent VendorInfo     : aes_engine       Version        : 00.01            Date/Time      : 2203231546        Archiving previous build files into the 'archive' folder.  Removing existing output directories Creating output directory  ==========================================  Starting synthesis ========================================== 
+// Tcl Message: Command: synth_design -top aes_engine_top -part xczu9eg-ffvb1156-2-e -assert -flatten_hierarchy none Starting synth_design 
+// Tcl Message: Attempting to get a license for feature 'Synthesis' and/or device 'xczu9eg' 
+// Tcl Message: INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xczu9eg' 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Constraint Validation : Time (s): cpu = 00:01:07 ; elapsed = 00:01:09 . Memory (MB): peak = 3895.391 ; gain = 23.734 
+// Tcl Message: --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- Start Loading Part and Timing Information --------------------------------------------------------------------------------- Loading part: xczu9eg-ffvb1156-2-e 
+// Tcl Message: INFO: [Synth 8-6742] Reading net delay rules and data 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Loading Part and Timing Information : Time (s): cpu = 00:01:07 ; elapsed = 00:01:09 . Memory (MB): peak = 3895.391 ; gain = 23.734 
+// Tcl Message: --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- Start Applying 'set_property' XDC Constraints --------------------------------------------------------------------------------- 
+// Tcl Message: Applied set_property KEEP_HIERARCHY = SOFT for u_bram_keys. (constraint file  auto generated constraint). 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:01:07 ; elapsed = 00:01:09 . Memory (MB): peak = 3895.391 ; gain = 23.734 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: INFO: [Synth 8-802] inferred FSM for state register 'state_reg' in module 'aes_engine_top' 
+// Tcl Message: INFO: [Synth 8-3354] encoded FSM with state register 'state_reg' using encoding 'sequential' in module 'aes_engine_top' 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished RTL Optimization Phase 2 : Time (s): cpu = 00:01:10 ; elapsed = 00:01:13 . Memory (MB): peak = 3895.391 ; gain = 23.734 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:04:13 ; elapsed = 00:04:18 . Memory (MB): peak = 3937.316 ; gain = 65.660 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: --------------------------------------------------------------------------------- Start Applying XDC Timing Constraints --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Applying XDC Timing Constraints : Time (s): cpu = 00:04:14 ; elapsed = 00:04:19 . Memory (MB): peak = 3937.316 ; gain = 65.660 
+// Tcl Message: --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- Start Timing Optimization --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Timing Optimization : Time (s): cpu = 00:04:31 ; elapsed = 00:04:37 . Memory (MB): peak = 3949.867 ; gain = 78.211 
+// Tcl Message: --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- Start Technology Mapping --------------------------------------------------------------------------------- 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Technology Mapping : Time (s): cpu = 00:04:37 ; elapsed = 00:04:43 . Memory (MB): peak = 3949.867 ; gain = 78.211 
+// Tcl Message: --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- Start IO Insertion --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- Start Final Netlist Cleanup --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- Finished Final Netlist Cleanup --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- 
+// Tcl Message: Finished IO Insertion : Time (s): cpu = 00:04:41 ; elapsed = 00:04:47 . Memory (MB): peak = 3949.867 ; gain = 78.211 
+// Tcl Message: --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- Start Renaming Generated Instances --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Renaming Generated Instances : Time (s): cpu = 00:04:41 ; elapsed = 00:04:47 . Memory (MB): peak = 3949.867 ; gain = 78.211 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: --------------------------------------------------------------------------------- Start Handling Custom Attributes --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Handling Custom Attributes : Time (s): cpu = 00:04:42 ; elapsed = 00:04:48 . Memory (MB): peak = 3949.867 ; gain = 78.211 
+// Tcl Message: --------------------------------------------------------------------------------- --------------------------------------------------------------------------------- Start Writing Synthesis Report ---------------------------------------------------------------------------------  Report BlackBoxes:  +-+--------------+----------+ | |BlackBox name |Instances | +-+--------------+----------+ +-+--------------+----------+ 
+// Tcl Message:  Report Cell Usage:  +------+---------+------+ |      |Cell     |Count | +------+---------+------+ |1     |BUFG     |     1| |2     |LUT1     |    74| |3     |LUT2     |   436| |4     |LUT3     |   305| |5     |LUT4     |   370| |6     |LUT5     |   675| |7     |LUT6     |  8362| |8     |MUXF7    |  2969| |9     |MUXF8    |  1380| |10    |RAMB18E2 |     3| |13    |RAMB36E2 |    35| |29    |FDRE     |  3214| |30    |FDSE     |     1| |31    |IBUF     |   163| |32    |OBUF     |   147| +------+---------+------+ 
+// Tcl Message: --------------------------------------------------------------------------------- 
+// Tcl Message: Finished Writing Synthesis Report : Time (s): cpu = 00:04:42 ; elapsed = 00:04:48 . Memory (MB): peak = 3949.867 ; gain = 78.211 
+// Tcl Message: --------------------------------------------------------------------------------- Synthesis finished with 0 errors, 0 critical warnings and 8026 warnings. Synthesis Optimization Runtime : Time (s): cpu = 00:03:40 ; elapsed = 00:04:41 . Memory (MB): peak = 3949.867 ; gain = 54.477 Synthesis Optimization Complete : Time (s): cpu = 00:04:42 ; elapsed = 00:04:48 . Memory (MB): peak = 3949.867 ; gain = 78.211 
+// [GUI Memory]: 180 MB (+6664kb) [00:00:10]
+// RouteApi: Init Delay Mediator Swing Worker Finished
+// Device view-level: 0.0
+// [GUI Memory]: 213 MB (+24942kb) [00:00:12]
+// [GUI Memory]: 224 MB (+357kb) [00:00:12]
+// Device view-level: 0.0
+// Run Command: RDIResourceCommand.RDICommands_RESET_LAYOUT
+// [Engine Memory]: 4,435 MB (+2672kb) [00:00:39]
+// Run Command: PAResourceCommand.PACommandNames_SCHEMATIC
+// [GUI Memory]: 238 MB (+2774kb) [00:00:40]
+// HMemoryUtils.trashcanNow. Engine heap size: 4,451 MB. GUI used memory: 155 MB. Current time: 3/23/22, 4:12:01 PM GMT
+// HMemoryUtils.trashcanNow. Engine heap size: 4,469 MB. GUI used memory: 157 MB. Current time: 3/23/22, 4:12:16 PM GMT
+selectMenu(PAResourceItoN.MainMenuMgr_REPORTS, "Reports"); // ag
+selectMenu(PAResourceItoN.MainMenuMgr_IO, "IO"); // al
+selectMenu(PAResourceItoN.MainMenuMgr_TIMING, "Timing"); // al
+selectMenuItem(PAResourceCommand.PACommandNames_RESOURCE_UTILIZATION, "Report Utilization..."); // ao
+dismissMenu(PAResourceItoN.MainMenuMgr_REPORTS, "Reports"); // ag
+// Run Command: PAResourceCommand.PACommandNames_RESOURCE_UTILIZATION
+selectButton(RDIResource.BaseDialog_OK, "OK"); // a
+dismissDialog("Report Utilization"); // a
+// TclEventType: UTILIZATION_RESULT_GENERATED
+// Tcl Message: report_utilization -name utilization_1 
+// HMemoryUtils.trashcanNow. Engine heap size: 4,470 MB. GUI used memory: 167 MB. Current time: 3/23/22, 4:12:43 PM GMT
+dismissDialog("Report Utilization"); // bA
+// Elapsed time: 15 seconds
+selectTree(PAResourceQtoS.ReportUtilTab_REPORT_UTILIZATION_NAVIGATION_TREE, "[Report Contents, CLB Logic, F8 Muxes]", 3, false); // l
+selectTree(PAResourceQtoS.ReportUtilTab_REPORT_UTILIZATION_NAVIGATION_TREE, "[Report Contents, CLB Logic, F7 Muxes]", 4, false); // l
+selectTree(PAResourceQtoS.ReportUtilTab_REPORT_UTILIZATION_NAVIGATION_TREE, "[Report Contents, CLB Logic, CLB LUTs]", 5, true); // l - Node
+selectTree(PAResourceQtoS.ReportUtilTab_REPORT_UTILIZATION_NAVIGATION_TREE, "[Report Contents, I/O, Bonded IOB]", 17, false); // l
+// Elapsed time: 13 seconds
+selectTree(PAResourceQtoS.ReportUtilTab_REPORT_UTILIZATION_NAVIGATION_TREE, "[Report Contents, CLB Logic, F8 Muxes]", 3, false); // l
+selectTree(PAResourceQtoS.ReportUtilTab_REPORT_UTILIZATION_NAVIGATION_TREE, "[Report Contents, CLB Logic, F7 Muxes]", 4, false); // l
+selectTree(PAResourceQtoS.ReportUtilTab_REPORT_UTILIZATION_NAVIGATION_TREE, "[Report Contents, CLB Logic, CLB LUTs]", 5, true); // l - Node
+// Elapsed time: 44 seconds
+selectTree(PAResourceQtoS.ReportUtilTab_REPORT_UTILIZATION_NAVIGATION_TREE, "[Report Contents, Summary]", 1, false); // l
+selectTable(PAResourceOtoP.ProjectSummaryUtilizationPanel_PROJECT_SUMMARY_UTILIZATION_TABLE, "IO ; 310 ; 328 ; 94.51219", 3, "94.51219", 3); // s
+selectTable(PAResourceOtoP.ProjectSummaryUtilizationPanel_PROJECT_SUMMARY_UTILIZATION_TABLE, "FF ; 3215 ; 548160 ; 0.5865076", 1, "0.5865076", 3); // s
+selectTable(PAResourceOtoP.ProjectSummaryUtilizationPanel_PROJECT_SUMMARY_UTILIZATION_TABLE, "LUT ; 9817 ; 274080 ; 3.581801", 0, "3.581801", 3); // s
+selectTable(PAResourceOtoP.ProjectSummaryUtilizationPanel_PROJECT_SUMMARY_UTILIZATION_TABLE, "FF ; 3215 ; 548160 ; 0.5865076", 1, "0.5865076", 3); // s
+selectTable(PAResourceOtoP.ProjectSummaryUtilizationPanel_PROJECT_SUMMARY_UTILIZATION_TABLE, "BRAM ; 36.5 ; 912 ; 4.002193", 2, "4.002193", 3); // s
+selectTable(PAResourceOtoP.ProjectSummaryUtilizationPanel_PROJECT_SUMMARY_UTILIZATION_TABLE, "IO ; 310 ; 328 ; 94.51219", 3, "94.51219", 3); // s
+selectTable(PAResourceOtoP.ProjectSummaryUtilizationPanel_PROJECT_SUMMARY_UTILIZATION_TABLE, "BUFG ; 1 ; 404 ; 0.24752475", 4, "0.24752475", 3); // s
+// HMemoryUtils.trashcanNow. Engine heap size: 4,491 MB. GUI used memory: 168 MB. Current time: 3/23/22, 4:15:41 PM GMT
+// Run Command: RDIResourceCommand.RDICommands_RESET_LAYOUT
+// Run Command: RDIResourceCommand.RDICommands_RESET_LAYOUT
+// Run Command: PAResourceCommand.PACommandNames_SCHEMATIC
+// Run Command: PAResourceCommand.PACommandNames_SCHEMATIC
+// Run Command: PAResourceCommand.PACommandNames_SHOW_HIERARCHY
+// Elapsed time: 98 seconds
+selectGraphicalView(PAResourceOtoP.PAViews_HIERARCHY, 874157, 413483); // o
+// Instance Tree: 'Cell - u_key_expansion'
+selectView(PAResourceOtoP.PAViews_HIERARCHY, "Hierarchy", 1240, 92, 2981, 924); // n
+// PAPropertyPanels.initPanels (u_key_expansion (aes_engine_key_expansion)) elapsed time: 0.2s
+selectGraphicalView(PAResourceOtoP.PAViews_HIERARCHY, -856180, 656180); // o
+selectView(PAResourceOtoP.PAViews_HIERARCHY, "Hierarchy", 855, 146, 2981, 924); // n
+selectGraphicalView(PAResourceOtoP.PAViews_HIERARCHY, 919101, 408989); // o
+// Instance Tree: 'Cell - u_key_expansion'
+selectView(PAResourceOtoP.PAViews_HIERARCHY, "Hierarchy", 1250, 91, 2981, 924); // n
+// Run Command: RDIResourceCommand.RDICommands_RESET_LAYOUT
+selectGraphicalView(PAResourceOtoP.PAViews_DEVICE, -841673, 1102867); // E
+selectTree(PAResourceItoN.NetlistTreeView_NETLIST_TREE, "[aes_engine_top, u_key_expansion (aes_engine_key_expansion)]", 14, false); // bD
+// Run Command: RDIResourceCommand.RDICommands_RESET_LAYOUT
+// Run Command: PAResourceCommand.PACommandNames_SCHEMATIC
+dismissDialog("Generate Schematic"); // u
+// WARNING: HEventQueue.dispatchEvent() is taking  1071 ms.
+// WARNING: HEventQueue.dispatchEvent() is taking  1071 ms.
+// Elapsed time: 17 seconds
+closeView(PAResourceOtoP.PAViews_SCHEMATIC, "Schematic"); // f
+// Run Command: PAResourceCommand.PACommandNames_SHOW_HIERARCHY
+// Run Command: RDIResourceCommand.RDICommands_RESET_LAYOUT
+// HMemoryUtils.trashcanNow. Engine heap size: 4,500 MB. GUI used memory: 228 MB. Current time: 3/23/22, 4:16:46 PM GMT
+selectTree(PAResourceItoN.NetlistTreeView_NETLIST_TREE, "[aes_engine_top, u_bram_keys (aes_engine_key_bram_blk_mem_gen_0_0)]", 13, false); // bD
+// Run Command: RDIResourceCommand.RDICommands_RESET_LAYOUT
+selectTree(PAResourceItoN.NetlistTreeView_NETLIST_TREE, "[aes_engine_top, u_bram_keys (aes_engine_key_bram_blk_mem_gen_0_0)]", 13, false); // bD
+// Run Command: PAResourceCommand.PACommandNames_SCHEMATIC
+// Run Command: PAResourceCommand.PACommandNames_SCHEMATIC
+// Run Command: RDIResourceCommand.RDICommands_RESET_LAYOUT
+// Elapsed time: 33 seconds
+selectGraphicalView(PAResourceOtoP.PAViews_DEVICE, -1346447, 1416760); // E
+// Device view-level: 0.3
+// Device view-level: 0.9
+// Device view-level: 0.6
+// HMemoryUtils.trashcanNow. Engine heap size: 4,505 MB. GUI used memory: 200 MB. Current time: 3/23/22, 4:17:26 PM GMT
+// Device view-level: 0.3
+// Device view-level: 0.0
+// Elapsed time: 12 seconds
+selectMenu(PAResourceItoN.MainMenuMgr_REPORTS, "Reports"); // ag
+selectMenu(PAResourceItoN.MainMenuMgr_IO, "IO"); // al
+selectMenu(PAResourceItoN.MainMenuMgr_TIMING, "Timing"); // al
+selectMenuItem(PAResourceCommand.PACommandNames_REPORT_TIMING_SUMMARY, "Report Timing Summary..."); // ao
+dismissMenu(PAResourceItoN.MainMenuMgr_REPORTS, "Reports"); // ag
+// Run Command: PAResourceCommand.PACommandNames_REPORT_TIMING_SUMMARY
+selectButton(RDIResource.BaseDialog_OK, "OK"); // a
+// [GUI Memory]: 257 MB (+8449kb) [00:06:44]
+dismissDialog("Report Timing Summary"); // aJ
+// TclEventType: TIMING_SUMMARY_UPDATED
+// Tcl Message: report_timing_summary -delay_type min_max -report_unconstrained -check_timing_verbose -max_paths 10 -input_pins -routable_nets -name timing_1 
+// Tcl Message: INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Temperature grade: E, Delay Type: min_max. INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs 
+dismissDialog("Report Timing Summary"); // bA
+// HMemoryUtils.trashcanNow. Engine heap size: 4,530 MB. GUI used memory: 204 MB. Current time: 3/23/22, 4:17:46 PM GMT
+// Elapsed time: 32 seconds
+selectButton(PAResourceAtoD.DesignTimingSumSectionPanel_WORST_NEGATIVE_SLACK, "0.372 ns"); // g
+// PAPropertyPanels.initPanels (Path 1) elapsed time: 0.5s
+// Elapsed time: 15 seconds
+selectTree(PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, "[Root, Intra-Clock Paths, board_clk]", 6, true); // a - Node
+selectButton(PAResourceItoN.IctElementSummarySectionPanel_HOLD, "-0.042 ns"); // g
+selectTree(PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, "[Root, Intra-Clock Paths, board_clk, Setup 0.372 ns]", 7, false); // a
+selectTree(PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, "[Root, Intra-Clock Paths]", 5, true); // a - Node
+selectTree(PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, "[Root, Check Timing]", 4, true); // a - Node
+selectTable(PAResourceAtoD.CheckTimingSectionPanel_CHECK_TIMING_SELECTION_TABLE, "no_output_delay ; 147 ; High", 1, "147", 1); // c
+selectTree(PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, "[Root, Clock Summary]", 3, false); // a
+selectTree(PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, "[Root, Design Timing Summary]", 2, false); // a
+// TclEventType: DESIGN_STALE
+// TclEventType: FILE_SET_CHANGE
+// Device view-level: 0.0
+// Elapsed time: 515 seconds
+selectButton(PAResourceAtoD.DesignTimingSumSectionPanel_WORST_NEGATIVE_SLACK, "0.372 ns"); // g
+// [GUI Memory]: 271 MB (+254kb) [00:16:30]
+// [GUI Memory]: 284 MB (+97kb) [00:16:30]
+// TclEventType: DESIGN_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: DESIGN_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DESIGN_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DESIGN_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DESIGN_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DESIGN_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DESIGN_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DESIGN_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DESIGN_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DESIGN_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DESIGN_STALE
+// TclEventType: FILE_SET_CHANGE
+// HMemoryUtils.trashcanNow. Engine heap size: 4,533 MB. GUI used memory: 207 MB. Current time: 3/23/22, 4:47:46 PM GMT

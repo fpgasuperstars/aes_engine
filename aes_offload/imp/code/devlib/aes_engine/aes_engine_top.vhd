@@ -18,9 +18,11 @@ library xpm;
 
 entity aes_engine_top IS
    generic(
-     g_Mode : integer  -- Set to desired mode AES128/AES192/AES256 this will have an effect on the number of rounds generated
+     g_Mode : integer := AES128 -- Set to desired mode AES128/AES192/AES256 this will have an effect on the number of rounds generated
    );
    port(
+      --i_clk_p           : in  std_logic;
+      --i_clk_n           : in  std_logic;
       i_clk             : in  std_logic;
       i_rst             : in  std_logic;
       -- AXI stream M2S
@@ -37,7 +39,9 @@ entity aes_engine_top IS
       -- Keys
       i_key_handle      : in  std_logic_vector(13 downto 0);
       -- control
-      i_speed_sel       : in  std_logic  -- speed selection between HI and g_mode 
+      i_speed_sel       : in  std_logic;  -- speed selection between HI and g_mode 
+      --LED
+      locked_led        : out std_logic
    );
 end entity;
 
@@ -45,16 +49,18 @@ architecture mixed of aes_engine_top is
    -- constants
    constant last_rnd       : std_logic_vector(g_Mode-1 downto 0) := (g_mode-1 => '1', others => '0');
    constant DUTY_EN        : integer := 2; -- enable duty cycle counter to start so that when the speed_en signal is a 1 the initial pipeline delay is accounted for
+   
    -- Types
    type  T_CIPHER_TXT    is array (0 to g_Mode) of std_logic_vector(AXI_T_DATA-1 downto 0); -- array containing the cipher text output from each round
-   type  T_STATES        is (newkey, normal, config, start, load_key) ;
+   type  T_STATES        is (newkey, normal, config, start, load_key);
+      
    -- Signals
    signal state                                               : T_STATES;
    signal rnd_cipher_txt                                      : T_CIPHER_TXT;
    signal expanded_key_q, expanded_key                        : T_EXPANDED_KEYS;                             
    signal t_data_q, config_data                               : std_logic_vector(AXI_T_DATA-1 downto 0);
    signal duty_cycle_cnt, flushout_cnt, en_cnt, lo_spd_en_cnt : unsigned(4 downto 0);
-   signal speed_en, t_valid_q, t_last_q, new_key              : std_logic;
+   signal speed_en, t_valid_q, t_last_q, new_key, clk         : std_logic;
    signal t_keep_q                                            : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
    signal t_valid, t_last                                     : T_AXI_STREAM;
    signal t_keep                                              : T_AXI_TKEEP;
@@ -64,6 +70,17 @@ architecture mixed of aes_engine_top is
    signal outdata                                             : std_logic_vector(AES256_KEY-1 downto 0);
    
 begin
+   -----------------------------------------------------------------------------------------
+   ---- Clock generation
+   -----------------------------------------------------------------------------------------
+   --u_clk_gen : entity xil_defaultlib.aes_engine_clk
+   --port map (
+   --   CLK_IN1_D_0_clk_n => i_clk_n,
+   --   CLK_IN1_D_0_clk_p => i_clk_p,
+   --   clk_out1_0        => clk,
+   --   locked_0          => locked_led,
+   --   reset_0           => i_rst
+   -- );
    ---------------------------------------------------------------------------------------
    -- Engine  control state machine
    ---------------------------------------------------------------------------------------
@@ -265,12 +282,12 @@ begin
    
    u_bram_keys : entity xil_defaultlib.aes_engine_key_bram_blk_mem_gen_0_0
       port map(
-          addra => addra,
-          clka  => i_clk,
-          dina  => x"0000000000000000000000000000000000000000000000000000000000000000",
-          douta => outdata,
-          ena   => '1', -- always enabled
-          wea(0)   => '0'   
+          addra  => addra,
+          clka   => i_clk,
+          dina   => x"0000000000000000000000000000000000000000000000000000000000000000",
+          douta  => outdata,
+          ena    => '1', -- always enabled
+          wea(0) => '0'   
       );
    
 end mixed;
