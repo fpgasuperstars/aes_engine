@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases : std_ulogic_vector(31 downto 0) := x"0000000F" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 
+      g_test_cases : std_ulogic_vector(31 downto 0) := x"000000F0" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 
    );
 end entity;
 
@@ -56,7 +56,7 @@ architecture sim of aes_engine_top_tb is
 begin
    dut : entity aes_engine.aes_engine_top
       generic map(
-         g_Mode         => AES128 -- change this to the mode required. Note: ensure the g_test_cases is set correctly 
+         g_Mode         => AES192 -- change this to the mode required. Note: ensure the g_test_cases is set correctly 
       )
       port map(
          i_key_handle   => key_handle,

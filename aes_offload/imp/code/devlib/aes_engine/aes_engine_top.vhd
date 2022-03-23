@@ -37,7 +37,7 @@ entity aes_engine_top IS
       -- Keys
       i_key_handle      : in  std_logic_vector(13 downto 0);
       -- control
-      i_speed_sel       : in  std_logic  -- speed selection between HI and LO 
+      i_speed_sel       : in  std_logic  -- speed selection between HI and g_mode 
    );
 end entity;
 
@@ -49,20 +49,19 @@ architecture mixed of aes_engine_top is
    type  T_CIPHER_TXT    is array (0 to g_Mode) of std_logic_vector(AXI_T_DATA-1 downto 0); -- array containing the cipher text output from each round
    type  T_STATES        is (newkey, normal, config, start, load_key) ;
    -- Signals
-   signal state                                              : T_STATES;
-   signal rnd_cipher_txt                                     : T_CIPHER_TXT;
-   signal expanded_key_q, expanded_key                       : T_EXPANDED_KEYS;                             
-   signal t_data_q, config_data                              : std_logic_vector(AXI_T_DATA-1 downto 0);
-   signal duty_cycle_cnt, flushout_cnt, en_cnt               : unsigned(4 downto 0);
-   signal speed_en, t_valid_q, t_last_q, new_key             : std_logic;
-   signal t_keep_q                                           : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
-   signal t_valid, t_last                                    : T_AXI_STREAM;
-   signal t_keep                                             : T_AXI_TKEEP;
-   
-   -- BRAM
-   signal addra                                              : std_logic_vector(13 downto 0);
-   signal outdata                                            : std_logic_vector(AES256_KEY-1 downto 0);
-   signal key_handle_q                                       : std_logic_vector(13 downto 0);
+   signal state                                               : T_STATES;
+   signal rnd_cipher_txt                                      : T_CIPHER_TXT;
+   signal expanded_key_q, expanded_key                        : T_EXPANDED_KEYS;                             
+   signal t_data_q, config_data                               : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal duty_cycle_cnt, flushout_cnt, en_cnt, lo_spd_en_cnt : unsigned(4 downto 0);
+   signal speed_en, t_valid_q, t_last_q, new_key              : std_logic;
+   signal t_keep_q                                            : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
+   signal t_valid, t_last                                     : T_AXI_STREAM;
+   signal t_keep                                              : T_AXI_TKEEP;
+                                                              
+   -- BRAM                                                    
+   signal addra, key_handle_q                                 : std_logic_vector(13 downto 0);
+   signal outdata                                             : std_logic_vector(AES256_KEY-1 downto 0);
    
 begin
    ---------------------------------------------------------------------------------------
@@ -79,7 +78,7 @@ begin
          case state is
             when start  =>
                state  <= load_key;
-            when load_key  =>
+            when load_key  => -- allow time for key to load ready for first encryption
                state  <= config;
                if i_t_valid then
                   config_data <= i_t_data;
@@ -136,18 +135,28 @@ begin
       wait until rising_edge(i_clk);
       if i_rst = '1'  then
          duty_cycle_cnt <= (others => '0');
-      elsif duty_cycle_cnt = LO then
+      elsif duty_cycle_cnt = g_mode+1 then
          duty_cycle_cnt <= (others => '0');
       else
          duty_cycle_cnt <= duty_cycle_cnt + 1;
       end if;
    end process;
    
-   -- run at Lo or Hi speed depending on speed selection input  
-   speed_en <= '1' when i_speed_sel = '1' and duty_cycle_cnt = LO else
+   -- run at LO or Hi speed depending on speed selection input  
+   speed_en <= '1' when i_speed_sel = '1' and duty_cycle_cnt = g_mode+1 else
                '1' when i_speed_sel = '0' else
                '0';
+   p_lo_speed : process
+   begin
+      wait until rising_edge(i_clk);
+      if i_rst then
+         lo_spd_en_cnt  <= (others  => '0');
+      elsif speed_en = '1' and lo_spd_en_cnt < lo_spd_en_cnt'high then -- when in lo speed ensure the first output is discarded as it contains config data only
+         lo_spd_en_cnt  <= lo_spd_en_cnt + 1;
+      end if;
+   end process;
    
+      
    ---------------------------------------------------------------------------------------
    -- flush out when new key
    ---------------------------------------------------------------------------------------
@@ -183,7 +192,7 @@ begin
          t_valid_q <= '0';  
          t_last_q  <= '0'; 
          t_keep_q  <= (others => '0');
-      elsif speed_en = '1' and (en_cnt > g_Mode) then
+      elsif speed_en = '1' and en_cnt > g_Mode and lo_spd_en_cnt >= 2 then
          o_t_data  <= rnd_cipher_txt(g_Mode);
          o_t_valid <= t_valid(g_Mode);
          o_t_last  <= t_last(g_Mode);
