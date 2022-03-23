@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000F00" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 
+      g_test_cases : std_ulogic_vector(31 downto 0) := x"0000000F" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 
    );
 end entity;
 
@@ -56,7 +56,7 @@ architecture sim of aes_engine_top_tb is
 begin
    dut : entity aes_engine.aes_engine_top
       generic map(
-         g_Mode         => AES256 -- change this to the mode required. Note: ensure the g_test_cases is set correctly 
+         g_Mode         => AES128 -- change this to the mode required. Note: ensure the g_test_cases is set correctly 
       )
       port map(
          i_key_handle   => key_handle,
@@ -160,16 +160,6 @@ begin
          wait until t_ready = '1';
          t_valid   <= '1'; 
          get_inputs(f_128_vectors, in_word, key_handle); -- load key
-         
-         -- account for delay in pipeline
-         for i in 0 to AES128+1 loop
-            wait until rising_edge(clk);
-            get_inputs(f_128_vectors, in_word, key_handle); -- get data from test vectors
-         end loop;
-         
-         get_ct(f_ct_vectors,exp_ct); -- get data from test vectors
-         wait for 2 ns;
-         assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
          
          while not endfile(f_128_vectors) loop -- run at full speed
             wait until rising_edge(clk);
