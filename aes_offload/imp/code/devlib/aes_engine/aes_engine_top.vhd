@@ -12,17 +12,19 @@ use ieee.numeric_std.all;
 
 library aes_engine;
 use     aes_engine.aes_engine_pkg.all;
+
 library blk_mem_gen_v8_4_5;
 library xil_defaultlib;
 library xpm;
 
 entity aes_engine_top IS
    generic(
-     g_Mode : integer := AES128 -- Set to desired mode AES128/AES192/AES256 this will have an effect on the number of rounds generated
+     g_Mode      : integer   := AES128; -- Set to desired mode AES128/AES192/AES256 this will have an effect on the number of rounds generated
+     g_speed_sel : std_logic := '0'     -- 1 = LO speed, 0 = HI speed
    );
    port(
-      --i_clk_p           : in  std_logic;
-      --i_clk_n           : in  std_logic;
+      --i_clk_p         : in  std_logic; -- used for the clk wizard
+      --i_clk_n         : in  std_logic; -- used for the clk wizard
       i_clk             : in  std_logic;
       i_rst             : in  std_logic;
       -- AXI stream M2S
@@ -37,9 +39,7 @@ entity aes_engine_top IS
       o_t_keep          : out std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
       o_t_data          : out std_logic_vector(AXI_T_DATA-1 downto 0);
       -- Keys
-      i_key_handle      : in  std_logic_vector(13 downto 0);
-      -- control
-      i_speed_sel       : in  std_logic;  -- speed selection between HI and g_mode 
+      i_key_handle      : in  std_logic_vector(9 downto 0);
       --LED
       locked_led        : out std_logic
    );
@@ -66,8 +66,8 @@ architecture mixed of aes_engine_top is
    signal t_keep                                              : T_AXI_TKEEP;
                                                               
    -- BRAM                                                    
-   signal addra, key_handle_q                                 : std_logic_vector(13 downto 0);
-   signal outdata                                             : std_logic_vector(AES256_KEY-1 downto 0);
+   signal addra, key_handle_q                                 : std_logic_vector(9 downto 0);
+   signal outdata, dina                                       : std_logic_vector(AES256_KEY-1 downto 0);
    
 begin
    -----------------------------------------------------------------------------------------
@@ -81,6 +81,7 @@ begin
    --   locked_0          => locked_led,
    --   reset_0           => i_rst
    -- );
+   locked_led  <= '1'; -- remove this and uncomment above coe to add clk wizard for implementation
    ---------------------------------------------------------------------------------------
    -- Engine  control state machine
    ---------------------------------------------------------------------------------------
@@ -96,21 +97,19 @@ begin
             when start  =>
                state  <= load_key;
             when load_key  => -- allow time for key to load ready for first encryption
-               state  <= config;
-               if i_t_valid then
-                  config_data <= i_t_data;
+               if duty_cycle_cnt <= g_mode then
+                  state <= load_key;
+               else
                   expanded_key_q <= expanded_key; -- register the expanded keys
-                  state <= normal;
+                  config_data <= i_t_data;
+                  state          <= config;
                end if;
             when config =>
                if new_key = '1' then
                   state <= newkey;
                elsif i_t_valid then
                   config_data <= i_t_data;
-                  expanded_key_q <= expanded_key; -- register the expanded keys
-                  state <= normal;
-               else
-                  state  <= config;
+                  state       <= normal;
                end if;
                
             when normal =>
@@ -124,7 +123,7 @@ begin
                end if;
                
             when newkey =>
-               if flushout_cnt = g_Mode then
+               if flushout_cnt = g_Mode *2+1 then
                   expanded_key_q <= expanded_key; -- register the expanded keys
                   for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
                      t_data_q((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
@@ -141,7 +140,7 @@ begin
    end process;
    
    new_key     <= '1'      when key_handle_q /= i_key_handle else '0';
-   o_t_ready   <= '0'      when state = newkey or new_key = '1' or state = start else '1';
+   o_t_ready   <= '0'      when state = newkey or new_key = '1' or state = start or (g_speed_sel = '1' and speed_en = '0') or state = load_key  else '1';
 
    ---------------------------------------------------------------------------------------
    -- Speed selection control
@@ -160,8 +159,8 @@ begin
    end process;
    
    -- run at LO or Hi speed depending on speed selection input  
-   speed_en <= '1' when i_speed_sel = '1' and duty_cycle_cnt = g_mode+1 else
-               '1' when i_speed_sel = '0' else
+   speed_en <= '1' when g_speed_sel = '1' and duty_cycle_cnt = g_mode+1 else
+               '1' when g_speed_sel = '0' else
                '0';
    p_lo_speed : process
    begin
@@ -209,7 +208,7 @@ begin
          t_valid_q <= '0';  
          t_last_q  <= '0'; 
          t_keep_q  <= (others => '0');
-      elsif speed_en = '1' and en_cnt > g_Mode and lo_spd_en_cnt >= 2 then
+      elsif speed_en = '1' and en_cnt > g_Mode and lo_spd_en_cnt > 2 then
          o_t_data  <= rnd_cipher_txt(g_Mode);
          o_t_valid <= t_valid(g_Mode);
          o_t_last  <= t_last(g_Mode);
@@ -284,7 +283,7 @@ begin
       port map(
           addra  => addra,
           clka   => i_clk,
-          dina   => x"0000000000000000000000000000000000000000000000000000000000000000",
+          dina   => dina,
           douta  => outdata,
           ena    => '1', -- always enabled
           wea(0) => '0'   

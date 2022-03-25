@@ -133,7 +133,7 @@ package body aes_engine_tb_pkg is
       read(v_iline, v_space);           
       read(v_iline, v_key);   
       in_word   <=  reverse_byte_order(v_pt);  -- reverse order of plain text
-      key       <=  std_logic_vector(to_unsigned(v_key,14)); -- get key handle
+      key       <=  std_logic_vector(to_unsigned(v_key,10)); -- get key handle
    end;
 
    -- extract cipher text data from FIPS test vectors

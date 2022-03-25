@@ -1,7 +1,7 @@
 --Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------
 --Tool Version: Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
---Date        : Tue Mar 22 12:21:08 2022
+--Date        : Fri Mar 25 08:57:57 2022
 --Host        : EUL10-797V3J3 running 64-bit major release  (build 9200)
 --Command     : generate_target aes_engine_key_bram.bd
 --Design      : aes_engine_key_bram
@@ -24,7 +24,7 @@ architecture STRUCTURE of aes_engine_key_bram is
     clka : in STD_LOGIC;
     ena : in STD_LOGIC;
     wea : in STD_LOGIC_VECTOR ( 0 to 0 );
-    addra : in STD_LOGIC_VECTOR ( 13 downto 0 );
+    addra : in STD_LOGIC_VECTOR ( 9 downto 0 );
     dina : in STD_LOGIC_VECTOR ( 255 downto 0 );
     douta : out STD_LOGIC_VECTOR ( 255 downto 0 )
   );
@@ -33,7 +33,7 @@ architecture STRUCTURE of aes_engine_key_bram is
 begin
 blk_mem_gen_0: component aes_engine_key_bram_blk_mem_gen_0_0
      port map (
-      addra(13 downto 0) => B"00000000000000",
+      addra(9 downto 0) => B"0000000000",
       clka => '0',
       dina(255 downto 0) => B"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000",
       douta(255 downto 0) => NLW_blk_mem_gen_0_douta_UNCONNECTED(255 downto 0),

@@ -39,7 +39,16 @@ begin
    gen_128 : for i in 1 to g_Mode generate
       gen_128_keys : if g_Mode = AES128 generate
          o_expanded_key(0)                                     <= i_key(AXI_T_DATA-1 downto 0);
-         g_function_input(i-1)                                 <= o_expanded_key(i-1)(AXI_T_DATA-1  downto expanded_key(i)'length-(BYTE_WIDTH*4));
+         
+         p_reg : process
+         begin
+            wait until rising_edge(i_clk);
+            if i_rst then
+               g_function_input(i-1)  <= (others  => '0');
+            else
+               g_function_input(i-1)  <= o_expanded_key(i-1)(AXI_T_DATA-1  downto expanded_key(i)'length-(BYTE_WIDTH*4));
+            end if;
+         end process;
                   
          left_shift(i-1)(BYTE_WIDTH*4-1 downto BYTE_WIDTH*3)   <= g_function_input(i-1)(BYTE_WIDTH-1   downto 0);
          left_shift(i-1)(BYTE_WIDTH-1   downto 0)              <= g_function_input(i-1)(BYTE_WIDTH*2-1 downto BYTE_WIDTH);
@@ -65,7 +74,17 @@ begin
    gen_192 : for i in 1 to g_Mode generate   
       gen_192_keys : if g_Mode = AES192 generate
          expanded_key_192(0)                                   <= i_key(AES192_KEY-1 downto 0);
-         g_function_input(i-1)                                 <= expanded_key_192(i-1)(AES192_KEY-1  downto AES192_KEY-(BYTE_WIDTH*4)); -- Take the last 32 bits of the key
+         
+         p_reg : process
+         begin
+            wait until rising_edge(i_clk);
+            if i_rst then
+               g_function_input(i-1)  <= (others  => '0');
+            else
+               g_function_input(i-1)  <= expanded_key_192(i-1)(AES192_KEY-1  downto AES192_KEY-(BYTE_WIDTH*4)); -- Take the last 32 bits of the key
+            end if;
+         end process;
+         
          
          left_shift(i-1)(BYTE_WIDTH*4-1 downto BYTE_WIDTH*3)   <= g_function_input(i-1)(BYTE_WIDTH-1   downto 0);
          left_shift(i-1)(BYTE_WIDTH-1   downto 0)              <= g_function_input(i-1)(BYTE_WIDTH*2-1 downto BYTE_WIDTH);
@@ -103,8 +122,21 @@ begin
          o_expanded_key(0)     <= i_key(AXI_T_DATA-1 downto 0);
          o_expanded_key(1)     <= i_key(AES256_KEY-1 downto AXI_T_DATA);
          -- take last 32 bits
-         h_function_input(i-1) <= o_expanded_key(h(i))(AXI_T_DATA-1  downto expanded_key(i)'length-(BYTE_WIDTH*4));
-         g_function_input(i-1) <= o_expanded_key(g(i-1))(AXI_T_DATA-1  downto expanded_key(i)'length-(BYTE_WIDTH*4));
+         --h_function_input(i-1) <= o_expanded_key(h(i))(AXI_T_DATA-1  downto expanded_key(i)'length-(BYTE_WIDTH*4));
+         --g_function_input(i-1) <= o_expanded_key(g(i-1))(AXI_T_DATA-1  downto expanded_key(i)'length-(BYTE_WIDTH*4));
+         
+         p_reg : process
+         begin
+            wait until rising_edge(i_clk);
+            if i_rst then
+               h_function_input(i-1)  <= (others  => '0');
+               g_function_input(i-1)  <= (others  => '0');
+            else
+               h_function_input(i-1) <= o_expanded_key(h(i))(AXI_T_DATA-1  downto expanded_key(i)'length-(BYTE_WIDTH*4));
+               g_function_input(i-1) <= o_expanded_key(g(i-1))(AXI_T_DATA-1  downto expanded_key(i)'length-(BYTE_WIDTH*4));
+            end if;
+            end process;
+         
          -----------
          -- use g function
          left_shift(i-1)(BYTE_WIDTH*4-1 downto BYTE_WIDTH*3)   <= g_function_input(i-1)(BYTE_WIDTH-1   downto 0);

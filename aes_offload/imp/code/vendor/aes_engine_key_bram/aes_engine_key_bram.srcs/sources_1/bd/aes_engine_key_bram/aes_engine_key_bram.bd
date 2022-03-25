@@ -48,7 +48,7 @@
             "value": "false"
           },
           "Write_Depth_A": {
-            "value": "9999"
+            "value": "1000"
           },
           "Write_Width_A": {
             "value": "256"
