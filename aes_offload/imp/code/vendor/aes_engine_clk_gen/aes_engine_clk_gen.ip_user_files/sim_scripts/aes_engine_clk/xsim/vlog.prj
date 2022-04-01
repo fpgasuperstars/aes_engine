@@ -1,7 +1,0 @@
-verilog xil_defaultlib --include "../../../../aes_engine_clk_gen.gen/sources_1/bd/aes_engine_clk/ipshared/62b6" \
-"../../../bd/aes_engine_clk/ip/aes_engine_clk_clk_wiz_0_0/aes_engine_clk_clk_wiz_0_0_clk_wiz.v" \
-"../../../bd/aes_engine_clk/ip/aes_engine_clk_clk_wiz_0_0/aes_engine_clk_clk_wiz_0_0.v" \
-
-verilog xil_defaultlib "glbl.v"
-
-nosort

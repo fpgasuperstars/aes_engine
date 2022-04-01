@@ -1,7 +1,7 @@
 Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 ------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
-| Date         : Fri Mar 25 18:27:43 2022
+| Date         : Fri Apr  1 17:04:49 2022
 | Host         : EUL10-797V3J3 running 64-bit major release  (build 9200)
 | Command      : report_ip_status
 ------------------------------------------------------------------------------------
@@ -10,7 +10,7 @@ IP Status Summary
 
 1. Project IP Status
 --------------------
-Your project uses 1 IP. Some of these IP may have undergone changes in this release of the software. Please review the recommended actions.
+Your project uses 2 IP. Some of these IP may have undergone changes in this release of the software. Please review the recommended actions.
 
 More information on the Xilinx versioning policy is available at www.xilinx.com.
 
@@ -23,6 +23,11 @@ Project IP Instances
 |                                     |            |                     |           | Generator          | (Rev.   |              |            |                      |
 |                                     |            |                     |           |                    | 5)      |              |            |                      |
 +-------------------------------------+------------+---------------------+-----------+--------------------+---------+--------------+------------+----------------------+
+| clock_clk_wiz_0_1                   | Up-to-date | No changes required |  *(2)     | Clocking Wizard    | 6.0     | 6.0 (Rev. 9) | Included   | xczu9eg-ffvb1156-2-e |
+|                                     |            |                     |           |                    | (Rev.   |              |            |                      |
+|                                     |            |                     |           |                    | 9)      |              |            |                      |
++-------------------------------------+------------+---------------------+-----------+--------------------+---------+--------------+------------+----------------------+
 *(1) c:/Xilinx/Vivado/2021.2/data/ip/xilinx/blk_mem_gen_v8_4/doc/blk_mem_gen_v8_4_changelog.txt
+*(2) c:/Xilinx/Vivado/2021.2/data/ip/xilinx/clk_wiz_v6_0/doc/clk_wiz_v6_0_changelog.txt
 
 

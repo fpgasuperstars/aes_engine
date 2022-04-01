@@ -64,4 +64,4 @@ vcom -work $lib_name -2008 -explicit \
   $CODE_PATH/aes_engine/aes_engine_pkg.vhd\
   $CODE_PATH/aes_engine/aes_engine_round.vhd\
   $CODE_PATH/aes_engine/aes_engine_key_expansion.vhd\
-  $CODE_PATH/aes_engine/aes_engine_top.vhd
+  $CODE_PATH/aes_engine/aes_engine_top_sim.vhd

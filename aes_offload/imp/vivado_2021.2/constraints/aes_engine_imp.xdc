@@ -1,6 +1,7 @@
 #clk diff pair
-
-set_property PACKAGE_PIN G21 [get_ports i_clk_p] 	# SYS_CLK_p
-set_property IOSTANDARD LVDS_25 [get_ports i_clk_p] # SYS_CLK_p
-set_property PACKAGE_PIN F21 [get_ports i_clk_n] 	# SYS_CLK_n
-set_property IOSTANDARD LVDS_25 [get_ports i_clk_n] # SYS_CLK_n
+create_clock -period 3.333 [get_ports i_clk_p]
+set_input_jitter [get_clocks -of_objects [get_ports i_clk_p]] 0.033
+set_property PACKAGE_PIN AL8 [get_ports i_clk_p]
+set_property IOSTANDARD DIFF_SSTL12 [get_ports i_clk_p]
+set_property PACKAGE_PIN AL7 [get_ports i_clk_n]
+set_property IOSTANDARD DIFF_SSTL12 [get_ports i_clk_n]
