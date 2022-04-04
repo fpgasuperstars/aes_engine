@@ -1,0 +1,139 @@
+
+==========================================
+ Starting optimization
+==========================================
+Parsing XDC File [C:/git/aes_engine/aes_offload/imp/vivado_2021.2/constraints/aes_engine_imp.xdc]
+Finished Parsing XDC File [C:/git/aes_engine/aes_offload/imp/vivado_2021.2/constraints/aes_engine_imp.xdc]
+Command: opt_design
+Attempting to get a license for feature 'Implementation' and/or device 'xczu9eg'
+INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xczu9eg'
+Running DRC as a precondition to command opt_design
+
+Starting DRC Task
+INFO: [DRC 23-27] Running DRC with 8 threads
+INFO: [Project 1-461] DRC finished with 0 Errors
+INFO: [Project 1-462] Please refer to the DRC report (report_drc) for more information.
+
+Time (s): cpu = 00:00:03 ; elapsed = 00:00:02 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Starting Cache Timing Information Task
+Ending Cache Timing Information Task | Checksum: 18f18a2b4
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.004 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Starting Logic Optimization Task
+
+Phase 1 Generate And Synthesize Debug Cores
+INFO: [Chipscope 16-329] Generating Script for core instance : dbg_hub 
+INFO: [IP_Flow 19-3806] Processing IP xilinx.com:ip:xsdbm:3.0 for cell dbg_hub_CV.
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.035 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Phase 1 Generate And Synthesize Debug Cores | Checksum: d286e9d3
+
+Time (s): cpu = 00:00:04 ; elapsed = 00:01:31 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 2 Retarget
+INFO: [Opt 31-138] Pushed 5 inverter(s) to 172 load pin(s).
+INFO: [Opt 31-49] Retargeted 0 cell(s).
+Phase 2 Retarget | Checksum: 8ec4736f
+
+Time (s): cpu = 00:00:07 ; elapsed = 00:01:32 . Memory (MB): peak = 4981.297 ; gain = 0.000
+INFO: [Opt 31-389] Phase Retarget created 1580 cells and removed 1603 cells
+INFO: [Opt 31-1021] In phase Retarget, 193 netlist objects are constrained preventing optimization. Please run opt_design with -debug_log to get more detail. 
+
+Phase 3 Constant propagation
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Phase 3 Constant propagation | Checksum: 8ec4736f
+
+Time (s): cpu = 00:00:08 ; elapsed = 00:01:33 . Memory (MB): peak = 4981.297 ; gain = 0.000
+INFO: [Opt 31-389] Phase Constant propagation created 0 cells and removed 0 cells
+INFO: [Opt 31-1021] In phase Constant propagation, 193 netlist objects are constrained preventing optimization. Please run opt_design with -debug_log to get more detail. 
+
+Phase 4 Sweep
+Phase 4 Sweep | Checksum: 17324faf6
+
+Time (s): cpu = 00:00:08 ; elapsed = 00:01:33 . Memory (MB): peak = 4981.297 ; gain = 0.000
+INFO: [Opt 31-389] Phase Sweep created 0 cells and removed 5 cells
+INFO: [Opt 31-1021] In phase Sweep, 1727 netlist objects are constrained preventing optimization. Please run opt_design with -debug_log to get more detail. 
+
+Phase 5 BUFG optimization
+INFO: [Opt 31-1077] Phase BUFG optimization inserted 0 global clock buffer(s) for CLOCK_LOW_FANOUT.
+Phase 5 BUFG optimization | Checksum: 17324faf6
+
+Time (s): cpu = 00:00:08 ; elapsed = 00:01:33 . Memory (MB): peak = 4981.297 ; gain = 0.000
+INFO: [Opt 31-662] Phase BUFG optimization created 0 cells of which 0 are BUFGs and removed 0 cells.
+
+Phase 6 Shift Register Optimization
+INFO: [Opt 31-1064] SRL Remap converted 0 SRLs to 0 registers and converted 0 registers of register chains to 0 SRLs
+Phase 6 Shift Register Optimization | Checksum: 17324faf6
+
+Time (s): cpu = 00:00:09 ; elapsed = 00:01:33 . Memory (MB): peak = 4981.297 ; gain = 0.000
+INFO: [Opt 31-389] Phase Shift Register Optimization created 0 cells and removed 0 cells
+
+Phase 7 Post Processing Netlist
+Phase 7 Post Processing Netlist | Checksum: 17324faf6
+
+Time (s): cpu = 00:00:09 ; elapsed = 00:01:34 . Memory (MB): peak = 4981.297 ; gain = 0.000
+INFO: [Opt 31-389] Phase Post Processing Netlist created 0 cells and removed 0 cells
+INFO: [Opt 31-1021] In phase Post Processing Netlist, 201 netlist objects are constrained preventing optimization. Please run opt_design with -debug_log to get more detail. 
+Opt_design Change Summary
+=========================
+
+
+-------------------------------------------------------------------------------------------------------------------------
+|  Phase                        |  #Cells created  |  #Cells Removed  |  #Constrained objects preventing optimizations  |
+-------------------------------------------------------------------------------------------------------------------------
+|  Retarget                     |            1580  |            1603  |                                            193  |
+|  Constant propagation         |               0  |               0  |                                            193  |
+|  Sweep                        |               0  |               5  |                                           1727  |
+|  BUFG optimization            |               0  |               0  |                                              0  |
+|  Shift Register Optimization  |               0  |               0  |                                              0  |
+|  Post Processing Netlist      |               0  |               0  |                                            201  |
+-------------------------------------------------------------------------------------------------------------------------
+
+
+
+Starting Connectivity Check Task
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.048 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Ending Logic Optimization Task | Checksum: c6037fd4
+
+Time (s): cpu = 00:00:09 ; elapsed = 00:01:34 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Starting Power Optimization Task
+INFO: [Pwropt 34-132] Skipping clock gating for clocks with a period < 2.00 ns.
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+Running Vector-less Activity Propagation...
+INFO: [Pwropt 34-9] Applying IDT optimizations ...
+INFO: [Pwropt 34-10] Applying ODC optimizations ...
+
+Finished Running Vector-less Activity Propagation
+
+
+Starting PowerOpt Patch Enables Task
+INFO: [Pwropt 34-162] WRITE_MODE attribute of 0 BRAM(s) out of a total of 72 has been updated to save power. Run report_power_opt to get a complete listing of the BRAMs updated.
+INFO: [Pwropt 34-201] Structural ODC has moved 0 WE to EN ports
+Number of BRAM Ports augmented: 0 newly gated: 0 Total Ports: 144
+Ending PowerOpt Patch Enables Task | Checksum: c6037fd4
+
+Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.291 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Ending Power Optimization Task | Checksum: c6037fd4
+
+Time (s): cpu = 00:00:29 ; elapsed = 00:00:17 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Starting Final Cleanup Task
+Ending Final Cleanup Task | Checksum: c6037fd4
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Starting Netlist Obfuscation Task
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.007 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Ending Netlist Obfuscation Task | Checksum: c6037fd4
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.007 . Memory (MB): peak = 4981.297 ; gain = 0.000
+INFO: [Common 17-83] Releasing license: Implementation
+282 Infos, 1804 Warnings, 0 Critical Warnings and 0 Errors encountered.
+opt_design completed successfully
+opt_design: Time (s): cpu = 00:00:44 ; elapsed = 00:01:56 . Memory (MB): peak = 4981.297 ; gain = 0.000
+INFO: [Common 17-600] The following parameters have non-default value.
+general.maxThreads
+

@@ -1,0 +1,54 @@
+Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
+| Date              : Mon Apr  4 16:14:02 2022
+| Host              : EUL10-797V3J3 running 64-bit major release  (build 9200)
+| Command           : report_clocks -file ../reports/clocks.rpt
+| Design            : aes_engine_wrapper
+| Device            : xczu9eg-ffvb1156
+| Speed File        : -2  PRODUCTION 1.29 08-03-2020
+| Temperature Grade : E
+-----------------------------------------------------------------------------------------
+
+Clock Report
+
+
+Attributes
+  P: Propagated
+  G: Generated
+  A: Auto-derived
+  R: Renamed
+  V: Virtual
+  I: Inverted
+  S: Pin phase-shifted with Latency mode
+
+Clock                                                                                                Period(ns)  Waveform(ns)    Attributes  Sources
+board_clk                                                                                            8.000       {0.000 4.000}   P           {i_clk_p}
+dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/INTERNAL_TCK  50.000      {0.000 25.000}  P           {dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/INTERNAL_TCK}
+clk_out1_clk_wiz_0                                                                                   2.500       {0.000 1.250}   P,G,A       {CLK/inst/mmcme4_adv_inst/CLKOUT0}
+
+
+====================================================
+Generated Clocks
+====================================================
+
+Generated Clock     : clk_out1_clk_wiz_0
+Master Source       : CLK/inst/mmcme4_adv_inst/CLKIN1
+Master Clock        : board_clk
+Edges               : {1 2 3}
+Edge Shifts(ns)     : {0.000 -2.750 -5.500}
+Generated Sources   : {CLK/inst/mmcme4_adv_inst/CLKOUT0}
+
+
+
+====================================================
+User Uncertainty
+====================================================
+
+
+
+====================================================
+User Jitter
+====================================================
+
+

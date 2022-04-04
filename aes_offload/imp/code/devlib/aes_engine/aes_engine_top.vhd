@@ -19,13 +19,10 @@ library xpm;
 
 entity aes_engine_top IS
    generic(
-     g_Mode      : integer   := AES128; -- Set to desired mode AES128/AES192/AES256 this will have an effect on the number of rounds generated
      g_speed_sel : std_logic := '0'     -- 1 = LO speed, 0 = HI speed
    );
    port(
-      --i_clk_p         : in  std_logic; -- used for the clk wizard
-      --i_clk_n         : in  std_logic; -- used for the clk wizard
-      clk             : in  std_logic;
+      i_clk             : in  std_logic;
       i_rst             : in  std_logic;
       -- AXI stream M2S
       i_t_data          : in  std_logic_vector(AXI_T_DATA-1 downto 0);
@@ -40,19 +37,10 @@ entity aes_engine_top IS
       o_t_data          : out std_logic_vector(AXI_T_DATA-1 downto 0);
       -- Keys
       i_key_handle      : in  std_logic_vector(9 downto 0)
-      --LED
-      --locked_led        : out std_logic
    );
 end entity;
 
 architecture mixed of aes_engine_top is
-  --component clock_clk_wiz_0_1_clk_wiz is
-  --port (
-  --  clk_in1_n : in STD_LOGIC;
-  --  clk_in1_p : in STD_LOGIC;
-  --  clk_out1 : out STD_LOGIC
-  --);
-  --end component clock_clk_wiz_0_1_clk_wiz;
    -- constants
    constant DUTY_EN        : integer := 2; -- enable duty cycle counter to start so that when the speed_en signal is a 1 the initial pipeline delay is accounted for
    
@@ -83,17 +71,6 @@ architecture mixed of aes_engine_top is
    signal outdata, dina                                       : std_logic_vector(AES256_KEY-1 downto 0);
    
 begin
-   -------------------------------------------------------------------------------------------
-   ------ Clock generation
-   -------------------------------------------------------------------------------------------
-   --u_clk_gen : component clock_clk_wiz_0_1_clk_wiz
-   --port map (
-   --   clk_in1_n => i_clk_n,
-   --   clk_in1_p => i_clk_p,
-   --   clk_out1  => clk
-   -- );
-
-   --locked_led  <= '1'; -- remove this and uncomment above coe to add clk wizard for implementation
    last_rnd  <= (AES128-1 => '1', others => '0') when aes_mode = "00" else
                 (AES192-1 => '1', others => '0') when aes_mode = "01" else
                 (AES256-1 => '1', others => '0') when aes_mode = "10" else
@@ -109,7 +86,7 @@ begin
    ---------------------------------------------------------------------------------------
    p_control : process
    begin
-      wait until rising_edge(clk);
+      wait until rising_edge(i_clk);
          if i_rst then
             state  <=  start;
             expanded_key_q <= (others  => (others  => '0'));
@@ -180,7 +157,7 @@ begin
    -- Duty cycle counter used for speed selection
    p_speed_select : process
    begin
-      wait until rising_edge(clk);
+      wait until rising_edge(i_clk);
       if i_rst = '1'  then
          duty_cycle_cnt <= (others => '0');
       elsif duty_cycle_cnt = gen_mode+1 then
@@ -196,7 +173,7 @@ begin
                '0';
    p_lo_speed : process
    begin
-      wait until rising_edge(clk);
+      wait until rising_edge(i_clk);
       if i_rst then
          lo_spd_en_cnt  <= (others  => '0');
       elsif speed_en = '1' and lo_spd_en_cnt < lo_spd_en_cnt'high then -- when in lo speed ensure the first output is discarded as it contains config data only
@@ -209,7 +186,7 @@ begin
    ---------------------------------------------------------------------------------------
    p_flush_out : process
    begin
-      wait until rising_edge(clk);
+      wait until rising_edge(i_clk);
       if i_rst then
          flushout_cnt <= (others  => '0');
       elsif state /= newkey  then -- count to allow enough time for old encryption to output correctly before new input comes in
@@ -225,7 +202,7 @@ begin
    -- Enable counter to tell when to output data after the initial pipeline delay
    p_outputs : process
    begin
-      wait until rising_edge(clk);
+      wait until rising_edge(i_clk);
          key_handle_q <= i_key_handle;
          t_valid_q  <= i_t_valid;
          t_last_q   <= i_t_last; 
@@ -249,7 +226,7 @@ begin
    
    p_en_out : process -- counter to determine first valid output after pipeline delays
    begin
-      wait until rising_edge(clk);
+      wait until rising_edge(i_clk);
       if i_rst = '1' or state = config1 or state = config2 then
          en_cnt  <= (others  => '0');
       elsif (state = normal or state = newkey) and en_cnt < gen_mode +1  then
@@ -262,7 +239,7 @@ begin
    ---------------------------------------------------------------------------------------
    u_key_expansion : entity aes_engine.aes_engine_key_expansion
          port map(
-            i_clk          => clk,
+            i_clk          => i_clk,
             i_rst          => i_rst,
             i_key          => outdata,
             i_mode         => gen_mode,
@@ -280,7 +257,7 @@ begin
    gen_encryption_rounds : for i in 1 to AES256 generate
       u_enc_rnd1 : entity aes_engine.aes_engine_round
          port map(
-            i_clk             => clk,
+            i_clk             => i_clk,
             i_rst             => i_rst,
             i_t_valid         => t_valid(i-1), 
             i_t_last          => t_last (i-1), 
@@ -300,7 +277,7 @@ begin
    -----------------------------------------------------------------------------------------
    p_key_select : process
    begin
-      wait until rising_edge(clk);
+      wait until rising_edge(i_clk);
       if  en_cnt = 0 or en_cnt >= gen_mode or state = load_key then -- only allow a new key when engine is not filling pipeline or when initial load key after reset. 
          addra  <=  key_handle_q;
       end if;
@@ -309,7 +286,7 @@ begin
    u_bram_keys : entity xil_defaultlib.aes_engine_key_bram_blk_mem_gen_0_0
       port map(
           addra  => addra,
-          clka   => clk,
+          clka   => i_clk,
           dina   => dina,
           douta  => outdata,
           ena    => '1', -- always enabled

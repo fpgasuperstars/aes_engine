@@ -4,7 +4,7 @@
 
 # General settings
 set project_name aes_engine
-set top_entity aes_engine_top
+set top_entity aes_engine_wrapper
 set device_pn xczu9eg-ffvb1156-2-e
 
 # Tools parameters

@@ -1,0 +1,294 @@
+
+==========================================
+ Starting placement
+==========================================
+Command: place_design -directive ExtraTimingOpt
+Attempting to get a license for feature 'Implementation' and/or device 'xczu9eg'
+INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xczu9eg'
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+INFO: [DRC 23-27] Running DRC with 8 threads
+INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors
+INFO: [Vivado_Tcl 4-199] Please refer to the DRC report (report_drc) for more information.
+Running DRC as a precondition to command place_design
+INFO: [DRC 23-27] Running DRC with 8 threads
+INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors
+INFO: [Vivado_Tcl 4-199] Please refer to the DRC report (report_drc) for more information.
+
+Starting Placer Task
+INFO: [Place 46-5] The placer was invoked with the 'ExtraTimingOpt' directive.
+INFO: [Place 30-611] Multithreading enabled for place_design using a maximum of 8 CPUs
+
+Phase 1 Placer Initialization
+
+Phase 1.1 Placer Initialization Netlist Sorting
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.009 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Phase 1.1 Placer Initialization Netlist Sorting | Checksum: 46881ae5
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.056 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.007 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 1.2 IO Placement/ Clock Placement/ Build Placer Device
+Phase 1.2 IO Placement/ Clock Placement/ Build Placer Device | Checksum: 1372a94a3
+
+Time (s): cpu = 00:00:03 ; elapsed = 00:00:02 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 1.3 Build Placer Netlist Model
+Phase 1.3 Build Placer Netlist Model | Checksum: 20f9e10c9
+
+Time (s): cpu = 00:00:14 ; elapsed = 00:00:05 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 1.4 Constrain Clocks/Macros
+Phase 1.4 Constrain Clocks/Macros | Checksum: 20f9e10c9
+
+Time (s): cpu = 00:00:14 ; elapsed = 00:00:05 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Phase 1 Placer Initialization | Checksum: 20f9e10c9
+
+Time (s): cpu = 00:00:14 ; elapsed = 00:00:05 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 2 Global Placement
+
+Phase 2.1 Floorplanning
+
+Phase 2.1.1 Partition Driven Placement
+
+Phase 2.1.1.1 PBP: Partition Driven Placement
+Phase 2.1.1.1 PBP: Partition Driven Placement | Checksum: 19818b0cc
+
+Time (s): cpu = 00:00:48 ; elapsed = 00:00:21 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 2.1.1.2 PBP: Clock Region Placement
+Phase 2.1.1.2 PBP: Clock Region Placement | Checksum: 1585546c9
+
+Time (s): cpu = 00:00:49 ; elapsed = 00:00:21 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 2.1.1.3 PBP: Compute Congestion
+Phase 2.1.1.3 PBP: Compute Congestion | Checksum: 1585546c9
+
+Time (s): cpu = 00:00:49 ; elapsed = 00:00:22 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 2.1.1.4 PBP: UpdateTiming
+Phase 2.1.1.4 PBP: UpdateTiming | Checksum: 145c79152
+
+Time (s): cpu = 00:00:51 ; elapsed = 00:00:22 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 2.1.1.5 PBP: Add part constraints
+Phase 2.1.1.5 PBP: Add part constraints | Checksum: 145c79152
+
+Time (s): cpu = 00:00:52 ; elapsed = 00:00:23 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Phase 2.1.1 Partition Driven Placement | Checksum: 145c79152
+
+Time (s): cpu = 00:00:52 ; elapsed = 00:00:23 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Phase 2.1 Floorplanning | Checksum: 145c79152
+
+Time (s): cpu = 00:00:52 ; elapsed = 00:00:23 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 2.2 Update Timing before SLR Path Opt
+Phase 2.2 Update Timing before SLR Path Opt | Checksum: 145c79152
+
+Time (s): cpu = 00:00:52 ; elapsed = 00:00:23 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 2.3 Post-Processing in Floorplanning
+Phase 2.3 Post-Processing in Floorplanning | Checksum: 1bfab88a5
+
+Time (s): cpu = 00:00:53 ; elapsed = 00:00:23 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 2.4 Global Placement Core
+
+Phase 2.4.1 Physical Synthesis In Placer
+INFO: [Physopt 32-1035] Found 1493 LUTNM shape to break, 130 LUT instances to create LUTNM shape
+INFO: [Physopt 32-1044] Break lutnm for timing: one critical 376, two critical 1117, total 1338, new lutff created 34
+INFO: [Physopt 32-1138] End 1 Pass. Optimized 1386 nets or LUTs. Breaked 1338 LUTs, combined 48 existing LUTs and moved 0 existing LUT
+INFO: [Physopt 32-1030] Pass 1. Identified 4 candidate driver sets for equivalent driver rewiring.
+INFO: [Physopt 32-661] Optimized 0 net.  Re-placed 0 instance.
+INFO: [Physopt 32-775] End 1 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.034 . Memory (MB): peak = 4981.297 ; gain = 0.000
+INFO: [Physopt 32-65] No nets found for high-fanout optimization.
+INFO: [Physopt 32-232] Optimized 0 net. Created 0 new instance.
+INFO: [Physopt 32-775] End 1 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+INFO: [Physopt 32-456] No candidate cells for DSP register optimization found in the design.
+INFO: [Physopt 32-775] End 2 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+INFO: [Physopt 32-1123] No candidate cells found for Shift Register to Pipeline optimization
+INFO: [Physopt 32-775] End 1 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+INFO: [Physopt 32-677] No candidate cells for Shift Register optimization found in the design
+INFO: [Physopt 32-775] End 1 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+INFO: [Physopt 32-527] Pass 1: Identified 7 candidate cells for BRAM register optimization
+INFO: [Physopt 32-665] Processed cell u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[2].ram.r/prim_init.ram/DEVICE_8SERIES.NO_BMM_INFO.SP.SIMPLE_PRIM36.ram. 36 registers were pushed out.
+INFO: [Physopt 32-665] Processed cell u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[1].ram.r/prim_init.ram/DEVICE_8SERIES.NO_BMM_INFO.SP.SIMPLE_PRIM36.ram. 36 registers were pushed out.
+INFO: [Physopt 32-665] Processed cell u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/prim_init.ram/DEVICE_8SERIES.NO_BMM_INFO.SP.SIMPLE_PRIM18.ram. 18 registers were pushed out.
+INFO: [Physopt 32-665] Processed cell u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[3].ram.r/prim_init.ram/DEVICE_8SERIES.NO_BMM_INFO.SP.SIMPLE_PRIM36.ram. 36 registers were pushed out.
+INFO: [Physopt 32-665] Processed cell u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[4].ram.r/prim_init.ram/DEVICE_8SERIES.NO_BMM_INFO.SP.SIMPLE_PRIM36.ram. 36 registers were pushed out.
+INFO: [Physopt 32-665] Processed cell u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[5].ram.r/prim_init.ram/DEVICE_8SERIES.NO_BMM_INFO.SP.SIMPLE_PRIM36.ram. 36 registers were pushed out.
+INFO: [Physopt 32-665] Processed cell u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[6].ram.r/prim_init.ram/DEVICE_8SERIES.NO_BMM_INFO.SP.SIMPLE_PRIM36.ram. 36 registers were pushed out.
+INFO: [Physopt 32-775] End 1 Pass. Optimized 7 nets or cells. Created 234 new cells, deleted 0 existing cell and moved 0 existing cell
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.138 . Memory (MB): peak = 4981.297 ; gain = 0.000
+INFO: [Physopt 32-846] No candidate cells for URAM register optimization found in the design
+INFO: [Physopt 32-775] End 2 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+INFO: [Physopt 32-949] No candidate nets found for dynamic/static region interface net replication
+INFO: [Physopt 32-775] End 1 Pass. Optimized 0 net or cell. Created 0 new cell, deleted 0 existing cell and moved 0 existing cell
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.009 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Summary of Physical Synthesis Optimizations
+============================================
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+|  Optimization                                     |  Added Cells  |  Removed Cells  |  Optimized Cells/Nets  |  Dont Touch  |  Iterations  |  Elapsed   |
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+|  LUT Combining                                    |         1338  |             48  |                  1386  |           0  |           1  |  00:00:00  |
+|  Retime                                           |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  Equivalent Driver Rewiring                       |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  Very High Fanout                                 |            0  |              0  |                     0  |           1  |           1  |  00:00:00  |
+|  DSP Register                                     |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  Shift Register to Pipeline                       |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  Shift Register                                   |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  BRAM Register                                    |          234  |              0  |                     7  |           0  |           1  |  00:00:03  |
+|  URAM Register                                    |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  Dynamic/Static Region Interface Net Replication  |            0  |              0  |                     0  |           0  |           1  |  00:00:00  |
+|  Total                                            |         1572  |             48  |                  1393  |           1  |          10  |  00:00:04  |
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Phase 2.4.1 Physical Synthesis In Placer | Checksum: 17eb0d315
+
+Time (s): cpu = 00:02:47 ; elapsed = 00:01:08 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Phase 2.4 Global Placement Core | Checksum: 201227999
+
+Time (s): cpu = 00:02:52 ; elapsed = 00:01:10 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Phase 2 Global Placement | Checksum: 201227999
+
+Time (s): cpu = 00:02:52 ; elapsed = 00:01:10 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 3 Detail Placement
+
+Phase 3.1 Commit Multi Column Macros
+Phase 3.1 Commit Multi Column Macros | Checksum: 15c6411d6
+
+Time (s): cpu = 00:02:55 ; elapsed = 00:01:11 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 3.2 Commit Most Macros & LUTRAMs
+Phase 3.2 Commit Most Macros & LUTRAMs | Checksum: 198bfbfff
+
+Time (s): cpu = 00:02:57 ; elapsed = 00:01:12 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 3.3 Small Shape DP
+
+Phase 3.3.1 Small Shape Clustering
+Phase 3.3.1 Small Shape Clustering | Checksum: d9d8c9dc
+
+Time (s): cpu = 00:03:08 ; elapsed = 00:01:18 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 3.3.2 Flow Legalize Slice Clusters
+Phase 3.3.2 Flow Legalize Slice Clusters | Checksum: 152b29d16
+
+Time (s): cpu = 00:03:09 ; elapsed = 00:01:18 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 3.3.3 Slice Area Swap
+Phase 3.3.3 Slice Area Swap | Checksum: 13f24752d
+
+Time (s): cpu = 00:03:11 ; elapsed = 00:01:20 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Phase 3.3 Small Shape DP | Checksum: ed264d42
+
+Time (s): cpu = 00:03:20 ; elapsed = 00:01:23 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 3.4 Re-assign LUT pins
+Phase 3.4 Re-assign LUT pins | Checksum: 14214ada8
+
+Time (s): cpu = 00:03:22 ; elapsed = 00:01:25 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 3.5 Pipeline Register Optimization
+Phase 3.5 Pipeline Register Optimization | Checksum: 19cf1d8e5
+
+Time (s): cpu = 00:03:22 ; elapsed = 00:01:26 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 3.6 Fast Optimization
+Phase 3.6 Fast Optimization | Checksum: 183754317
+
+Time (s): cpu = 00:03:54 ; elapsed = 00:01:46 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Phase 3 Detail Placement | Checksum: 183754317
+
+Time (s): cpu = 00:03:54 ; elapsed = 00:01:46 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 4 Post Placement Optimization and Clean-Up
+
+Phase 4.1 Post Commit Optimization
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+
+Phase 4.1.1 Post Placement Optimization
+Post Placement Optimization Initialization | Checksum: 1ec19133d
+
+Phase 4.1.1.1 BUFG Insertion
+
+Starting Physical Synthesis Task
+
+Phase 1 Physical Synthesis Initialization
+INFO: [Physopt 32-721] Multithreading enabled for phys_opt_design using a maximum of 8 CPUs
+INFO: [Physopt 32-619] Estimated Timing Summary | WNS=-1.035 | TNS=-500.204 |
+Phase 1 Physical Synthesis Initialization | Checksum: 17c607b79
+
+Time (s): cpu = 00:00:03 ; elapsed = 00:00:00.524 . Memory (MB): peak = 4981.297 ; gain = 0.000
+INFO: [Place 46-56] BUFG insertion identified 0 candidate nets. Inserted BUFG: 0, Replicated BUFG Driver: 0, Skipped due to Placement/Routing Conflicts: 0, Skipped due to Timing Degradation: 0, Skipped due to Illegal Netlist: 0.
+Ending Physical Synthesis Task | Checksum: 19973e8dc
+
+Time (s): cpu = 00:00:04 ; elapsed = 00:00:00.835 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Phase 4.1.1.1 BUFG Insertion | Checksum: 1ec19133d
+
+Time (s): cpu = 00:04:17 ; elapsed = 00:01:52 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 4.1.1.2 Post Placement Timing Optimization
+INFO: [Place 30-746] Post Placement Timing Summary WNS=-0.707. For the most accurate timing information please run report_timing.
+Phase 4.1.1.2 Post Placement Timing Optimization | Checksum: 91f1a3a8
+
+Time (s): cpu = 00:05:35 ; elapsed = 00:03:19 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Time (s): cpu = 00:05:35 ; elapsed = 00:03:19 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Phase 4.1 Post Commit Optimization | Checksum: 91f1a3a8
+
+Time (s): cpu = 00:05:35 ; elapsed = 00:03:19 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.006 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 4.2 Post Placement Cleanup
+Phase 4.2 Post Placement Cleanup | Checksum: 139b53a44
+
+Time (s): cpu = 00:05:41 ; elapsed = 00:03:24 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 4.3 Placer Reporting
+
+Phase 4.3.1 Print Estimated Congestion
+INFO: [Place 30-612] Post-Placement Estimated Congestion 
+ ________________________________________________________________________
+|           | Global Congestion | Long Congestion   | Short Congestion  |
+| Direction | Region Size       | Region Size       | Region Size       |
+|___________|___________________|___________________|___________________|
+|      North|                1x1|                8x8|                2x2|
+|___________|___________________|___________________|___________________|
+|      South|                1x1|                1x1|                2x2|
+|___________|___________________|___________________|___________________|
+|       East|                1x1|                1x1|                2x2|
+|___________|___________________|___________________|___________________|
+|       West|                1x1|                1x1|                4x4|
+|___________|___________________|___________________|___________________|
+
+Phase 4.3.1 Print Estimated Congestion | Checksum: 139b53a44
+
+Time (s): cpu = 00:05:41 ; elapsed = 00:03:24 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Phase 4.3 Placer Reporting | Checksum: 139b53a44
+
+Time (s): cpu = 00:05:41 ; elapsed = 00:03:24 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Phase 4.4 Final Placement Cleanup
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.007 . Memory (MB): peak = 4981.297 ; gain = 0.000
+
+Time (s): cpu = 00:05:41 ; elapsed = 00:03:24 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Phase 4 Post Placement Optimization and Clean-Up | Checksum: 18287dd73
+
+Time (s): cpu = 00:05:41 ; elapsed = 00:03:24 . Memory (MB): peak = 4981.297 ; gain = 0.000
+Ending Placer Task | Checksum: 143fd38e3
+
+Time (s): cpu = 00:05:41 ; elapsed = 00:03:24 . Memory (MB): peak = 4981.297 ; gain = 0.000
+INFO: [Common 17-83] Releasing license: Implementation
+328 Infos, 1804 Warnings, 0 Critical Warnings and 0 Errors encountered.
+place_design completed successfully
+place_design: Time (s): cpu = 00:05:53 ; elapsed = 00:03:28 . Memory (MB): peak = 4981.297 ; gain = 0.000
+INFO: [Common 17-600] The following parameters have non-default value.
+general.maxThreads
+
