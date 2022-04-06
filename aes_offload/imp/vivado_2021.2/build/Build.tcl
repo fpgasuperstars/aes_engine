@@ -345,7 +345,7 @@ proc build {{parameters no_parameteres}} {
     puts "\n=========================================="
     puts " Checksum generation"
     puts "=========================================="
-    write_cfgmem -force -format MCS -size 32 -interface SPIx4 -checksum -loadbit "up 0x0 $outputs_dir/$project_name.bit" $outputs_dir/$project_name.mcs  
+    write_cfgmem -force -format MCS -size 32 -interface SPIx1 -checksum -loadbit "up 0x0 $outputs_dir/$project_name.bit" $outputs_dir/$project_name.mcs  
     if {[check_parameters $parameters -debug]||[check_parameters $parameters -ins_ila]} {write_debug_probes -force $outputs_dir/$project_name.ltx}
     set current_length [save_log $current_length "$reports_dir/bitstream.log"]
   }

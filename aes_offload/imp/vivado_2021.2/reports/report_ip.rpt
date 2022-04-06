@@ -1,7 +1,7 @@
 Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 ------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
-| Date         : Mon Apr  4 16:01:50 2022
+| Date         : Wed Apr  6 21:21:26 2022
 | Host         : EUL10-797V3J3 running 64-bit major release  (build 9200)
 | Command      : report_ip_status
 ------------------------------------------------------------------------------------
@@ -10,29 +10,24 @@ IP Status Summary
 
 1. Project IP Status
 --------------------
-Your project uses 3 IP. Some of these IP may have undergone changes in this release of the software. Please review the recommended actions.
+Your project uses 2 IP. Some of these IP may have undergone changes in this release of the software. Please review the recommended actions.
 
 More information on the Xilinx versioning policy is available at www.xilinx.com.
 
 Project IP Instances
-+-------------------------------------+-----------------+---------------------+-----------+--------------------+---------+---------------+------------+----------------------+
-| Instance Name                       | Status          | Recommendation      | Change    | IP Name            | IP      | New Version   | New        | Original Part        |
-|                                     |                 |                     | Log       |                    | Version |               | License    |                      |
-+-------------------------------------+-----------------+---------------------+-----------+--------------------+---------+---------------+------------+----------------------+
-| aes_engine_key_bram_blk_mem_gen_0_0 | Up-to-date      | No changes required |  *(1)     | Block Memory       | 8.4     | 8.4 (Rev. 5)  | Included   | xczu9eg-ffvb1156-2-e |
-|                                     |                 |                     |           | Generator          | (Rev.   |               |            |                      |
-|                                     |                 |                     |           |                    | 5)      |               |            |                      |
-+-------------------------------------+-----------------+---------------------+-----------+--------------------+---------+---------------+------------+----------------------+
-| clk_wiz_0                           | IP board change | Retarget IP         |  *(2)     | Clocking Wizard    | 6.0     | 6.0 (Rev. 9)  | Included   | xczu9eg-ffvb1156-2-e |
-|                                     |                 |                     |           |                    | (Rev.   |               |            |                      |
-|                                     |                 |                     |           |                    | 9)      |               |            |                      |
-+-------------------------------------+-----------------+---------------------+-----------+--------------------+---------+---------------+------------+----------------------+
-| vio_0                               | IP part change  | Retarget IP         |  *(3)     | VIO (Virtual       | 3.0     | 3.0 (Rev. 22) | Included   | xc7vx485tffg1157-1   |
-|                                     |                 |                     |           | Input/Output)      | (Rev.   |               |            |                      |
-|                                     |                 |                     |           |                    | 22)     |               |            |                      |
-+-------------------------------------+-----------------+---------------------+-----------+--------------------+---------+---------------+------------+----------------------+
++-------------------------------------+------------+---------------------+-----------+--------------------+---------+---------------+------------+----------------------+
+| Instance Name                       | Status     | Recommendation      | Change    | IP Name            | IP      | New Version   | New        | Original Part        |
+|                                     |            |                     | Log       |                    | Version |               | License    |                      |
++-------------------------------------+------------+---------------------+-----------+--------------------+---------+---------------+------------+----------------------+
+| aes_engine_key_bram_blk_mem_gen_0_0 | Up-to-date | No changes required |  *(1)     | Block Memory       | 8.4     | 8.4 (Rev. 5)  | Included   | xczu9eg-ffvb1156-2-e |
+|                                     |            |                     |           | Generator          | (Rev.   |               |            |                      |
+|                                     |            |                     |           |                    | 5)      |               |            |                      |
++-------------------------------------+------------+---------------------+-----------+--------------------+---------+---------------+------------+----------------------+
+| vio_0                               | Up-to-date | No changes required |  *(2)     | VIO (Virtual       | 3.0     | 3.0 (Rev. 22) | Included   | xczu9eg-ffvb1156-2-e |
+|                                     |            |                     |           | Input/Output)      | (Rev.   |               |            |                      |
+|                                     |            |                     |           |                    | 22)     |               |            |                      |
++-------------------------------------+------------+---------------------+-----------+--------------------+---------+---------------+------------+----------------------+
 *(1) c:/Xilinx/Vivado/2021.2/data/ip/xilinx/blk_mem_gen_v8_4/doc/blk_mem_gen_v8_4_changelog.txt
-*(2) c:/Xilinx/Vivado/2021.2/data/ip/xilinx/clk_wiz_v6_0/doc/clk_wiz_v6_0_changelog.txt
-*(3) c:/Xilinx/Vivado/2021.2/data/ip/xilinx/vio_v3_0/doc/vio_v3_0_changelog.txt
+*(2) c:/Xilinx/Vivado/2021.2/data/ip/xilinx/vio_v3_0/doc/vio_v3_0_changelog.txt
 
 

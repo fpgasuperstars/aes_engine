@@ -1,7 +1,7 @@
 // Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
-// Date        : Mon Apr  4 15:52:47 2022
+// Date        : Tue Apr  5 11:04:13 2022
 // Host        : EUL10-797V3J3 running 64-bit major release  (build 9200)
 // Command     : write_verilog -force -mode funcsim
 //               c:/git/aes_engine/aes_offload/imp/code/vendor/clk_wiz/clk_wiz.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_sim_netlist.v
@@ -16,17 +16,21 @@
 module clk_wiz_0
    (clk_out1,
     reset,
-    clk_in1);
+    clk_in1_p,
+    clk_in1_n);
   output clk_out1;
   input reset;
-  input clk_in1;
+  input clk_in1_p;
+  input clk_in1_n;
 
-  wire clk_in1;
+  (* IBUF_LOW_PWR *) wire clk_in1_n;
+  (* IBUF_LOW_PWR *) wire clk_in1_p;
   wire clk_out1;
   wire reset;
 
   clk_wiz_0_clk_wiz inst
-       (.clk_in1(clk_in1),
+       (.clk_in1_n(clk_in1_n),
+        .clk_in1_p(clk_in1_p),
         .clk_out1(clk_out1),
         .reset(reset));
 endmodule
@@ -34,13 +38,16 @@ endmodule
 module clk_wiz_0_clk_wiz
    (clk_out1,
     reset,
-    clk_in1);
+    clk_in1_p,
+    clk_in1_n);
   output clk_out1;
   input reset;
-  input clk_in1;
+  input clk_in1_p;
+  input clk_in1_n;
 
-  wire clk_in1;
   wire clk_in1_clk_wiz_0;
+  wire clk_in1_n;
+  wire clk_in1_p;
   wire clk_out1;
   wire clk_out1_clk_wiz_0;
   wire reset;
@@ -66,14 +73,15 @@ module clk_wiz_0_clk_wiz
   wire [15:0]NLW_mmcme4_adv_inst_DO_UNCONNECTED;
 
   (* BOX_TYPE = "PRIMITIVE" *) 
-  (* XILINX_LEGACY_PRIM = "BUFG" *) 
-  (* XILINX_TRANSFORM_PINMAP = "VCC:CE" *) 
-  BUFGCE #(
-    .CE_TYPE("ASYNC"),
-    .SIM_DEVICE("ULTRASCALE_PLUS")) 
-    clkin1_bufg
-       (.CE(1'b1),
-        .I(clk_in1),
+  (* CAPACITANCE = "DONT_CARE" *) 
+  (* IBUF_DELAY_VALUE = "0" *) 
+  (* IFD_DELAY_VALUE = "AUTO" *) 
+  IBUFDS #(
+    .DIFF_TERM("FALSE"),
+    .IOSTANDARD("DEFAULT")) 
+    clkin1_ibufds
+       (.I(clk_in1_p),
+        .IB(clk_in1_n),
         .O(clk_in1_clk_wiz_0));
   (* BOX_TYPE = "PRIMITIVE" *) 
   (* XILINX_LEGACY_PRIM = "BUFG" *) 
@@ -89,10 +97,10 @@ module clk_wiz_0_clk_wiz
   (* OPT_MODIFIED = "MLO" *) 
   MMCME4_ADV #(
     .BANDWIDTH("OPTIMIZED"),
-    .CLKFBOUT_MULT_F(48.000000),
+    .CLKFBOUT_MULT_F(4.000000),
     .CLKFBOUT_PHASE(0.000000),
     .CLKFBOUT_USE_FINE_PS("FALSE"),
-    .CLKIN1_PERIOD(8.000000),
+    .CLKIN1_PERIOD(3.333000),
     .CLKIN2_PERIOD(0.000000),
     .CLKOUT0_DIVIDE_F(3.000000),
     .CLKOUT0_DUTY_CYCLE(0.500000),
@@ -124,7 +132,7 @@ module clk_wiz_0_clk_wiz
     .CLKOUT6_PHASE(0.000000),
     .CLKOUT6_USE_FINE_PS("FALSE"),
     .COMPENSATION("INTERNAL"),
-    .DIVCLK_DIVIDE(5),
+    .DIVCLK_DIVIDE(1),
     .IS_CLKFBIN_INVERTED(1'b0),
     .IS_CLKIN1_INVERTED(1'b0),
     .IS_CLKIN2_INVERTED(1'b0),

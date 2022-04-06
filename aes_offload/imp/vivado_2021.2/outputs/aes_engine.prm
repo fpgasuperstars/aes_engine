@@ -1,0 +1,14 @@
+===================================
+Configuration Memory information
+===================================
+File Format        MCS
+Interface          SPIX1
+Size               32M
+Start Address      0x00000000
+End Address        0x01FFFFFF
+Checksum           0x6F193ED0
+Fill Value         0xFF
+
+Addr1         Addr2         Date                    File(s)                      Checksum
+0x00000000    0x019485BB    Apr  6 21:46:07 2022    ../outputs/aes_engine.bit    0x040A7514
+File Checksum Total                                                              0x040A7514

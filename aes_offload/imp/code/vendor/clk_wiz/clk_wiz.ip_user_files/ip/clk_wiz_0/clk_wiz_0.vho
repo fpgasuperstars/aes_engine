@@ -55,12 +55,12 @@
 --  Output     Output      Phase    Duty Cycle   Pk-to-Pk     Phase
 --   Clock     Freq (MHz)  (degrees)    (%)     Jitter (ps)  Error (ps)
 ------------------------------------------------------------------------------
--- clk_out1__400.00000______0.000______50.0______146.303____222.305
+-- clk_out1__400.00000______0.000______50.0_______77.334_____77.836
 --
 ------------------------------------------------------------------------------
 -- Input Clock   Freq (MHz)    Input Jitter (UI)
 ------------------------------------------------------------------------------
--- __primary_____________125____________0.010
+-- __primary_____________300____________0.010
 
 
 -- The following code must appear in the VHDL architecture header:
@@ -72,7 +72,8 @@ port
   clk_out1          : out    std_logic;
   -- Status and control signals
   reset             : in     std_logic;
-  clk_in1           : in     std_logic
+  clk_in1_p         : in     std_logic;
+  clk_in1_n         : in     std_logic
  );
 end component;
 
@@ -87,6 +88,7 @@ your_instance_name : clk_wiz_0
   -- Status and control signals                
    reset => reset,
    -- Clock in ports
-   clk_in1 => clk_in1
+   clk_in1_p => clk_in1_p,
+   clk_in1_n => clk_in1_n
  );
 -- INST_TAG_END ------ End INSTANTIATION Template ------------

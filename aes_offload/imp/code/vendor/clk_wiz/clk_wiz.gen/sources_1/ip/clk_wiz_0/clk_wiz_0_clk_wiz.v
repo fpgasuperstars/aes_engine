@@ -56,12 +56,12 @@
 //  Output     Output      Phase    Duty Cycle   Pk-to-Pk     Phase
 //   Clock     Freq (MHz)  (degrees)    (%)     Jitter (ps)  Error (ps)
 //----------------------------------------------------------------------------
-// clk_out1__400.00000______0.000______50.0______146.303____222.305
+// clk_out1__400.00000______0.000______50.0_______77.334_____77.836
 //
 //----------------------------------------------------------------------------
 // Input Clock   Freq (MHz)    Input Jitter (UI)
 //----------------------------------------------------------------------------
-// __primary_____________125____________0.010
+// __primary_____________300____________0.010
 
 `timescale 1ps/1ps
 
@@ -72,15 +72,17 @@ module clk_wiz_0_clk_wiz
   output        clk_out1,
   // Status and control signals
   input         reset,
-  input         clk_in1
+  input         clk_in1_p,
+  input         clk_in1_n
  );
   // Input buffering
   //------------------------------------
 wire clk_in1_clk_wiz_0;
 wire clk_in2_clk_wiz_0;
-  BUFG clkin1_bufg
-   (.O (clk_in1_clk_wiz_0),
-    .I (clk_in1));
+  IBUFDS clkin1_ibufds
+   (.O  (clk_in1_clk_wiz_0),
+    .I  (clk_in1_p),
+    .IB (clk_in1_n));
 
 
 
@@ -128,15 +130,15 @@ wire clk_in2_clk_wiz_0;
     .CLKOUT4_CASCADE      ("FALSE"),
     .COMPENSATION         ("AUTO"),
     .STARTUP_WAIT         ("FALSE"),
-    .DIVCLK_DIVIDE        (5),
-    .CLKFBOUT_MULT_F      (48.000),
+    .DIVCLK_DIVIDE        (1),
+    .CLKFBOUT_MULT_F      (4.000),
     .CLKFBOUT_PHASE       (0.000),
     .CLKFBOUT_USE_FINE_PS ("FALSE"),
     .CLKOUT0_DIVIDE_F     (3.000),
     .CLKOUT0_PHASE        (0.000),
     .CLKOUT0_DUTY_CYCLE   (0.500),
     .CLKOUT0_USE_FINE_PS  ("FALSE"),
-    .CLKIN1_PERIOD        (8.000))
+    .CLKIN1_PERIOD        (3.333))
   
   mmcme4_adv_inst
     // Output clocks

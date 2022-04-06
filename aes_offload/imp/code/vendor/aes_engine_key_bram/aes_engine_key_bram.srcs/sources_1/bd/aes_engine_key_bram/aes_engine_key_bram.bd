@@ -20,6 +20,9 @@
         "xci_path": "ip\\aes_engine_key_bram_blk_mem_gen_0_0\\aes_engine_key_bram_blk_mem_gen_0_0.xci",
         "inst_hier_path": "blk_mem_gen_0",
         "parameters": {
+          "Algorithm": {
+            "value": "Minimum_Area"
+          },
           "Coe_File": {
             "value": "../../../../../../../init_file/keys_mem_init.coe"
           },
@@ -37,6 +40,9 @@
           },
           "Read_Width_A": {
             "value": "256"
+          },
+          "Register_PortA_Output_of_Memory_Core": {
+            "value": "false"
           },
           "Register_PortA_Output_of_Memory_Primitives": {
             "value": "true"

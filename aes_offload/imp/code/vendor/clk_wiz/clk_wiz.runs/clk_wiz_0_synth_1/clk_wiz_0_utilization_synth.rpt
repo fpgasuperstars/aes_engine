@@ -1,7 +1,7 @@
 Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
-| Date         : Mon Apr  4 15:52:47 2022
+| Date         : Tue Apr  5 11:04:13 2022
 | Host         : EUL10-797V3J3 running 64-bit major release  (build 9200)
 | Command      : report_utilization -file clk_wiz_0_utilization_synth.rpt -pb clk_wiz_0_utilization_synth.pb
 | Design       : clk_wiz_0
@@ -94,7 +94,7 @@ Table of Contents
 +------------+------+-------+------------+-----------+-------+
 |  Site Type | Used | Fixed | Prohibited | Available | Util% |
 +------------+------+-------+------------+-----------+-------+
-| Bonded IOB |    0 |     0 |          0 |       328 |  0.00 |
+| Bonded IOB |    2 |     0 |          0 |       328 |  0.61 |
 +------------+------+-------+------------+-----------+-------+
 
 
@@ -104,8 +104,8 @@ Table of Contents
 +----------------------+------+-------+------------+-----------+-------+
 |       Site Type      | Used | Fixed | Prohibited | Available | Util% |
 +----------------------+------+-------+------------+-----------+-------+
-| GLOBAL CLOCK BUFFERs |    2 |     0 |          0 |       404 |  0.50 |
-|   BUFGCE             |    2 |     0 |          0 |       116 |  1.72 |
+| GLOBAL CLOCK BUFFERs |    1 |     0 |          0 |       404 |  0.25 |
+|   BUFGCE             |    1 |     0 |          0 |       116 |  0.86 |
 |   BUFGCE_DIV         |    0 |     0 |          0 |        16 |  0.00 |
 |   BUFG_GT            |    0 |     0 |          0 |       168 |  0.00 |
 |   BUFG_PS            |    0 |     0 |          0 |        72 |  0.00 |
@@ -153,8 +153,10 @@ Table of Contents
 +------------+------+---------------------+
 |  Ref Name  | Used | Functional Category |
 +------------+------+---------------------+
-| BUFGCE     |    2 |               Clock |
 | MMCME4_ADV |    1 |               Clock |
+| IBUFCTRL   |    1 |              Others |
+| DIFFINBUF  |    1 |                 I/O |
+| BUFGCE     |    1 |               Clock |
 +------------+------+---------------------+
 
 

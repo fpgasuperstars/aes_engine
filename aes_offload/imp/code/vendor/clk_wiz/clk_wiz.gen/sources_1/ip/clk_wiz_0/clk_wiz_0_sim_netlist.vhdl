@@ -1,7 +1,7 @@
 -- Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
--- Date        : Mon Apr  4 15:52:47 2022
+-- Date        : Tue Apr  5 11:04:13 2022
 -- Host        : EUL10-797V3J3 running 64-bit major release  (build 9200)
 -- Command     : write_vhdl -force -mode funcsim
 --               c:/git/aes_engine/aes_offload/imp/code/vendor/clk_wiz/clk_wiz.gen/sources_1/ip/clk_wiz_0/clk_wiz_0_sim_netlist.vhdl
@@ -18,7 +18,8 @@ entity clk_wiz_0_clk_wiz is
   port (
     clk_out1 : out STD_LOGIC;
     reset : in STD_LOGIC;
-    clk_in1 : in STD_LOGIC
+    clk_in1_p : in STD_LOGIC;
+    clk_in1_n : in STD_LOGIC
   );
 end clk_wiz_0_clk_wiz;
 
@@ -46,26 +47,30 @@ architecture STRUCTURE of clk_wiz_0_clk_wiz is
   signal NLW_mmcme4_adv_inst_PSDONE_UNCONNECTED : STD_LOGIC;
   signal NLW_mmcme4_adv_inst_DO_UNCONNECTED : STD_LOGIC_VECTOR ( 15 downto 0 );
   attribute BOX_TYPE : string;
-  attribute BOX_TYPE of clkin1_bufg : label is "PRIMITIVE";
-  attribute XILINX_LEGACY_PRIM : string;
-  attribute XILINX_LEGACY_PRIM of clkin1_bufg : label is "BUFG";
-  attribute XILINX_TRANSFORM_PINMAP : string;
-  attribute XILINX_TRANSFORM_PINMAP of clkin1_bufg : label is "VCC:CE";
+  attribute BOX_TYPE of clkin1_ibufds : label is "PRIMITIVE";
+  attribute CAPACITANCE : string;
+  attribute CAPACITANCE of clkin1_ibufds : label is "DONT_CARE";
+  attribute IBUF_DELAY_VALUE : string;
+  attribute IBUF_DELAY_VALUE of clkin1_ibufds : label is "0";
+  attribute IFD_DELAY_VALUE : string;
+  attribute IFD_DELAY_VALUE of clkin1_ibufds : label is "AUTO";
   attribute BOX_TYPE of clkout1_buf : label is "PRIMITIVE";
+  attribute XILINX_LEGACY_PRIM : string;
   attribute XILINX_LEGACY_PRIM of clkout1_buf : label is "BUFG";
+  attribute XILINX_TRANSFORM_PINMAP : string;
   attribute XILINX_TRANSFORM_PINMAP of clkout1_buf : label is "VCC:CE";
   attribute BOX_TYPE of mmcme4_adv_inst : label is "PRIMITIVE";
   attribute OPT_MODIFIED : string;
   attribute OPT_MODIFIED of mmcme4_adv_inst : label is "MLO";
 begin
-clkin1_bufg: unisim.vcomponents.BUFGCE
+clkin1_ibufds: unisim.vcomponents.IBUFDS
     generic map(
-      CE_TYPE => "ASYNC",
-      SIM_DEVICE => "ULTRASCALE_PLUS"
+      DIFF_TERM => false,
+      IOSTANDARD => "DEFAULT"
     )
         port map (
-      CE => '1',
-      I => clk_in1,
+      I => clk_in1_p,
+      IB => clk_in1_n,
       O => clk_in1_clk_wiz_0
     );
 clkout1_buf: unisim.vcomponents.BUFGCE
@@ -81,10 +86,10 @@ clkout1_buf: unisim.vcomponents.BUFGCE
 mmcme4_adv_inst: unisim.vcomponents.MMCME4_ADV
     generic map(
       BANDWIDTH => "OPTIMIZED",
-      CLKFBOUT_MULT_F => 48.000000,
+      CLKFBOUT_MULT_F => 4.000000,
       CLKFBOUT_PHASE => 0.000000,
       CLKFBOUT_USE_FINE_PS => "FALSE",
-      CLKIN1_PERIOD => 8.000000,
+      CLKIN1_PERIOD => 3.333000,
       CLKIN2_PERIOD => 0.000000,
       CLKOUT0_DIVIDE_F => 3.000000,
       CLKOUT0_DUTY_CYCLE => 0.500000,
@@ -116,7 +121,7 @@ mmcme4_adv_inst: unisim.vcomponents.MMCME4_ADV
       CLKOUT6_PHASE => 0.000000,
       CLKOUT6_USE_FINE_PS => "FALSE",
       COMPENSATION => "INTERNAL",
-      DIVCLK_DIVIDE => 5,
+      DIVCLK_DIVIDE => 1,
       IS_CLKFBIN_INVERTED => '0',
       IS_CLKIN1_INVERTED => '0',
       IS_CLKIN2_INVERTED => '0',
@@ -178,7 +183,8 @@ entity clk_wiz_0 is
   port (
     clk_out1 : out STD_LOGIC;
     reset : in STD_LOGIC;
-    clk_in1 : in STD_LOGIC
+    clk_in1_p : in STD_LOGIC;
+    clk_in1_n : in STD_LOGIC
   );
   attribute NotValidForBitStream : boolean;
   attribute NotValidForBitStream of clk_wiz_0 : entity is true;
@@ -188,7 +194,8 @@ architecture STRUCTURE of clk_wiz_0 is
 begin
 inst: entity work.clk_wiz_0_clk_wiz
      port map (
-      clk_in1 => clk_in1,
+      clk_in1_n => clk_in1_n,
+      clk_in1_p => clk_in1_p,
       clk_out1 => clk_out1,
       reset => reset
     );

@@ -73,7 +73,7 @@ OPTRACE "vio_0_synth_1" START { ROLLUP_AUTO }
 set_param project.vivado.isBlockSynthRun true
 set_msg_config -msgmgr_mode ooc_run
 OPTRACE "Creating in-memory project" START { }
-create_project -in_memory -part xc7vx485tffg1157-1
+create_project -in_memory -part xczu9eg-ffvb1156-2-e
 
 set_param project.singleFileAddWarning.threshold 0
 set_param project.compositeFile.enableAutoGeneration 0
@@ -83,11 +83,12 @@ set_property webtalk.parent_dir C:/git/aes_engine/aes_offload/imp/code/vendor/vi
 set_property parent.project_path C:/git/aes_engine/aes_offload/imp/code/vendor/vio/vio.xpr [current_project]
 set_property default_lib xil_defaultlib [current_project]
 set_property target_language VHDL [current_project]
+set_property board_part xilinx.com:zcu102:part0:3.4 [current_project]
 set_property ip_output_repo c:/git/aes_engine/aes_offload/imp/code/vendor/vio/vio.cache/ip [current_project]
 set_property ip_cache_permissions {read write} [current_project]
 OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
-read_ip -quiet c:/git/aes_engine/aes_offload/imp/code/vendor/vio/vio.srcs/sources_1/ip/vio_0/vio_0.xci
+read_ip -quiet C:/git/aes_engine/aes_offload/imp/code/vendor/vio/vio.srcs/sources_1/ip/vio_0/vio_0.xci
 set_property used_in_implementation false [get_files -all c:/git/aes_engine/aes_offload/imp/code/vendor/vio/vio.gen/sources_1/ip/vio_0/vio_0.xdc]
 set_property used_in_implementation false [get_files -all c:/git/aes_engine/aes_offload/imp/code/vendor/vio/vio.gen/sources_1/ip/vio_0/vio_0_ooc.xdc]
 
@@ -110,7 +111,7 @@ if { $cacheID == "" } {
 close [open __synthesis_is_running__ w]
 
 OPTRACE "synth_design" START { }
-synth_design -top vio_0 -part xc7vx485tffg1157-1 -mode out_of_context
+synth_design -top vio_0 -part xczu9eg-ffvb1156-2-e -mode out_of_context
 OPTRACE "synth_design" END { }
 OPTRACE "Write IP Cache" START { }
 

@@ -14,17 +14,18 @@ entity aes_engine_wrapper is
 end entity;
 
 architecture structural of aes_engine_wrapper is
-   
-component clk_wiz_0
-port
- (-- Clock in ports
-  -- Clock out ports
-  clk_out1          : out    std_logic;
-  -- Status and control signals
-  reset             : in     std_logic;
-  clk_in1           : in     std_logic
- );
-end component;
+
+--component clk_wiz_0
+--port
+-- (-- Clock in ports
+--  -- Clock out ports
+--  clk_out1          : out    std_logic;
+--  -- Status and control signals
+--  reset             : in     std_logic;
+--  clk_in1_p         : in     std_logic;
+--  clk_in1_n         : in     std_logic
+-- );
+--end component;
 
 COMPONENT vio_0
   PORT (
@@ -63,25 +64,30 @@ END COMPONENT;
    
 begin
    
-  -- LVDS input to internal single
-  CLK_IBUFGDS : IBUFGDS
-  generic map(
-    IOSTANDARD => "LVDS_25"
-  )
-  port map(
-    I  => i_clk_p,
-    IB => i_clk_n,
-    O  => clk_lvcmos
-  );
+   -- DIFF_SSTL12 input to internal single
+   CLK_IBUFGDS : IBUFGDS
+   generic map(
+     IOSTANDARD => "DIFF_SSTL12"
+      )
+   port map(
+      I  => i_clk_p,
+      IB => i_clk_n,
+      O  => clk_s
+   );
+ 
    -----------------------------------------------------------------------------------------
    ------ Clock generation
    -----------------------------------------------------------------------------------------
-CLK : clk_wiz_0
-   port map (   
-      clk_out1 => clk_s,              
-      reset    => rst,
-      clk_in1  => clk_lvcmos
- );
+  -- CLK : clk_wiz_0
+  --    port map ( 
+  --    -- Clock out ports  
+  --       clk_out1 => clk_s,
+  --    -- Status and control signals                
+  --       reset => rst,
+  --    -- Clock in ports
+  --       clk_in1_p => i_clk_p,
+  --       clk_in1_n => i_clk_n
+  --       );
     
    u_top : entity aes_engine.aes_engine_top
       port map(
@@ -102,20 +108,20 @@ CLK : clk_wiz_0
          i_key_handle      => key_handle 
       );
 
-  vio : vio_0
-  PORT MAP (
-    clk => clk_s,
-    probe_in0(127 DOWNTO 0)   => t_datao,    
-    probe_in1(15 DOWNTO 0)    => t_keepo,    
-    probe_in2(0)              => t_lasto,    
-    probe_in3(0)              => t_valido,   
-    probe_in4(0)              => treadyo,    
-    probe_out0(127 DOWNTO 0)  => tdatai,       
-    probe_out1(15 DOWNTO 0)   => tkeepi,       
-    probe_out2(9 DOWNTO 0)    => key_handle,   
-    probe_out3(0)             => rst,          
-    probe_out4(0)             => tlasti,       
-    probe_out5(0)             => tvalidi       
-  );
+   vio : vio_0
+      port map (
+         clk => clk_s,
+         probe_in0(127 downto 0)   => t_datao,    
+         probe_in1(15 downto 0)    => t_keepo,    
+         probe_in2(0)              => t_lasto,    
+         probe_in3(0)              => t_valido,   
+         probe_in4(0)              => treadyo,    
+         probe_out0(127 downto 0)  => tdatai,       
+         probe_out1(15 downto 0)   => tkeepi,       
+         probe_out2(9 downto 0)    => key_handle,   
+         probe_out3(0)             => rst,          
+         probe_out4(0)             => tlasti,       
+         probe_out5(0)             => tvalidi       
+      );
  
 end structural;

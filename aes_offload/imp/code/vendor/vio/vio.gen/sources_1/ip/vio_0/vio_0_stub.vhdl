@@ -1,13 +1,13 @@
 -- Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
--- Date        : Mon Apr  4 14:22:21 2022
+-- Date        : Tue Apr  5 10:32:50 2022
 -- Host        : EUL10-797V3J3 running 64-bit major release  (build 9200)
 -- Command     : write_vhdl -force -mode synth_stub
 --               c:/git/aes_engine/aes_offload/imp/code/vendor/vio/vio.gen/sources_1/ip/vio_0/vio_0_stub.vhdl
 -- Design      : vio_0
 -- Purpose     : Stub declaration of top-level module interface
--- Device      : xc7vx485tffg1157-1
+-- Device      : xczu9eg-ffvb1156-2-e
 -- --------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;

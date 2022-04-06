@@ -275,6 +275,42 @@ begin
          file_close(f_ct_vectors);
       end if;
       
+      ------------------------------------------------------------------------------------
+      ---- Test case 4
+      ------------------------------------------------------------------------------------
+      if g_test_cases(3) = '1' then
+         file_open(status, f_128_vectors  , CMD_128_FILE);
+         file_open(status, f_ct_vectors   , CT_128_FILE);
+         key_handle  <= (others  =>  '0');
+         test_msg <= pad_string(" Test case 4 : AES128 decryption HI speed ", ' ', STRING_LENGTH);
+         wait for 0 ns;
+         report lf & lf & test_msg & lf;
+         speed_sel <= '0';
+         rst       <= '1';             
+         wait for RESET_DURATION;
+         rst       <= '0';           
+         wait until rising_edge(clk);
+         wait until t_ready = '1';
+         t_valid   <= '1'; 
+         get_inputs(f_ct_vectors, in_word, key_handle); -- load key
+         wait until rising_edge(clk);
+         while not endfile(f_ct_vectors) loop -- run at full speed
+            if t_ready = '1' then
+               get_inputs(f_ct_vectors, in_word, key_handle); -- get data from test vectors
+               wait until rising_edge(clk);
+               get_ct(f_128_vectors, exp_ct); -- get data from test vectors
+               wait for 2 ns;
+               assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
+            else
+               wait until rising_edge(clk);
+            end if;
+         end loop;
+         wait for clk_period*20;
+         t_valid  <= '0';
+         file_close(f_128_vectors);
+         file_close(f_ct_vectors);
+      end if;
+      
       --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       -- AES 192
       --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

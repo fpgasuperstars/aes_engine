@@ -91,7 +91,7 @@ output wire [255 : 0] douta;
     .C_MEM_TYPE(0),
     .C_BYTE_SIZE(9),
     .C_ALGORITHM(1),
-    .C_PRIM_TYPE(1),
+    .C_PRIM_TYPE(6),
     .C_LOAD_INIT_FILE(1),
     .C_INIT_FILE_NAME("aes_engine_key_bram_blk_mem_gen_0_0.mif"),
     .C_INIT_FILE("NONE"),
