@@ -94,3 +94,13 @@ Trace back: Bad sequence in.main_pane.memory.interior.cs.body.tree.lwchildsite.c
     ("after" script)
   <2:C:/modelsim_dlx64_2021.3/win64pe/tk8.6/bgerror.tcl:106: ::tkerror {Bad sequence in.main_pane.memory.interior.cs.body.tree.lwchildsite.clipper.canvas.sfchildsite.tree, aborting query. (2)}
   <1:C:/mtitcl/vsim/vsiminit.tc_:523: ::tk::dialog::error::bgerror {Bad sequence in.main_pane.memory.interior.cs.body.tree.lwchildsite.clipper.canvas.sfchildsite.tree, aborting query. (2)}
+Thu Apr 07 14:17:08 BST 2022
+Trace back: invalid command name ".main_pane.wave.interior.cs.body.pw.wf.grid.row0,wave.data"
+    while executing
+"$widget index @$x,$y"
+    (procedure "WaveABar::mouseMotionUpdate" line 19)
+    invoked from within
+"WaveABar::mouseMotionUpdate .main_pane.wave.interior.cs.body.pw.wf.grid.row0,wave.data .main_pane.wave.interior.cs.body.pw.wf 1668 307"
+    ("after" script)
+  <2:C:/modelsim_dlx64_2021.3/win64pe/tk8.6/bgerror.tcl:106: ::tkerror {invalid command name ".main_pane.wave.interior.cs.body.pw.wf.grid.row0,wave.data"}
+  <1:C:/mtitcl/vsim/vsiminit.tc_:523: ::tk::dialog::error::bgerror {invalid command name ".main_pane.wave.interior.cs.body.pw.wf.grid.row0,wave.data"}

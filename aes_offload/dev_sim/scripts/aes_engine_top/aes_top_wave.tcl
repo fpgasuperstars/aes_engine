@@ -10,12 +10,10 @@ add wave -noupdate -expand -group {internal values} -expand /aes_engine_top_tb/d
 add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/decrypt
 add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/expanded_key_q
 add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/t_data_q
-add wave -noupdate -group {axi stream} /aes_engine_top_tb/dut/i_t_last
-add wave -noupdate -group {axi stream} /aes_engine_top_tb/dut/i_t_keep
-add wave -noupdate -group {axi stream} /aes_engine_top_tb/dut/i_t_valid
-add wave -noupdate -group {axi stream} /aes_engine_top_tb/dut/t_valid_q
-add wave -noupdate -group {axi stream} /aes_engine_top_tb/dut/o_t_valid
-add wave -noupdate -group {axi stream} /aes_engine_top_tb/dut/o_t_ready
+add wave -noupdate -expand -group {axi stream} /aes_engine_top_tb/dut/i_t_last
+add wave -noupdate -expand -group {axi stream} /aes_engine_top_tb/dut/i_t_keep
+add wave -noupdate -expand -group {axi stream} /aes_engine_top_tb/dut/i_t_valid
+add wave -noupdate -expand -group {axi stream} /aes_engine_top_tb/dut/o_t_ready
 add wave -noupdate -group {control and status} /aes_engine_top_tb/dut/speed_en
 add wave -noupdate -group {control and status} -radix unsigned /aes_engine_top_tb/dut/duty_cycle_cnt
 add wave -noupdate -group {control and status} -radix unsigned /aes_engine_top_tb/dut/en_cnt
@@ -33,7 +31,7 @@ add wave -noupdate -group BRAM -radix unsigned /aes_engine_top_tb/dut/u_bram_key
 add wave -noupdate -group BRAM /aes_engine_top_tb/dut/u_bram_keys/douta
 add wave -noupdate -group BRAM -radix unsigned /aes_engine_top_tb/dut/i_key_handle
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {2849950 ps} 0}
+WaveRestoreCursors {{Cursor 1} {337777 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 179
 configure wave -valuecolwidth 526
@@ -49,4 +47,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {2766797 ps} {2927185 ps}
+WaveRestoreZoom {0 ps} {568838 ps}

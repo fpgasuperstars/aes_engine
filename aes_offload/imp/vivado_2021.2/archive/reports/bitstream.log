@@ -1,0 +1,108 @@
+
+==========================================
+ Starting bitstream generation
+==========================================
+Command: write_bitstream -force ../outputs/aes_engine.bit -verbose -bin_file
+Attempting to get a license for feature 'Implementation' and/or device 'xczu9eg'
+INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xczu9eg'
+Running DRC as a precondition to command write_bitstream
+INFO: [IP_Flow 19-1839] IP Catalog is up to date.
+INFO: [DRC 23-27] Running DRC with 8 threads
+WARNING: [DRC PDCN-1569] LUT equation term check: Used physical LUT pin 'A1' of cell dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_switch/temp_curid[31]_i_1 (pin dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_switch/temp_curid[31]_i_1/I0) is not included in the LUT equation: 'O5=(A5*A2)+(A5*(~A2)*(~A4))+((~A5))'. If this cell is a user instantiated LUT in the design, please remove connectivity to the pin or change the equation and/or INIT string of the LUT to prevent this issue. If the cell is inferred or IP created LUT, please regenerate the IP and/or resynthesize the design to attempt to correct the issue.
+WARNING: [DRC PDCN-1569] LUT equation term check: Used physical LUT pin 'A2' of cell dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.id_state[0]_i_1 (pin dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.id_state[0]_i_1/I0) is not included in the LUT equation: 'O6=(A6+~A6)*((A5))'. If this cell is a user instantiated LUT in the design, please remove connectivity to the pin or change the equation and/or INIT string of the LUT to prevent this issue. If the cell is inferred or IP created LUT, please regenerate the IP and/or resynthesize the design to attempt to correct the issue.
+WARNING: [DRC PDCN-1569] LUT equation term check: Used physical LUT pin 'A3' of cell dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_switch/temp_curid[31]_i_1 (pin dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_switch/temp_curid[31]_i_1/I1) is not included in the LUT equation: 'O5=(A5*A2)+(A5*(~A2)*(~A4))+((~A5))'. If this cell is a user instantiated LUT in the design, please remove connectivity to the pin or change the equation and/or INIT string of the LUT to prevent this issue. If the cell is inferred or IP created LUT, please regenerate the IP and/or resynthesize the design to attempt to correct the issue.
+WARNING: [DRC RTSTAT-10] No routable loads: 19 net(s) have no routable loads. The problem bus(es) and/or net(s) are dbg_hub/inst/BSCANID.u_xsdbm_id/CORE_XSDB.UUT_MASTER/U_ICON_INTERFACE/U_CMD6_RD/U_RD_FIFO/SUBCORE_FIFO.xsdbm_v3_0_0_rdfifo_inst/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.rd/gr1.gr1_int.rfwft/aempty_fwft_i, dbg_hub/inst/BSCANID.u_xsdbm_id/CORE_XSDB.UUT_MASTER/U_ICON_INTERFACE/U_CMD7_CTL/ctl_reg[2:0], dbg_hub/inst/BSCANID.u_xsdbm_id/CORE_XSDB.UUT_MASTER/U_ICON_INTERFACE/U_CMD1/ctl_reg_en_2[1], dbg_hub/inst/BSCANID.u_xsdbm_id/CORE_XSDB.UUT_MASTER/U_ICON_INTERFACE/U_CMD7_CTL/ctl_reg_en_2[1], dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_switch/m_bscan_capture[0], dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_switch/m_bscan_drck[0], dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_switch/m_bscan_runtest[0], dbg_hub/inst/BSCANID.u_xsdbm_id/CORE_XSDB.UUT_MASTER/U_ICON_INTERFACE/U_CMD6_RD/U_RD_FIFO/SUBCORE_FIFO.xsdbm_v3_0_0_rdfifo_inst/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/gwhf.whf/overflow, dbg_hub/inst/BSCANID.u_xsdbm_id/CORE_XSDB.UUT_MASTER/U_ICON_INTERFACE/U_CMD6_WR/U_WR_FIFO/SUBCORE_FIFO.xsdbm_v3_0_0_wrfifo_inst/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/gwhf.whf/overflow, dbg_hub/inst/BSCANID.u_xsdbm_id/CORE_XSDB.UUT_MASTER/U_ICON_INTERFACE/U_CMD6_RD/U_RD_FIFO/SUBCORE_FIFO.xsdbm_v3_0_0_rdfifo_inst/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.rd/gras.rsts/ram_empty_i, dbg_hub/inst/BSCANID.u_xsdbm_id/CORE_XSDB.UUT_MASTER/U_ICON_INTERFACE/U_CMD6_WR/U_WR_FIFO/SUBCORE_FIFO.xsdbm_v3_0_0_wrfifo_inst/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.wr/gwas.wsts/ram_full_i, dbg_hub/inst/BSCANID.u_xsdbm_id/CORE_XSDB.UUT_MASTER/U_ICON_INTERFACE/U_CMD6_WR/U_WR_FIFO/SUBCORE_FIFO.xsdbm_v3_0_0_wrfifo_inst/inst_fifo_gen/gconvfifo.rf/grf.rf/rstblk/rd_rst_reg[0], dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/s_bscan_tms, dbg_hub/inst/BSCANID.u_xsdbm_id/CORE_XSDB.UUT_MASTER/U_ICON_INTERFACE/U_CMD6_WR/U_WR_FIFO/SUBCORE_FIFO.xsdbm_v3_0_0_wrfifo_inst/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.rd/grhf.rhf/underflow, dbg_hub/inst/BSCANID.u_xsdbm_id/CORE_XSDB.UUT_MASTER/U_ICON_INTERFACE/U_CMD6_RD/U_RD_FIFO/SUBCORE_FIFO.xsdbm_v3_0_0_rdfifo_inst/inst_fifo_gen/gconvfifo.rf/grf.rf/gntv_or_sync_fifo.gl0.rd/grhf.rhf/underflow... and (the first 15 of 17 listed).
+INFO: [Vivado 12-3199] DRC finished with 0 Errors, 4 Warnings
+INFO: [Vivado 12-3200] Please refer to the DRC report (report_drc) for more information.
+INFO: [Designutils 20-2272] Running write_bitstream with 8 threads.
+Loading data files...
+Loading site data...
+Loading route data...
+Processing options...
+Summary of write_bitstream Options:
++-------------------------+-------------------------+
+| Option Name             | Current Setting         |
++-------------------------+-------------------------+
+| JTAG_SYSMON             | ENABLE*                 |
++-------------------------+-------------------------+
+| SYSMONPOWERDOWN         | DISABLE*                |
++-------------------------+-------------------------+
+| COMPRESS                | FALSE*                  |
++-------------------------+-------------------------+
+| PERFRAMECRC             | NO*                     |
++-------------------------+-------------------------+
+| CRC                     | ENABLE*                 |
++-------------------------+-------------------------+
+| DISABLE_JTAG            | NO*                     |
++-------------------------+-------------------------+
+| MCAP_ACCESS             | ENABLE*                 |
++-------------------------+-------------------------+
+| DONE_CYCLE              | 4*                      |
++-------------------------+-------------------------+
+| MATCH_CYCLE             | NoWait                  |
++-------------------------+-------------------------+
+| USERID                  | 0XFFFFFFFF*             |
++-------------------------+-------------------------+
+| SECURITY                | NONE*                   |
++-------------------------+-------------------------+
+| ACTIVERECONFIG          | NO*                     |
++-------------------------+-------------------------+
+| ICAP_SELECT             | AUTO*                   |
++-------------------------+-------------------------+
+| GWE_CYCLE               | 6*                      |
++-------------------------+-------------------------+
+| GTS_CYCLE               | 5*                      |
++-------------------------+-------------------------+
+| LCK_CYCLE               | NOWAIT*                 |
++-------------------------+-------------------------+
+| DCIUPDATEMODE           | ASREQUIRED*             |
++-------------------------+-------------------------+
+| OVERTEMPSHUTDOWN        | DISABLE*                |
++-------------------------+-------------------------+
+| UNUSEDPIN               | PULLDOWN*               |
++-------------------------+-------------------------+
+| PUDC_B                  | PULLUP*                 |
++-------------------------+-------------------------+
+| INITSIGNALSERROR        | ENABLE*                 |
++-------------------------+-------------------------+
+| USR_ACCESS              | (Not Enabled)*          |
++-------------------------+-------------------------+
+ *  Default setting.
+ ** The specified setting matches the default setting.
+Creating bitmap...
+Creating bitstream...
+Writing bitstream ../outputs/aes_engine.bit...
+Writing bitstream ../outputs/aes_engine.bin...
+INFO: [Vivado 12-1842] Bitgen Completed Successfully.
+INFO: [Common 17-83] Releasing license: Implementation
+14 Infos, 20 Warnings, 0 Critical Warnings and 0 Errors encountered.
+write_bitstream completed successfully
+write_bitstream: Time (s): cpu = 00:01:16 ; elapsed = 00:00:38 . Memory (MB): peak = 4232.500 ; gain = 42.023
+
+==========================================
+ Checksum generation
+==========================================
+Command: write_cfgmem -force -format MCS -size 32 -interface SPIx1 -checksum -loadbit {up 0x0 ../outputs/aes_engine.bit} ../outputs/aes_engine.mcs
+Creating config memory files...
+Creating bitstream load up from address 0x00000000
+Loading bitfile ../outputs/aes_engine.bit
+Writing file ../outputs/aes_engine.mcs
+Writing log file ../outputs/aes_engine.prm
+===================================
+Configuration Memory information
+===================================
+File Format        MCS
+Interface          SPIX1
+Size               32M
+Start Address      0x00000000
+End Address        0x01FFFFFF
+Checksum           0x6F0BF853
+Fill Value         0xFF
+
+Addr1         Addr2         Date                    File(s)                      Checksum
+0x00000000    0x019485BB    Apr  6 22:53:02 2022    ../outputs/aes_engine.bit    0x03FD2E97
+File Checksum Total                                                              0x03FD2E97
+14 Infos, 20 Warnings, 0 Critical Warnings and 0 Errors encountered.
+write_cfgmem completed successfully
+write_cfgmem: Time (s): cpu = 00:00:11 ; elapsed = 00:00:12 . Memory (MB): peak = 4237.801 ; gain = 5.301
+

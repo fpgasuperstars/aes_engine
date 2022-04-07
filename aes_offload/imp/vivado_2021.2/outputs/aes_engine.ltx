@@ -11,7 +11,7 @@
                         "type": "XSDB_V3",
                         "name": "dbg_hub",
                         "spec": "labtools_xsdbm_v3",
-                        "clk_input_freq_hz": "300300315"
+                        "clk_input_freq_hz": "300030014"
                     },
                     {
                         "type": "VIO_V2",
@@ -1069,7 +1069,8 @@
                                 "nets": [
                                     {
                                         "name": "rst",
-                                        "isBus": false
+                                        "isBus": false,
+                                        "parentNetId": 301
                                     }
                                 ]
                             },
@@ -1102,6 +1103,39 @@
                                     {
                                         "name": "tvalidi",
                                         "isBus": false
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "parent_nets": [
+                    {
+                        "id": 301,
+                        "name": "vio/inst/PROBE_OUT_ALL_INST/G_PROBE_OUT[3].PROBE_OUT0_INST/probe_out3[0]",
+                        "state_reg": [
+                            {
+                                "name": "u_top/FSM_sequential_state_reg[0]",
+                                "states": [
+                                    {
+                                        "name": "config1",
+                                        "val": "100"
+                                    },
+                                    {
+                                        "name": "load_key",
+                                        "val": "011"
+                                    },
+                                    {
+                                        "name": "start",
+                                        "val": "010"
+                                    },
+                                    {
+                                        "name": "newkey",
+                                        "val": "000"
+                                    },
+                                    {
+                                        "name": "normal",
+                                        "val": "001"
                                     }
                                 ]
                             }

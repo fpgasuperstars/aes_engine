@@ -1,0 +1,335 @@
+
+==========================================
+ Starting route
+==========================================
+Command: route_design
+Attempting to get a license for feature 'Implementation' and/or device 'xczu9eg'
+INFO: [Common 17-349] Got license for feature 'Implementation' and/or device 'xczu9eg'
+Running DRC as a precondition to command route_design
+INFO: [DRC 23-27] Running DRC with 8 threads
+INFO: [Vivado_Tcl 4-198] DRC finished with 0 Errors
+INFO: [Vivado_Tcl 4-199] Please refer to the DRC report (report_drc) for more information.
+
+
+Starting Routing Task
+INFO: [Route 35-254] Multithreading enabled for route_design using a maximum of 8 CPUs
+
+Phase 1 Build RT Design
+Checksum: PlaceDB: 99e6d831 ConstDB: 0 ShapeSum: 9077da71 RouteDB: c44603d1
+Nodegraph reading from file.  Time (s): cpu = 00:00:02 ; elapsed = 00:00:02 . Memory (MB): peak = 4190.477 ; gain = 0.000
+Post Restoration Checksum: NetGraph: 532feb66 NumContArr: 997047f2 Constraints: b389a3a8 Timing: 0
+Phase 1 Build RT Design | Checksum: 1a029d700
+
+Time (s): cpu = 00:00:19 ; elapsed = 00:00:15 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 2 Router Initialization
+
+Phase 2.1 Create Timer
+Phase 2.1 Create Timer | Checksum: 1a029d700
+
+Time (s): cpu = 00:00:20 ; elapsed = 00:00:15 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 2.2 Fix Topology Constraints
+Phase 2.2 Fix Topology Constraints | Checksum: 1a029d700
+
+Time (s): cpu = 00:00:20 ; elapsed = 00:00:16 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 2.3 Pre Route Cleanup
+Phase 2.3 Pre Route Cleanup | Checksum: 1a029d700
+
+Time (s): cpu = 00:00:20 ; elapsed = 00:00:16 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 2.4 Global Clock Net Routing
+ Number of Nodes with overlaps = 0
+Phase 2.4 Global Clock Net Routing | Checksum: 1705d1013
+
+Time (s): cpu = 00:00:27 ; elapsed = 00:00:18 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 2.5 Update Timing
+Phase 2.5 Update Timing | Checksum: 1fb92c2ff
+
+Time (s): cpu = 00:01:04 ; elapsed = 00:00:28 . Memory (MB): peak = 4190.477 ; gain = 0.000
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=0.009  | TNS=0.000  | WHS=-0.013 | THS=-0.048 |
+
+
+Phase 2.6 Update Timing for Bus Skew
+
+Phase 2.6.1 Update Timing
+Phase 2.6.1 Update Timing | Checksum: 21c1fa98a
+
+Time (s): cpu = 00:01:55 ; elapsed = 00:00:40 . Memory (MB): peak = 4190.477 ; gain = 0.000
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=0.009  | TNS=0.000  | WHS=N/A    | THS=N/A    |
+
+Phase 2.6 Update Timing for Bus Skew | Checksum: 20c1438a8
+
+Time (s): cpu = 00:01:56 ; elapsed = 00:00:40 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Router Utilization Summary
+  Global Vertical Routing Utilization    = 0.000120989 %
+  Global Horizontal Routing Utilization  = 0.000165739 %
+  Routable Net Status*
+  *Does not include unroutable nets such as driverless and loadless.
+  Run report_route_status for detailed report.
+  Number of Failed Nets               = 32387
+    (Failed Nets is the sum of unrouted and partially routed nets)
+  Number of Unrouted Nets             = 17953
+  Number of Partially Routed Nets     = 14434
+  Number of Node Overlaps             = 0
+
+Phase 2 Router Initialization | Checksum: 21d7c742a
+
+Time (s): cpu = 00:02:01 ; elapsed = 00:00:42 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 3 Initial Routing
+
+Phase 3.1 Global Routing
+Phase 3.1 Global Routing | Checksum: 21d7c742a
+
+Time (s): cpu = 00:02:02 ; elapsed = 00:00:42 . Memory (MB): peak = 4190.477 ; gain = 0.000
+Phase 3 Initial Routing | Checksum: 1ffe912f0
+
+Time (s): cpu = 00:02:39 ; elapsed = 00:00:54 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 4 Rip-up And Reroute
+
+Phase 4.1 Global Iteration 0
+ Number of Nodes with overlaps = 12441
+ Number of Nodes with overlaps = 1340
+ Number of Nodes with overlaps = 196
+ Number of Nodes with overlaps = 14
+ Number of Nodes with overlaps = 2
+ Number of Nodes with overlaps = 1
+ Number of Nodes with overlaps = 0
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=-0.113 | TNS=-1.218 | WHS=0.010  | THS=0.000  |
+
+Phase 4.1 Global Iteration 0 | Checksum: 25f3b1003
+
+Time (s): cpu = 00:05:27 ; elapsed = 00:01:41 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 4.2 Global Iteration 1
+ Number of Nodes with overlaps = 261
+ Number of Nodes with overlaps = 18
+ Number of Nodes with overlaps = 5
+ Number of Nodes with overlaps = 1
+ Number of Nodes with overlaps = 0
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=-0.020 | TNS=-0.026 | WHS=N/A    | THS=N/A    |
+
+Phase 4.2 Global Iteration 1 | Checksum: 25ff64c8c
+
+Time (s): cpu = 00:05:45 ; elapsed = 00:01:54 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 4.3 Global Iteration 2
+ Number of Nodes with overlaps = 1087
+ Number of Nodes with overlaps = 115
+ Number of Nodes with overlaps = 35
+ Number of Nodes with overlaps = 9
+ Number of Nodes with overlaps = 3
+ Number of Nodes with overlaps = 0
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=-0.025 | TNS=-0.025 | WHS=N/A    | THS=N/A    |
+
+Phase 4.3 Global Iteration 2 | Checksum: 28c0a4236
+
+Time (s): cpu = 00:06:12 ; elapsed = 00:02:08 . Memory (MB): peak = 4190.477 ; gain = 0.000
+Phase 4 Rip-up And Reroute | Checksum: 28c0a4236
+
+Time (s): cpu = 00:06:12 ; elapsed = 00:02:08 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 5 Delay and Skew Optimization
+
+Phase 5.1 Delay CleanUp
+
+Phase 5.1.1 Update Timing
+Phase 5.1.1 Update Timing | Checksum: 1c06b0b25
+
+Time (s): cpu = 00:06:29 ; elapsed = 00:02:12 . Memory (MB): peak = 4190.477 ; gain = 0.000
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=-0.020 | TNS=-0.026 | WHS=0.010  | THS=0.000  |
+
+ Number of Nodes with overlaps = 0
+Phase 5.1 Delay CleanUp | Checksum: 1df59a7ec
+
+Time (s): cpu = 00:06:31 ; elapsed = 00:02:13 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 5.2 Clock Skew Optimization
+Phase 5.2 Clock Skew Optimization | Checksum: 1df59a7ec
+
+Time (s): cpu = 00:06:31 ; elapsed = 00:02:13 . Memory (MB): peak = 4190.477 ; gain = 0.000
+Phase 5 Delay and Skew Optimization | Checksum: 1df59a7ec
+
+Time (s): cpu = 00:06:31 ; elapsed = 00:02:13 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 6 Post Hold Fix
+
+Phase 6.1 Hold Fix Iter
+
+Phase 6.1.1 Update Timing
+Phase 6.1.1 Update Timing | Checksum: 2a43843ea
+
+Time (s): cpu = 00:06:41 ; elapsed = 00:02:16 . Memory (MB): peak = 4190.477 ; gain = 0.000
+INFO: [Route 35-416] Intermediate Timing Summary | WNS=-0.018 | TNS=-0.024 | WHS=0.010  | THS=0.000  |
+
+Phase 6.1 Hold Fix Iter | Checksum: 28683ec4c
+
+Time (s): cpu = 00:06:41 ; elapsed = 00:02:16 . Memory (MB): peak = 4190.477 ; gain = 0.000
+Phase 6 Post Hold Fix | Checksum: 28683ec4c
+
+Time (s): cpu = 00:06:42 ; elapsed = 00:02:16 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 7 Route finalize
+
+Router Utilization Summary
+  Global Vertical Routing Utilization    = 3.84719 %
+  Global Horizontal Routing Utilization  = 2.97233 %
+  Routable Net Status*
+  *Does not include unroutable nets such as driverless and loadless.
+  Run report_route_status for detailed report.
+  Number of Failed Nets               = 0
+    (Failed Nets is the sum of unrouted and partially routed nets)
+  Number of Unrouted Nets             = 0
+  Number of Partially Routed Nets     = 0
+  Number of Node Overlaps             = 0
+
+Congestion Report
+North Dir 1x1 Area, Max Cong = 80.2817%, No Congested Regions.
+South Dir 1x1 Area, Max Cong = 77.7251%, No Congested Regions.
+East Dir 1x1 Area, Max Cong = 84.6154%, No Congested Regions.
+West Dir 1x1 Area, Max Cong = 71.1538%, No Congested Regions.
+
+------------------------------
+Reporting congestion hotspots
+------------------------------
+Direction: North
+----------------
+Congested clusters found at Level 0
+Effective congestion level: 0 Aspect Ratio: 1 Sparse Ratio: 0
+Direction: South
+----------------
+Congested clusters found at Level 0
+Effective congestion level: 0 Aspect Ratio: 1 Sparse Ratio: 0
+Direction: East
+----------------
+Congested clusters found at Level 0
+Effective congestion level: 0 Aspect Ratio: 1 Sparse Ratio: 0
+Direction: West
+----------------
+Congested clusters found at Level 0
+Effective congestion level: 0 Aspect Ratio: 1 Sparse Ratio: 0
+
+Phase 7 Route finalize | Checksum: 24f824318
+
+Time (s): cpu = 00:06:43 ; elapsed = 00:02:17 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 8 Verifying routed nets
+
+ Verification completed successfully
+Phase 8 Verifying routed nets | Checksum: 24f824318
+
+Time (s): cpu = 00:06:43 ; elapsed = 00:02:17 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 9 Depositing Routes
+Phase 9 Depositing Routes | Checksum: 24f824318
+
+Time (s): cpu = 00:06:48 ; elapsed = 00:02:22 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 10 Resolve XTalk
+Phase 10 Resolve XTalk | Checksum: 24f824318
+
+Time (s): cpu = 00:06:49 ; elapsed = 00:02:23 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 11 Post Router Timing
+INFO: [Route 35-57] Estimated Timing Summary | WNS=-0.018 | TNS=-0.024 | WHS=0.010  | THS=0.000  |
+
+WARNING: [Route 35-328] Router estimated timing not met.
+Resolution: For a complete and accurate timing signoff, report_timing_summary must be run after route_design. Alternatively, route_design can be run with the -timing_summary option to enable a complete timing signoff at the end of route_design.
+Phase 11 Post Router Timing | Checksum: 24f824318
+
+Time (s): cpu = 00:06:55 ; elapsed = 00:02:24 . Memory (MB): peak = 4190.477 ; gain = 0.000
+Time taken to check if laguna hold fix is required (in secs): 0
+
+Phase 12 Physical Synthesis in Router
+
+Phase 12.1 Physical Synthesis Initialization
+INFO: [Physopt 32-668] Current Timing Summary | WNS=-0.005 | TNS=-0.010 | WHS=0.010 | THS=0.000 |
+Phase 12.1 Physical Synthesis Initialization | Checksum: 24f824318
+
+Time (s): cpu = 00:07:36 ; elapsed = 00:02:35 . Memory (MB): peak = 4190.477 ; gain = 0.000
+
+Phase 12.2 Critical Path Optimization
+INFO: [Physopt 32-668] Current Timing Summary | WNS=-0.005 | TNS=-0.010 | WHS=0.010 | THS=0.000 |
+INFO: [Physopt 32-953] Path group WNS did not improve. Path group: board_clk. Processed net: u_top/u_key_expansion/sel__36_n_63.
+INFO: [Physopt 32-953] Path group WNS did not improve. Path group: board_clk. Processed net: u_top/u_key_expansion/sel__13_n_44.
+INFO: [Physopt 32-953] Path group WNS did not improve. Path group: board_clk. Processed net: u_top/u_key_expansion/expanded_key_128[8]_96[19].
+INFO: [Physopt 32-668] Current Timing Summary | WNS=-0.005 | TNS=-0.010 | WHS=0.010 | THS=0.000 |
+Phase 12.2 Critical Path Optimization | Checksum: 27b456435
+
+Time (s): cpu = 00:07:43 ; elapsed = 00:02:37 . Memory (MB): peak = 4190.477 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.011 . Memory (MB): peak = 4190.477 ; gain = 0.000
+INFO: [Physopt 32-669] Post Physical Optimization Timing Summary | WNS=-0.005 | TNS=-0.010 | WHS=0.010 | THS=0.000 |
+Phase 12 Physical Synthesis in Router | Checksum: 27b456435
+
+Time (s): cpu = 00:07:44 ; elapsed = 00:02:38 . Memory (MB): peak = 4190.477 ; gain = 0.000
+INFO: [Route 35-16] Router Completed Successfully
+
+Time (s): cpu = 00:07:44 ; elapsed = 00:02:38 . Memory (MB): peak = 4190.477 ; gain = 0.000
+INFO: [Common 17-83] Releasing license: Implementation
+456 Infos, 2137 Warnings, 0 Critical Warnings and 0 Errors encountered.
+route_design completed successfully
+route_design: Time (s): cpu = 00:08:24 ; elapsed = 00:02:50 . Memory (MB): peak = 4190.477 ; gain = 0.000
+INFO: [Common 17-600] The following parameters have non-default value.
+general.maxThreads
+
+==========================================
+ Writing reports
+==========================================
+INFO: [Timing 38-480] Writing timing data to binary archive.
+Writing placer database...
+Writing XDEF routing.
+Writing XDEF routing logical nets.
+Writing XDEF routing special nets.
+Write XDEF Complete: Time (s): cpu = 00:00:15 ; elapsed = 00:00:05 . Memory (MB): peak = 4190.477 ; gain = 0.000
+INFO: [Common 17-1381] The checkpoint 'C:/git/aes_engine/aes_offload/imp/vivado_2021.2/checkpoints/post_route.dcp' has been generated.
+write_checkpoint: Time (s): cpu = 00:00:30 ; elapsed = 00:00:16 . Memory (MB): peak = 4190.477 ; gain = 0.000
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Temperature grade: E, Delay Type: min_max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+WARNING: [Timing 38-436] There are set_bus_skew constraint(s) in this design. Please run report_bus_skew to ensure that bus skew requirements are met.
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Temperature grade: E, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+INFO: [Timing 38-78] ReportTimingParams: -max_paths 100 -nworst 1 -delay_type max -sort_by group.
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: min_max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Temperature grade: E, Delay Type: min_max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+Command: report_methodology -file ../reports/methodology.rpt
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+INFO: [DRC 23-133] Running Methodology with 8 threads
+INFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/git/aes_engine/aes_offload/imp/vivado_2021.2/reports/methodology.rpt.
+report_methodology completed successfully
+report_methodology: Time (s): cpu = 00:00:25 ; elapsed = 00:00:06 . Memory (MB): peak = 4190.477 ; gain = 0.000
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+INFO: [Timing 38-91] UpdateTimingParams: No interconnect No Cell Dly, Speed grade: -2, Temperature grade: E, Delay Type: min_max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+INFO: [Timing 38-314] The report_cdc command only analyzes and reports clock domain crossing paths where clocks have been defined on both source and destination sides. Ports with no input delay constraint are skipped. Please run check_timing to verify there are no missing clock definitions in your design, nor any unconstrained input port.
+Command: report_drc -file ../reports/post_imp_drc.rpt
+INFO: [IP_Flow 19-1839] IP Catalog is up to date.
+INFO: [DRC 23-27] Running DRC with 8 threads
+INFO: [Vivado_Tcl 2-168] The results of DRC are in file C:/git/aes_engine/aes_offload/imp/vivado_2021.2/reports/post_imp_drc.rpt.
+report_drc completed successfully
+report_drc: Time (s): cpu = 00:00:39 ; elapsed = 00:00:09 . Memory (MB): peak = 4190.477 ; gain = 0.000
+report_io: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.145 . Memory (MB): peak = 4190.477 ; gain = 0.000
+Generating gt_attributes.rpt
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTXE2_CHANNEL*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTHE2_CHANNEL*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTYE3_CHANNEL*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTYE4_CHANNEL*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTHE3_CHANNEL*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTHE4_CHANNEL*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTPE2_CHANNEL*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTM_DUAL*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTXE2_COMMON*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTPE2_COMMON*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTHE2_COMMON*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTYE3_COMMON*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTHE4_COMMON*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTYE4_COMMON*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTYE3_COMMON*}'.
+WARNING: [Vivado 12-180] No cells matched 'get_cells -hierarchical -filter {LIB_CELL =~ *GTHE3_COMMON*}'.
+

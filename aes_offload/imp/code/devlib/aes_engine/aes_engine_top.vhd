@@ -134,7 +134,7 @@ begin
                   end loop; 
                   state <= normal;
                elsif i_t_valid = '0' then
-                  state  <= config1;
+                  state  <= start;
                end if;
                
             when newkey =>
@@ -214,7 +214,7 @@ begin
          t_valid_q  <= i_t_valid;
          t_last_q   <= i_t_last; 
          t_keep_q   <= i_t_keep;
-      if i_rst = '1' or i_t_valid = '0' then
+      if i_rst = '1' or state = start then
          o_t_data  <= (others => '0');
          o_t_valid <= '0';
          o_t_last  <= '0';

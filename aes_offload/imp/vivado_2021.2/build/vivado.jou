@@ -2,8 +2,8 @@
 # Vivado v2021.2 (64-bit)
 # SW Build 3367213 on Tue Oct 19 02:48:09 MDT 2021
 # IP Build 3369179 on Thu Oct 21 08:25:16 MDT 2021
-# Start of session at: Wed Apr  6 21:03:13 2022
-# Process ID: 18284
+# Start of session at: Thu Apr  7 07:45:40 2022
+# Process ID: 13580
 # Current directory: C:/git/aes_engine/aes_offload/imp/vivado_2021.2/build
 # Command line: vivado.exe -mode tcl -notrace -source build.tcl
 # Log file: C:/git/aes_engine/aes_offload/imp/vivado_2021.2/build/vivado.log
@@ -11,8 +11,6 @@
 # Running On: EUL10-797V3J3, OS: Windows, CPU Frequency: 1690 MHz, CPU Physical cores: 4, Host memory: 33723 MB
 #-----------------------------------------------------------
 source build.tcl -notrace
-build {-no_id_update -debug}
-build {-no_id_update -debug}
 build {-no_id_update -debug}
 start_gui
 open_hw_manager
@@ -28,19 +26,44 @@ set_property FULL_PROBES.FILE {C:/git/aes_engine/aes_offload/imp/vivado_2021.2/o
 set_property PROGRAM.FILE {C:/git/aes_engine/aes_offload/imp/vivado_2021.2/outputs/aes_engine.bit} [get_hw_devices xczu9_0]
 program_hw_devices [get_hw_devices xczu9_0]
 refresh_hw_device [lindex [get_hw_devices xczu9_0] 0]
-set_property OUTPUT_VALUE 1 [get_hw_probes rst -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
-commit_hw_vio [get_hw_probes {rst} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
-set_property OUTPUT_VALUE 0 [get_hw_probes rst -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
-commit_hw_vio [get_hw_probes {rst} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
 set_property OUTPUT_VALUE 1 [get_hw_probes tvalidi -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
 commit_hw_vio [get_hw_probes {tvalidi} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 001 [get_hw_probes key_handle -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {key_handle} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 0 [get_hw_probes tvalidi -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {tvalidi} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 00002000000000000000000000000000 [get_hw_probes tdatai -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {tdatai} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 1 [get_hw_probes tvalidi -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {tvalidi} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 170 [get_hw_probes key_handle -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {key_handle} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
 set_property OUTPUT_VALUE FFFF [get_hw_probes tkeepi -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
 commit_hw_vio [get_hw_probes {tkeepi} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
-set_property OUTPUT_VALUE 00000000000000000000000000000080 [get_hw_probes tdatai -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
-commit_hw_vio [get_hw_probes {tdatai} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
-set_property OUTPUT_VALUE 000000000000000000000000000000C0 [get_hw_probes tdatai -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
-commit_hw_vio [get_hw_probes {tdatai} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
 set_property OUTPUT_VALUE 00000000000000000000000000000000 [get_hw_probes tdatai -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
 commit_hw_vio [get_hw_probes {tdatai} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
 set_property OUTPUT_VALUE 001 [get_hw_probes key_handle -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
 commit_hw_vio [get_hw_probes {key_handle} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 0 [get_hw_probes tvalidi -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {tvalidi} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 00000000000000000000000000000080 [get_hw_probes tdatai -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {tdatai} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 000 [get_hw_probes key_handle -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {key_handle} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 1 [get_hw_probes tvalidi -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {tvalidi} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE F000 [get_hw_probes tkeepi -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {tkeepi} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE FFFF [get_hw_probes tkeepi -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {tkeepi} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 0 [get_hw_probes tvalidi -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {tvalidi} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 1 [get_hw_probes tvalidi -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {tvalidi} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 0 [get_hw_probes tvalidi -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {tvalidi} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 001 [get_hw_probes key_handle -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {key_handle} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+set_property OUTPUT_VALUE 1 [get_hw_probes tvalidi -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+commit_hw_vio [get_hw_probes {tvalidi} -of_objects [get_hw_vios -of_objects [get_hw_devices xczu9_0] -filter {CELL_NAME=~"vio"}]]
+close_hw_manager
