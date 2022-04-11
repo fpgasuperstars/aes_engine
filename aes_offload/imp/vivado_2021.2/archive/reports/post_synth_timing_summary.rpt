@@ -1,7 +1,7 @@
 Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------
 | Tool Version      : Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
-| Date              : Thu Apr  7 07:55:49 2022
+| Date              : Mon Apr 11 11:33:15 2022
 | Host              : EUL10-797V3J3 running 64-bit major release  (build 9200)
 | Command           : report_timing_summary -file ../reports/post_synth_timing_summary.rpt
 | Design            : aes_engine_wrapper
@@ -137,7 +137,7 @@ Table of Contents
 
     WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
     -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-      0.218        0.000                      0                15209       -0.045      -21.624                    797                15209        1.124        0.000                       0                  6176  
+      0.199        0.000                      0                15684       -0.045      -26.217                    928                15684        1.124        0.000                       0                  6374  
 
 
 Timing constraints are not met.
@@ -160,7 +160,7 @@ board_clk  {0.000 1.666}        3.333           300.030
 
 Clock             WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
 -----             -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-board_clk           0.218        0.000                      0                15209       -0.045      -21.624                    797                15209        1.124        0.000                       0                  6176  
+board_clk           0.199        0.000                      0                15684       -0.045      -26.217                    928                15684        1.124        0.000                       0                  6374  
 
 
 ------------------------------------------------------------------------------------------------
@@ -191,24 +191,24 @@ Path Group    From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing 
 From Clock:  board_clk
   To Clock:  board_clk
 
-Setup :            0  Failing Endpoints,  Worst Slack        0.218ns,  Total Violation        0.000ns
-Hold  :          797  Failing Endpoints,  Worst Slack       -0.045ns,  Total Violation      -21.624ns
+Setup :            0  Failing Endpoints,  Worst Slack        0.199ns,  Total Violation        0.000ns
+Hold  :          928  Failing Endpoints,  Worst Slack       -0.045ns,  Total Violation      -26.217ns
 PW    :            0  Failing Endpoints,  Worst Slack        1.124ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.218ns  (required time - arrival time)
-  Source:                 u_top/u_key_expansion/sel__1/CLKARDCLK
+Slack (MET) :             0.199ns  (required time - arrival time)
+  Source:                 u_top/u_key_expansion/gen_128[1].g_function_input_128_reg[0]_rep/CLKBWRCLK
                             (rising edge-triggered cell RAMB18E2 clocked by board_clk  {rise@0.000ns fall@1.666ns period=3.333ns})
-  Destination:            u_top/u_key_expansion/gen_192[8].g_function_input_192_reg[7]_rep/ADDRARDADDR[4]
+  Destination:            u_top/u_key_expansion/gen_192[9].g_function_input_192_reg[8]_rep/ADDRARDADDR[5]
                             (rising edge-triggered cell RAMB18E2 clocked by board_clk  {rise@0.000ns fall@1.666ns period=3.333ns})
   Path Group:             board_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            3.333ns  (board_clk rise@3.333ns - board_clk rise@0.000ns)
-  Data Path Delay:        2.583ns  (logic 1.221ns (47.271%)  route 1.362ns (52.729%))
-  Logic Levels:           5  (LUT4=3 LUT6=2)
+  Data Path Delay:        2.669ns  (logic 1.231ns (46.122%)  route 1.438ns (53.878%))
+  Logic Levels:           5  (LUT2=1 LUT5=2 LUT6=2)
   Clock Path Skew:        -0.145ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    2.935ns = ( 6.268 - 3.333 ) 
     Source Clock Delay      (SCD):    3.217ns
@@ -232,23 +232,23 @@ Slack (MET) :             0.218ns  (required time - arrival time)
                                                       0.000     0.444 r  CLK_IBUFGDS/IBUFCTRL_INST/O
                          net (fo=1, unplaced)         0.161     0.605    clk_s
                          BUFGCE (Prop_BUFGCE_I_O)     0.028     0.633 r  clk_s_BUFG_inst/O
-                         net (fo=6176, unplaced)      2.584     3.217    u_top/u_key_expansion/i_clk
-                         RAMB18E2                                     r  u_top/u_key_expansion/sel__1/CLKARDCLK
+                         net (fo=6374, unplaced)      2.584     3.217    u_top/u_key_expansion/i_clk
+                         RAMB18E2                                     r  u_top/u_key_expansion/gen_128[1].g_function_input_128_reg[0]_rep/CLKBWRCLK
   -------------------------------------------------------------------    -------------------
-                         RAMB18E2 (Prop_RAMB18E2_CLKARDCLK_DOUTADOUT[0])
-                                                      0.932     4.149 r  u_top/u_key_expansion/sel__1/DOUTADOUT[0]
-                         net (fo=17, unplaced)        0.249     4.398    u_top/u_key_expansion/sel__1_n_47
-                         LUT6 (Prop_LUT6_I0_O)        0.149     4.547 r  u_top/u_key_expansion/o_expanded_key[7][96]_INST_0_i_1/O
-                         net (fo=16, unplaced)        0.269     4.816    u_top/u_key_expansion/o_expanded_key[7][96]_INST_0_i_1_n_0
-                         LUT4 (Prop_LUT4_I3_O)        0.035     4.851 r  u_top/u_key_expansion/o_expanded_key[10][96]_INST_0_i_5/O
-                         net (fo=2, unplaced)         0.225     5.076    u_top/u_key_expansion/o_expanded_key[10][96]_INST_0_i_5_n_0
-                         LUT4 (Prop_LUT4_I3_O)        0.035     5.111 r  u_top/u_key_expansion/o_expanded_key[10][96]_INST_0_i_1/O
-                         net (fo=7, unplaced)         0.250     5.361    u_top/u_key_expansion/p_56_in[0]
-                         LUT6 (Prop_LUT6_I3_O)        0.035     5.396 r  u_top/u_key_expansion/o_expanded_key[11][96]_INST_0_i_1/O
-                         net (fo=2, unplaced)         0.225     5.621    u_top/u_key_expansion/o_expanded_key[11][96]_INST_0_i_1_n_0
-                         LUT4 (Prop_LUT4_I0_O)        0.035     5.656 r  u_top/u_key_expansion/gen_192[8].g_function_input_192_reg[7]_rep_i_8/O
-                         net (fo=1, unplaced)         0.144     5.800    u_top/u_key_expansion/gen_192[8].g_function_input_192_reg[7]_rep_i_8_n_0
-                         RAMB18E2                                     r  u_top/u_key_expansion/gen_192[8].g_function_input_192_reg[7]_rep/ADDRARDADDR[4]
+                         RAMB18E2 (Prop_RAMB18E2_CLKBWRCLK_DOUTBDOUT[1])
+                                                      0.908     4.125 r  u_top/u_key_expansion/gen_128[1].g_function_input_128_reg[0]_rep/DOUTBDOUT[1]
+                         net (fo=25, unplaced)        0.260     4.385    u_top/u_key_expansion/gen_128[1].g_function_input_128_reg[0]_rep_n_62
+                         LUT6 (Prop_LUT6_I0_O)        0.149     4.534 r  u_top/u_key_expansion/o_expanded_key[7][65]_INST_0_i_1/O
+                         net (fo=17, unplaced)        0.270     4.804    u_top/u_key_expansion/expanded_key_192[5]_0[1]
+                         LUT6 (Prop_LUT6_I3_O)        0.035     4.839 r  u_top/u_key_expansion/o_expanded_key[8][97]_INST_0_i_4/O
+                         net (fo=1, unplaced)         0.225     5.064    u_top/u_key_expansion/o_expanded_key[8][97]_INST_0_i_4_n_0
+                         LUT5 (Prop_LUT5_I4_O)        0.069     5.133 r  u_top/u_key_expansion/o_expanded_key[8][97]_INST_0_i_1/O
+                         net (fo=6, unplaced)         0.247     5.380    u_top/u_key_expansion/expanded_key_192[5]_160[1]
+                         LUT5 (Prop_LUT5_I3_O)        0.035     5.415 r  u_top/u_key_expansion/o_expanded_key[13][33]_INST_0_i_1/O
+                         net (fo=2, unplaced)         0.225     5.640    u_top/u_key_expansion/expanded_key_192[8]_160[1]
+                         LUT2 (Prop_LUT2_I0_O)        0.035     5.675 r  u_top/u_key_expansion/gen_192[9].g_function_input_192_reg[8]_rep_i_7/O
+                         net (fo=1, unplaced)         0.211     5.886    u_top/u_key_expansion/gen_192[9].g_function_input_192_reg[8]_rep_i_7_n_0
+                         RAMB18E2                                     r  u_top/u_key_expansion/gen_192[9].g_function_input_192_reg[8]_rep/ADDRARDADDR[5]
   -------------------------------------------------------------------    -------------------
 
                          (clock board_clk rise edge)
@@ -262,17 +262,17 @@ Slack (MET) :             0.218ns  (required time - arrival time)
                                                       0.000     3.672 r  CLK_IBUFGDS/IBUFCTRL_INST/O
                          net (fo=1, unplaced)         0.133     3.805    clk_s
                          BUFGCE (Prop_BUFGCE_I_O)     0.024     3.829 r  clk_s_BUFG_inst/O
-                         net (fo=6176, unplaced)      2.439     6.268    u_top/u_key_expansion/i_clk
-                         RAMB18E2                                     r  u_top/u_key_expansion/gen_192[8].g_function_input_192_reg[7]_rep/CLKARDCLK
+                         net (fo=6374, unplaced)      2.439     6.268    u_top/u_key_expansion/i_clk
+                         RAMB18E2                                     r  u_top/u_key_expansion/gen_192[9].g_function_input_192_reg[8]_rep/CLKARDCLK
                          clock pessimism              0.137     6.405    
                          clock uncertainty           -0.035     6.370    
-                         RAMB18E2 (Setup_RAMB18E2_CLKARDCLK_ADDRARDADDR[4])
-                                                     -0.352     6.018    u_top/u_key_expansion/gen_192[8].g_function_input_192_reg[7]_rep
+                         RAMB18E2 (Setup_RAMB18E2_CLKARDCLK_ADDRARDADDR[5])
+                                                     -0.285     6.085    u_top/u_key_expansion/gen_192[9].g_function_input_192_reg[8]_rep
   -------------------------------------------------------------------
-                         required time                          6.018    
-                         arrival time                          -5.800    
+                         required time                          6.085    
+                         arrival time                          -5.886    
   -------------------------------------------------------------------
-                         slack                                  0.218    
+                         slack                                  0.199    
 
 
 
@@ -308,7 +308,7 @@ Slack (VIOLATED) :        -0.045ns  (arrival time - required time)
                                                       0.000     0.194 r  CLK_IBUFGDS/IBUFCTRL_INST/O
                          net (fo=1, unplaced)         0.066     0.260    clk_s
                          BUFGCE (Prop_BUFGCE_I_O)     0.017     0.277 r  clk_s_BUFG_inst/O
-                         net (fo=6176, unplaced)      1.114     1.391    u_top/i_clk
+                         net (fo=6374, unplaced)      1.114     1.391    u_top/i_clk
                          FDRE                                         r  u_top/addra_reg[5]/C
   -------------------------------------------------------------------    -------------------
                          FDRE (Prop_FDRE_C_Q)         0.039     1.430 r  u_top/addra_reg[5]/Q
@@ -327,7 +327,7 @@ Slack (VIOLATED) :        -0.045ns  (arrival time - required time)
                                                       0.000     0.301 r  CLK_IBUFGDS/IBUFCTRL_INST/O
                          net (fo=1, unplaced)         0.083     0.384    clk_s
                          BUFGCE (Prop_BUFGCE_I_O)     0.019     0.403 r  clk_s_BUFG_inst/O
-                         net (fo=6176, unplaced)      1.259     1.662    u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/prim_init.ram/CLKA
+                         net (fo=6374, unplaced)      1.259     1.662    u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/prim_init.ram/CLKA
                          RAMB18E2                                     r  u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/prim_init.ram/DEVICE_8SERIES.NO_BMM_INFO.SP.SIMPLE_PRIM18.ram/CLKARDCLK
                          clock pessimism             -0.126     1.536    
                          RAMB18E2 (Hold_RAMB18E2_CLKARDCLK_ADDRARDADDR[9])

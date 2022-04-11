@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000002" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 
+      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000008" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 222 = lo speed tests, 111 hi speed with tlast tests, 040 = valid go lo during run
    );
 end entity;
 
@@ -56,7 +56,7 @@ architecture sim of aes_engine_top_tb is
 begin
    dut : entity aes_engine.aes_engine_top
       generic map(
-         g_speed_sel    => '1' -- 1 = Lo speed
+         g_speed_sel    => '0' -- 1 = Lo speed
       )
       port map(
          i_key_handle   => key_handle,
@@ -307,25 +307,26 @@ begin
          wait for RESET_DURATION;
          rst       <= '0';           
          wait until rising_edge(clk);
-         wait until t_ready = '1';
-         t_valid   <= '1'; 
-         get_inputs(f_ct_vectors, in_word, key_handle); -- load key
-         wait until rising_edge(clk);
-         while not endfile(f_ct_vectors) loop -- run at full speed
-            if t_ready = '1' then
-               get_inputs(f_ct_vectors, in_word, key_handle); -- get data from test vectors
-               wait until rising_edge(clk);
-               get_ct(f_128_vectors, exp_ct); -- get data from test vectors
-               wait for 2 ns;
-               assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
-            else
-               wait until rising_edge(clk);
-            end if;
-         end loop;
-         wait for clk_period*20;
-         t_valid  <= '0';
-         file_close(f_128_vectors);
-         file_close(f_ct_vectors);
+         if t_ready = '1' then
+            t_valid   <= '1'; 
+            get_inputs(f_ct_vectors, in_word, key_handle); -- load key
+            wait until rising_edge(clk);
+            while not endfile(f_ct_vectors) loop -- run at full speed
+               if t_ready = '1' then
+                  get_inputs(f_ct_vectors, in_word, key_handle); -- get data from test vectors
+                  wait until rising_edge(clk);
+                  get_ct(f_128_vectors, exp_ct); -- get data from test vectors
+                  wait for 2 ns;
+                  assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
+               else
+                  wait until rising_edge(clk);
+               end if;
+            end loop;
+            wait for clk_period*20;
+            t_valid  <= '0';
+            file_close(f_128_vectors);
+            file_close(f_ct_vectors);
+         end if;
       end if;
       
       --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

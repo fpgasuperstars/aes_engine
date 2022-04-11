@@ -31,6 +31,7 @@ package aes_engine_pkg is
    constant r : T_jindex := (0,2,4,6,8);          -- used for converting 192 to 128
    -- types
    type     T_EXPANDED_KEYS is array (0 to AES256+1)          of std_logic_vector(AXI_T_DATA-1 downto 0);   -- array containing the expanded keys for 128/256
+   type     T_DEC_EXPANDED_KEYS is array (AES256+1 downto 0)          of std_logic_vector(AXI_T_DATA-1 downto 0);   -- array containing the expanded keys for 128/256
    type     T_EXP_KEYS_192  is array (0 to AES256+1)          of std_logic_vector(AES192_KEY-1 downto 0);   -- array containing the expanded keys for 192
    type     T_TEMP_192      is array (0 to AES256+1)          of std_logic_vector(BYTE_WIDTH*8-1 downto 0); -- array containing the temp signals for the last two words of a 192 bit key
    type     T_RND_CONST     is array (0 to AES256-1)          of std_logic_vector(BYTE_WIDTH*4-1 downto 0); -- array containing the round constans for key expansion

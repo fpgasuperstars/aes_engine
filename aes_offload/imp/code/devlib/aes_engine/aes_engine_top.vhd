@@ -54,15 +54,17 @@ architecture mixed of aes_engine_top is
    -- Signals
    signal state                                               : T_STATES;
    signal encrypt, decrypt                                    : T_CIPHER_TXT;
-   signal expanded_key_q, expanded_key, expanded_key_decrypt  : T_EXPANDED_KEYS;                             
-   signal t_data_q, config_data, t_data_last                               : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal expanded_key_q, expanded_key, expanded_key_decrypt  : T_EXPANDED_KEYS;
+   signal dec_expanded_key_q                                  : T_EXPANDED_KEYS;
+   signal t_data_q, config_data, t_data_last                  : std_logic_vector(AXI_T_DATA-1 downto 0);
    signal duty_cycle_cnt, flushout_cnt, en_cnt, lo_spd_en_cnt : unsigned(4 downto 0);
-   signal ini_key_cnt : unsigned(5 downto 0);
+   signal ini_key_cnt                                         : unsigned(5 downto 0);
    signal speed_en, t_valid_q, t_last_q, new_key, en_decr, en_cnt_rst, last_flag     : std_logic;
    signal t_keep_q                                            : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
    signal t_valid, t_last                                     : T_AXI_STREAM;
    signal t_keep                                              : T_AXI_TKEEP;
    signal last_rnd                                            : std_logic_vector(AES256-1 downto 0);
+   signal last_rnd_dec                                        : std_logic_vector(0 to AES256-1);
    signal gen_mode                                            : integer:= AES256;
    
    -- Configuration
@@ -76,11 +78,17 @@ architecture mixed of aes_engine_top is
    
 begin
    
-   -- logic used to flag when the last round is
+   -- logic used to flag when the last round is encrypt
    last_rnd  <= (AES128-1 => '1', others => '0') when aes_mode = "00" else
                 (AES192-1 => '1', others => '0') when aes_mode = "01" else
                 (AES256-1 => '1', others => '0') when aes_mode = "10" else
                 (others => '0');
+   
+   -- logic used to flag when the last round is encrypt
+   last_rnd_dec <= (4 => '1', others => '0') when aes_mode = "00" else
+                   (2 => '1', others => '0') when aes_mode = "01" else
+                   (0 => '1', others => '0') when aes_mode = "10" else
+                   (others => '0');
                 
    -- logic to pass the mode selected that can be used for the state control                
    gen_mode  <= AES128 when aes_mode = "00" else
@@ -110,6 +118,7 @@ begin
                   iv          <= i_t_data((IV_C+MODE_C)-1 downto MODE_C);
                   aes_mode    <= i_t_data((AES_MODE_C+IV_C+MODE_C)-1 downto IV_C+MODE_C);
                   en_decr     <= i_t_data(AES_MODE_C+IV_C+MODE_C);
+                  o_done      <= '0';
                   state       <= newkey;
                end if;
                
@@ -124,13 +133,13 @@ begin
                elsif i_t_last then
                   last_flag  <= '1';
                   for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
-                     t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
+                     t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0');
                   end loop;
                elsif new_key then
                   state <= newkey;
                elsif o_t_ready and i_t_valid then
                   for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
-                     t_data_q((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
+                     t_data_q((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0');
                   end loop; 
                   state <= normal;
                elsif last_flag = '1' and en_cnt >= gen_mode then
@@ -143,7 +152,7 @@ begin
                if i_t_last then
                   last_flag  <= '1';
                   for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
-                     t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
+                     t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); 
                   end loop;
                   state  <= newkey;
                elsif last_flag then
@@ -266,7 +275,7 @@ begin
          o_t_last  <= t_last(gen_mode);
          o_t_keep  <= t_keep(gen_mode);  
       elsif en_decr = '1' and speed_en = '1' and en_cnt >= gen_mode and lo_spd_en_cnt > 2 and ini_key_cnt >= gen_mode*3 then
-         o_t_data  <= decrypt(gen_mode);
+         o_t_data  <= decrypt((AES256-gen_mode)-1);
          o_t_valid <= t_valid(gen_mode);
          o_t_last  <= t_last(gen_mode);
          o_t_keep  <= t_keep(gen_mode); 
@@ -306,7 +315,7 @@ begin
    
    -- initial round key step for both encryption and decryption
    encrypt(0) <= t_data_q xor expanded_key_q(0);
-   decrypt(0) <= t_data_q xor expanded_key_q(gen_mode);
+   decrypt(AES256) <= t_data_q xor dec_expanded_key_q(AES256+1);
 
    gen_encryption_rounds : for i in 1 to AES256 generate
       u_enc_rnds : entity aes_engine.aes_engine_round
@@ -326,14 +335,36 @@ begin
          );
    end generate;
    
-   gen_decryption_rounds : for i in 1 to AES128 generate
+   -- reverse key order for decryption
+   p_dec_keys : process(all)
+   begin
+      case gen_mode is
+         when AES128 =>
+            for i in AES128 downto 0 loop
+               dec_expanded_key_q(i+5)  <= expanded_key_q(i);
+            end loop;
+         when AES192 =>
+            for i in AES192 downto 0 loop
+               dec_expanded_key_q(i+3)  <= expanded_key_q(i);
+            end loop;
+         when AES256 =>
+            for i in AES256 downto 0 loop
+               dec_expanded_key_q(i+1)  <= expanded_key_q(i);
+            end loop;
+         when others  =>
+               null;
+      end case;
+   end process;
+   
+   
+   gen_decryption_rounds : for i in AES256-1 downto 0 generate
       u_dec_rnds : entity aes_engine.aes_engine_decrypt
          port map(
             i_clk             => i_clk,
             i_rst             => i_rst,
-            i_expanded_key    => expanded_key_q(gen_mode-i),
-            i_last_rnd        => last_rnd(i-1),
-            i_cipher_txt      => decrypt(i-1),
+            i_expanded_key    => dec_expanded_key_q(i+1),
+            i_last_rnd        => last_rnd_dec(i),
+            i_cipher_txt      => decrypt(i+1),
             o_rndn_plain_txt  => decrypt(i)
          );
    end generate;

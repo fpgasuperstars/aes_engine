@@ -16,22 +16,22 @@ INFO: [DRC 23-27] Running DRC with 8 threads
 INFO: [Project 1-461] DRC finished with 0 Errors
 INFO: [Project 1-462] Please refer to the DRC report (report_drc) for more information.
 
-Time (s): cpu = 00:00:04 ; elapsed = 00:00:02 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:04 ; elapsed = 00:00:02 . Memory (MB): peak = 5384.473 ; gain = 0.000
 
 Starting Cache Timing Information Task
 Ending Cache Timing Information Task | Checksum: 16b9180a2
 
-Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.233 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.241 . Memory (MB): peak = 5384.473 ; gain = 0.000
 
 Starting Logic Optimization Task
 
 Phase 1 Generate And Synthesize Debug Cores
 INFO: [Chipscope 16-329] Generating Script for core instance : dbg_hub 
 INFO: [IP_Flow 19-3806] Processing IP xilinx.com:ip:xsdbm:3.0 for cell dbg_hub_CV.
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.057 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.065 . Memory (MB): peak = 5384.473 ; gain = 0.000
 Phase 1 Generate And Synthesize Debug Cores | Checksum: 21dd9ace0
 
-Time (s): cpu = 00:00:06 ; elapsed = 00:01:43 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:07 ; elapsed = 00:01:49 . Memory (MB): peak = 5384.473 ; gain = 0.000
 
 Phase 2 Retarget
 INFO: [Opt 31-1287] Pulled Inverter u_top/o_t_ready_INST_0 into driver instance u_top/o_t_ready_INST_0_i_1, which resulted in an inversion of 5 pins
@@ -39,7 +39,7 @@ INFO: [Opt 31-138] Pushed 4 inverter(s) to 298 load pin(s).
 INFO: [Opt 31-49] Retargeted 0 cell(s).
 Phase 2 Retarget | Checksum: 2999002f0
 
-Time (s): cpu = 00:00:12 ; elapsed = 00:01:45 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:13 ; elapsed = 00:01:51 . Memory (MB): peak = 5384.473 ; gain = 0.000
 INFO: [Opt 31-389] Phase Retarget created 0 cells and removed 11 cells
 INFO: [Opt 31-1021] In phase Retarget, 193 netlist objects are constrained preventing optimization. Please run opt_design with -debug_log to get more detail. 
 
@@ -47,14 +47,14 @@ Phase 3 Constant propagation
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
 Phase 3 Constant propagation | Checksum: 2999002f0
 
-Time (s): cpu = 00:00:13 ; elapsed = 00:01:46 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:13 ; elapsed = 00:01:52 . Memory (MB): peak = 5384.473 ; gain = 0.000
 INFO: [Opt 31-389] Phase Constant propagation created 0 cells and removed 0 cells
 INFO: [Opt 31-1021] In phase Constant propagation, 193 netlist objects are constrained preventing optimization. Please run opt_design with -debug_log to get more detail. 
 
 Phase 4 Sweep
 Phase 4 Sweep | Checksum: 19eb7a32b
 
-Time (s): cpu = 00:00:13 ; elapsed = 00:01:46 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:14 ; elapsed = 00:01:52 . Memory (MB): peak = 5384.473 ; gain = 0.000
 INFO: [Opt 31-389] Phase Sweep created 0 cells and removed 0 cells
 INFO: [Opt 31-1021] In phase Sweep, 1727 netlist objects are constrained preventing optimization. Please run opt_design with -debug_log to get more detail. 
 
@@ -62,20 +62,20 @@ Phase 5 BUFG optimization
 INFO: [Opt 31-1077] Phase BUFG optimization inserted 0 global clock buffer(s) for CLOCK_LOW_FANOUT.
 Phase 5 BUFG optimization | Checksum: 19eb7a32b
 
-Time (s): cpu = 00:00:14 ; elapsed = 00:01:47 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:15 ; elapsed = 00:01:53 . Memory (MB): peak = 5384.473 ; gain = 0.000
 INFO: [Opt 31-662] Phase BUFG optimization created 0 cells of which 0 are BUFGs and removed 0 cells.
 
 Phase 6 Shift Register Optimization
 INFO: [Opt 31-1064] SRL Remap converted 0 SRLs to 0 registers and converted 0 registers of register chains to 0 SRLs
 Phase 6 Shift Register Optimization | Checksum: 19eb7a32b
 
-Time (s): cpu = 00:00:14 ; elapsed = 00:01:47 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:15 ; elapsed = 00:01:53 . Memory (MB): peak = 5384.473 ; gain = 0.000
 INFO: [Opt 31-389] Phase Shift Register Optimization created 0 cells and removed 0 cells
 
 Phase 7 Post Processing Netlist
 Phase 7 Post Processing Netlist | Checksum: 19eb7a32b
 
-Time (s): cpu = 00:00:14 ; elapsed = 00:01:47 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:15 ; elapsed = 00:01:53 . Memory (MB): peak = 5384.473 ; gain = 0.000
 INFO: [Opt 31-389] Phase Post Processing Netlist created 0 cells and removed 0 cells
 INFO: [Opt 31-1021] In phase Post Processing Netlist, 201 netlist objects are constrained preventing optimization. Please run opt_design with -debug_log to get more detail. 
 Opt_design Change Summary
@@ -97,10 +97,10 @@ Opt_design Change Summary
 
 Starting Connectivity Check Task
 
-Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.115 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.108 . Memory (MB): peak = 5384.473 ; gain = 0.000
 Ending Logic Optimization Task | Checksum: 1b015633b
 
-Time (s): cpu = 00:00:14 ; elapsed = 00:01:47 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:15 ; elapsed = 00:01:54 . Memory (MB): peak = 5384.473 ; gain = 0.000
 
 Starting Power Optimization Task
 INFO: [Pwropt 34-132] Skipping clock gating for clocks with a period < 2.00 ns.
@@ -118,25 +118,25 @@ INFO: [Pwropt 34-201] Structural ODC has moved 0 WE to EN ports
 Number of BRAM Ports augmented: 0 newly gated: 0 Total Ports: 140
 Ending PowerOpt Patch Enables Task | Checksum: 1b015633b
 
-Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.361 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.396 . Memory (MB): peak = 5384.473 ; gain = 0.000
 Ending Power Optimization Task | Checksum: 1b015633b
 
-Time (s): cpu = 00:00:40 ; elapsed = 00:00:13 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:41 ; elapsed = 00:00:14 . Memory (MB): peak = 5384.473 ; gain = 0.000
 
 Starting Final Cleanup Task
 Ending Final Cleanup Task | Checksum: 1b015633b
 
-Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 5384.473 ; gain = 0.000
 
 Starting Netlist Obfuscation Task
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.012 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.015 . Memory (MB): peak = 5384.473 ; gain = 0.000
 Ending Netlist Obfuscation Task | Checksum: 1b015633b
 
-Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.013 . Memory (MB): peak = 4350.551 ; gain = 0.000
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.016 . Memory (MB): peak = 5384.473 ; gain = 0.000
 INFO: [Common 17-83] Releasing license: Implementation
-377 Infos, 2475 Warnings, 0 Critical Warnings and 0 Errors encountered.
+374 Infos, 2473 Warnings, 0 Critical Warnings and 0 Errors encountered.
 opt_design completed successfully
-opt_design: Time (s): cpu = 00:01:02 ; elapsed = 00:02:06 . Memory (MB): peak = 4350.551 ; gain = 0.000
+opt_design: Time (s): cpu = 00:01:05 ; elapsed = 00:02:14 . Memory (MB): peak = 5384.473 ; gain = 0.000
 INFO: [Common 17-600] The following parameters have non-default value.
 general.maxThreads
 

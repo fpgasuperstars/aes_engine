@@ -5,8 +5,6 @@ IPs properties report
 -------------------------------
  aes_engine_key_bram_blk_mem_gen_0_0
 -------------------------------
-WARNING: [Vivado 12-3672] The is_managed property should only be queried on the file object representing this IP. Use the get_files command to access file objects.
-WARNING: [Vivado 12-3670] The generate_synth_checkpoint property should only be queried on the file object representing this IP. Use the get_files command to access file objects.
   CONFIG.AXI_ID_Width = 4
   CONFIG.AXI_Slave_Type = Memory_Slave
   CONFIG.AXI_Type = AXI4_Full

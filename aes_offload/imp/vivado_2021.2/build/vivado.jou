@@ -11,3 +11,4 @@
 # Running On: EUL10-797V3J3, OS: Windows, CPU Frequency: 1690 MHz, CPU Physical cores: 4, Host memory: 33723 MB
 #-----------------------------------------------------------
 source build.tcl -notrace
+build {-no_id_update -debug}
