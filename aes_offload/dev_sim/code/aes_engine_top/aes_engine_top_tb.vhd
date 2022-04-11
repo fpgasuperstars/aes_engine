@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000100" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 
+      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000002" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 
    );
 end entity;
 
@@ -56,7 +56,7 @@ architecture sim of aes_engine_top_tb is
 begin
    dut : entity aes_engine.aes_engine_top
       generic map(
-         g_speed_sel    => '0' -- 1 = Lo speed
+         g_speed_sel    => '1' -- 1 = Lo speed
       )
       port map(
          i_key_handle   => key_handle,
@@ -67,7 +67,8 @@ begin
          i_rst          => rst,
          i_t_data       => in_word, 
          o_t_data       => out_word,
-         o_t_ready      => t_ready
+         o_t_ready      => t_ready,
+         o_done  => open
       );
       
    p_clk : process
@@ -174,7 +175,7 @@ begin
          end if;
          if t_ready = '1' then
             in_word  <= (AES128-1 => '1', others => '0');
-            --key_handle  <= std_logic_vector(to_unsigned(0,10)); -- load key
+            --key_handle  <= std_logic_vector(to_unsigned(0,10)); -- load key -- test 3 different scenarios 1. last(set last here), 2. new key then last(append copy of last line in test vectors and set last here), 3. new key and last(set new kay and last at tsame time here)
             t_last  <= '1';
             wait until rising_edge(clk);
             t_valid  <= '0';
@@ -459,12 +460,24 @@ begin
                wait for 2 ns;
                assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
             else
-               wait until t_ready = '1';
+               wait until rising_edge(clk);
             end if;
          end loop;
-         
          wait until rising_edge(clk);
-         t_valid   <= '0'; 
+         t_valid   <= '0'; -- set valid low for 100 cycles and see if output is invalid and output t_valid goes low, OK
+         for i in 0 to 100 loop -- run at full speed
+         if t_ready = '1' then
+               wait until rising_edge(clk);
+               get_inputs(f_192_vectors, in_word, key_handle); -- get data from test vectors
+               get_ct(f_192_ct_vectors, exp_ct); -- get data from test vectors
+               wait for 2 ns;
+               assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
+            else
+               wait until rising_edge(clk);
+            end if;
+         end loop;
+         wait until rising_edge(clk);
+         t_valid   <= '1'; 
          
          while not endfile(f_192_vectors) loop -- run at full speed
          if t_ready = '1' then

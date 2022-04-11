@@ -105,7 +105,8 @@ begin
          o_t_keep          => t_keepo  ,
          o_t_data          => t_datao  ,
          -- Keys
-         i_key_handle      => key_handle 
+         i_key_handle      => key_handle,
+         o_done            => open 
       );
 
    vio : vio_0

@@ -36,7 +36,9 @@ entity aes_engine_top IS
       o_t_keep          : out std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
       o_t_data          : out std_logic_vector(AXI_T_DATA-1 downto 0);
       -- Keys
-      i_key_handle      : in  std_logic_vector(9 downto 0)
+      i_key_handle      : in  std_logic_vector(9 downto 0);
+      -- status
+      o_done            : out std_logic
    );
 end entity;
 
@@ -47,19 +49,20 @@ architecture mixed of aes_engine_top is
    
    -- Types
    type  T_CIPHER_TXT    is array (0 to AES256) of std_logic_vector(AXI_T_DATA-1 downto 0); -- array containing the cipher text output from each round
-   type  T_STATES        is (newkey, normal, config1, start, load_key);
+   type  T_STATES        is (newkey, normal, config, last);
       
    -- Signals
    signal state                                               : T_STATES;
    signal encrypt, decrypt                                    : T_CIPHER_TXT;
    signal expanded_key_q, expanded_key, expanded_key_decrypt  : T_EXPANDED_KEYS;                             
-   signal t_data_q, config_data                               : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal t_data_q, config_data, t_data_last                               : std_logic_vector(AXI_T_DATA-1 downto 0);
    signal duty_cycle_cnt, flushout_cnt, en_cnt, lo_spd_en_cnt : unsigned(4 downto 0);
-   signal speed_en, t_valid_q, t_last_q, new_key, en_decr, en_cnt_rst     : std_logic;
+   signal ini_key_cnt : unsigned(5 downto 0);
+   signal speed_en, t_valid_q, t_last_q, new_key, en_decr, en_cnt_rst, last_flag     : std_logic;
    signal t_keep_q                                            : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
    signal t_valid, t_last                                     : T_AXI_STREAM;
    signal t_keep                                              : T_AXI_TKEEP;
-   signal last_rnd_enc, last_rnd_dec                          : std_logic_vector(AES256-1 downto 0);
+   signal last_rnd                                            : std_logic_vector(AES256-1 downto 0);
    signal gen_mode                                            : integer:= AES256;
    
    -- Configuration
@@ -73,16 +76,11 @@ architecture mixed of aes_engine_top is
    
 begin
    
-   -- logic used to flag when the last round is encrypt
-   last_rnd_enc<= (AES128-1 => '1', others => '0') when aes_mode = "00" else
-                  (AES192-1 => '1', others => '0') when aes_mode = "01" else
-                  (AES256-1 => '1', others => '0') when aes_mode = "10" else
-                  (others => '0');
-                  
-   last_rnd_dec<= (AES128-1 => '1', others => '0') when aes_mode = "00" else
-                  (AES192-1 => '1', others => '0') when aes_mode = "01" else
-                  (AES256-1 => '1', others => '0') when aes_mode = "10" else
-                  (others => '0');
+   -- logic used to flag when the last round is
+   last_rnd  <= (AES128-1 => '1', others => '0') when aes_mode = "00" else
+                (AES192-1 => '1', others => '0') when aes_mode = "01" else
+                (AES256-1 => '1', others => '0') when aes_mode = "10" else
+                (others => '0');
                 
    -- logic to pass the mode selected that can be used for the state control                
    gen_mode  <= AES128 when aes_mode = "00" else
@@ -97,55 +95,84 @@ begin
    begin
       wait until rising_edge(i_clk);
          if i_rst  then
-            state  <=  start;
+            state  <=  config;
             expanded_key_q <= (others  => (others  => '0'));
-            t_data_q  <= (others  => '0');
+            t_data_q     <= (others  => '0');
+            t_data_last  <= (others  => '0');
+            last_flag    <= '0';
+            o_done       <= '0';
          else
             en_cnt_rst  <= '0';
          case state is
-            when start  =>
-               state  <= config1;
-            
-            when config1 =>
+            when config =>
                if i_t_valid then
                   mode        <= i_t_data(MODE_C-1 downto 0);
                   iv          <= i_t_data((IV_C+MODE_C)-1 downto MODE_C);
                   aes_mode    <= i_t_data((AES_MODE_C+IV_C+MODE_C)-1 downto IV_C+MODE_C);
                   en_decr     <= i_t_data(AES_MODE_C+IV_C+MODE_C);
-                  state       <= load_key;
-               end if;
-            
-            when load_key  => -- allow time for key to load ready for first encryption
-               if duty_cycle_cnt <= gen_mode then
-                  state <= load_key;
-               else
-                  expanded_key_q <= expanded_key; -- register the expanded keys
-                  en_cnt_rst  <= '1';
-                  state          <= normal;
+                  state       <= newkey;
                end if;
                
             when normal =>
                en_cnt_rst  <= '0';
-               if new_key = '1' then
+               if i_t_last and new_key then
+                  last_flag  <= '1';
+                  state <= newkey;
+                  for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
+                     t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
+                  end loop;
+               elsif i_t_last then
+                  last_flag  <= '1';
+                  for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
+                     t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
+                  end loop;
+               elsif new_key then
                   state <= newkey;
                elsif o_t_ready and i_t_valid then
                   for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
                      t_data_q((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
                   end loop; 
                   state <= normal;
-               elsif i_t_valid = '0' then
-                  state  <= start;
+               elsif last_flag = '1' and en_cnt >= gen_mode then
+                  en_cnt_rst  <= '1';
+                  state  <= last;
+                  t_data_q <= t_data_last;
                end if;
                
             when newkey =>
-               if flushout_cnt = (gen_mode *2)+1 then
-                  expanded_key_q <= expanded_key; -- register the expanded keys 
-                  state  <=  normal;
-                  en_cnt_rst  <= '1';
-               else
+               if i_t_last then
+                  last_flag  <= '1';
+                  for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
+                     t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
+                  end loop;
                   state  <= newkey;
+               elsif last_flag then
+                  if flushout_cnt = (gen_mode *2)+1 then
+                     expanded_key_q <= expanded_key; -- register the expanded keys 
+                     state  <=  last;
+                     t_data_q <= t_data_last;
+                     en_cnt_rst  <= '1';
+                  else
+                     state  <= newkey;
+                  end if;
+               else
+                  if flushout_cnt = (gen_mode *2)+1 then
+                     expanded_key_q <= expanded_key; -- register the expanded keys 
+                     state  <=  normal;
+                     en_cnt_rst  <= '1';
+                  else
+                     state  <= newkey;
+                  end if;
                end if;
-               
+            
+            when last =>
+               t_data_q <= t_data_last;
+               if en_cnt = gen_mode then
+                  state  <= config;
+                  last_flag  <= '0';
+                  o_done  <= '1';
+               end if;
+
             when others  =>
                null;
          end case;
@@ -156,7 +183,7 @@ begin
    new_key     <= '1'      when key_handle_q /= i_key_handle else '0';
    
    --  engine ready logic
-   o_t_ready   <= '0'      when state = newkey or new_key = '1' or state = start or (g_speed_sel = '1' and speed_en = '0') or state = load_key  else '1';
+   o_t_ready   <= '0'      when state = newkey or new_key = '1' or (g_speed_sel = '1' and speed_en = '0') or state = last else '1';
 
    ---------------------------------------------------------------------------------------
    -- Speed selection control
@@ -188,6 +215,16 @@ begin
       end if;
    end process;
    
+   p_inital_key : process
+   begin
+      wait until rising_edge(i_clk);
+      if i_rst then
+         ini_key_cnt  <= (others  => '0');
+      elsif ini_key_cnt < gen_mode*3 then
+         ini_key_cnt  <= ini_key_cnt + 1;
+      end if;
+   end process;
+   
       
    ---------------------------------------------------------------------------------------
    -- flush out when new key detected
@@ -214,7 +251,7 @@ begin
          t_valid_q  <= i_t_valid;
          t_last_q   <= i_t_last; 
          t_keep_q   <= i_t_keep;
-      if i_rst = '1' or state = start then
+      if i_rst = '1' then
          o_t_data  <= (others => '0');
          o_t_valid <= '0';
          o_t_last  <= '0';
@@ -223,12 +260,12 @@ begin
          t_valid_q <= '0';  
          t_last_q  <= '0'; 
          t_keep_q  <= (others => '0');
-      elsif en_decr = '0' and speed_en = '1' and en_cnt >= gen_mode and lo_spd_en_cnt > 2 then
+      elsif en_decr = '0' and speed_en = '1' and en_cnt >= gen_mode and lo_spd_en_cnt > 2 and ini_key_cnt >= gen_mode*3 then
          o_t_data  <= encrypt(gen_mode);
          o_t_valid <= t_valid(gen_mode);
          o_t_last  <= t_last(gen_mode);
          o_t_keep  <= t_keep(gen_mode);  
-      elsif en_decr = '1' and speed_en = '1' and en_cnt >= gen_mode and lo_spd_en_cnt > 2 then
+      elsif en_decr = '1' and speed_en = '1' and en_cnt >= gen_mode and lo_spd_en_cnt > 2 and ini_key_cnt >= gen_mode*3 then
          o_t_data  <= decrypt(gen_mode);
          o_t_valid <= t_valid(gen_mode);
          o_t_last  <= t_last(gen_mode);
@@ -240,9 +277,9 @@ begin
    p_en_out : process -- counter to determine first valid output after pipeline delays
    begin
       wait until rising_edge(i_clk);
-      if i_rst = '1' or state = config1 or en_cnt_rst = '1' then
+      if i_rst = '1' or state = config or en_cnt_rst = '1' then
          en_cnt  <= (others  => '0');
-      elsif (state = normal or state = newkey) and en_cnt < gen_mode  then
+      elsif state /= config and en_cnt <= gen_mode  then
          en_cnt  <=  en_cnt + 1;
       end if;
    end process;
@@ -283,7 +320,7 @@ begin
             o_t_last          => t_last (i), 
             o_t_keep          => t_keep (i), 
             i_expanded_key    => expanded_key_q(i),
-            i_last_rnd        => last_rnd_enc(i-1),
+            i_last_rnd        => last_rnd(i-1),
             i_plain_txt       => encrypt(i-1),
             o_rndn_cipher_txt => encrypt(i)
          );
@@ -295,7 +332,7 @@ begin
             i_clk             => i_clk,
             i_rst             => i_rst,
             i_expanded_key    => expanded_key_q(gen_mode-i),
-            i_last_rnd        => last_rnd_dec(i-1),
+            i_last_rnd        => last_rnd(i-1),
             i_cipher_txt      => decrypt(i-1),
             o_rndn_plain_txt  => decrypt(i)
          );
@@ -307,7 +344,7 @@ begin
    p_key_select : process
    begin
       wait until rising_edge(i_clk);
-      if  en_cnt = 0 or en_cnt >= gen_mode-1 or state = load_key then -- only allow a new key when engine is not flushing or filling pipeline or when initial load key after reset. 
+      if  en_cnt = 0 or en_cnt >= gen_mode-1 or state = newkey then -- only allow a new key when engine is not flushing or filling pipeline or when initial load key after reset. 
          addra  <=  key_handle_q;
       end if;
    end process;

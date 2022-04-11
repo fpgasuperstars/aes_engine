@@ -36,7 +36,9 @@ entity aes_engine_top IS
       o_t_keep          : out std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
       o_t_data          : out std_logic_vector(AXI_T_DATA-1 downto 0);
       -- Keys
-      i_key_handle      : in  std_logic_vector(9 downto 0)
+      i_key_handle      : in  std_logic_vector(9 downto 0);
+      -- status
+      o_done            : out std_logic
    );
 end entity;
 
@@ -98,6 +100,7 @@ begin
             t_data_q     <= (others  => '0');
             t_data_last  <= (others  => '0');
             last_flag    <= '0';
+            o_done       <= '0';
          else
             en_cnt_rst  <= '0';
          case state is
@@ -112,13 +115,13 @@ begin
                
             when normal =>
                en_cnt_rst  <= '0';
-               if i_t_last and new_key then
+               if i_t_last and new_key and i_t_valid then
                   last_flag  <= '1';
                   state <= newkey;
                   for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
                      t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
                   end loop;
-               elsif i_t_last then
+               elsif i_t_last and i_t_valid then
                   last_flag  <= '1';
                   for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
                      t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
@@ -167,6 +170,7 @@ begin
                if en_cnt = gen_mode then
                   state  <= config;
                   last_flag  <= '0';
+                  o_done  <= '1';
                end if;
 
             when others  =>

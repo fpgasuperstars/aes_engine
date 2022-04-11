@@ -3,11 +3,11 @@
  Build complete
 ==========================================
 
-Started in: 2022-04-06 22:33:56
+Started in: 2022-04-07 07:46:18
 
-Build time (synthesis and implementation): 1159.4 seconds (19.32 minutes).
+Build time (synthesis and implementation): 1284.6 seconds (21.41 minutes).
 
 Hostname: eul10-797v3j3
 
-ERROR!!! The timing constraints are NOT met.
+The timing constraints are met.
 
