@@ -1,7 +1,7 @@
 Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------
 | Tool Version      : Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
-| Date              : Mon Apr 11 11:33:15 2022
+| Date              : Mon Apr 11 12:26:31 2022
 | Host              : EUL10-797V3J3 running 64-bit major release  (build 9200)
 | Command           : report_timing_summary -file ../reports/post_synth_timing_summary.rpt
 | Design            : aes_engine_wrapper
@@ -137,7 +137,7 @@ Table of Contents
 
     WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
     -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-      0.199        0.000                      0                15684       -0.045      -26.217                    928                15684        1.124        0.000                       0                  6374  
+      0.199        0.000                      0                15706       -0.045      -28.994                   1066                15706        1.124        0.000                       0                  6385  
 
 
 Timing constraints are not met.
@@ -160,7 +160,7 @@ board_clk  {0.000 1.666}        3.333           300.030
 
 Clock             WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
 -----             -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-board_clk           0.199        0.000                      0                15684       -0.045      -26.217                    928                15684        1.124        0.000                       0                  6374  
+board_clk           0.199        0.000                      0                15706       -0.045      -28.994                   1066                15706        1.124        0.000                       0                  6385  
 
 
 ------------------------------------------------------------------------------------------------
@@ -192,7 +192,7 @@ From Clock:  board_clk
   To Clock:  board_clk
 
 Setup :            0  Failing Endpoints,  Worst Slack        0.199ns,  Total Violation        0.000ns
-Hold  :          928  Failing Endpoints,  Worst Slack       -0.045ns,  Total Violation      -26.217ns
+Hold  :         1066  Failing Endpoints,  Worst Slack       -0.045ns,  Total Violation      -28.994ns
 PW    :            0  Failing Endpoints,  Worst Slack        1.124ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
@@ -232,7 +232,7 @@ Slack (MET) :             0.199ns  (required time - arrival time)
                                                       0.000     0.444 r  CLK_IBUFGDS/IBUFCTRL_INST/O
                          net (fo=1, unplaced)         0.161     0.605    clk_s
                          BUFGCE (Prop_BUFGCE_I_O)     0.028     0.633 r  clk_s_BUFG_inst/O
-                         net (fo=6374, unplaced)      2.584     3.217    u_top/u_key_expansion/i_clk
+                         net (fo=6385, unplaced)      2.584     3.217    u_top/u_key_expansion/i_clk
                          RAMB18E2                                     r  u_top/u_key_expansion/gen_128[1].g_function_input_128_reg[0]_rep/CLKBWRCLK
   -------------------------------------------------------------------    -------------------
                          RAMB18E2 (Prop_RAMB18E2_CLKBWRCLK_DOUTBDOUT[1])
@@ -262,7 +262,7 @@ Slack (MET) :             0.199ns  (required time - arrival time)
                                                       0.000     3.672 r  CLK_IBUFGDS/IBUFCTRL_INST/O
                          net (fo=1, unplaced)         0.133     3.805    clk_s
                          BUFGCE (Prop_BUFGCE_I_O)     0.024     3.829 r  clk_s_BUFG_inst/O
-                         net (fo=6374, unplaced)      2.439     6.268    u_top/u_key_expansion/i_clk
+                         net (fo=6385, unplaced)      2.439     6.268    u_top/u_key_expansion/i_clk
                          RAMB18E2                                     r  u_top/u_key_expansion/gen_192[9].g_function_input_192_reg[8]_rep/CLKARDCLK
                          clock pessimism              0.137     6.405    
                          clock uncertainty           -0.035     6.370    
@@ -308,7 +308,7 @@ Slack (VIOLATED) :        -0.045ns  (arrival time - required time)
                                                       0.000     0.194 r  CLK_IBUFGDS/IBUFCTRL_INST/O
                          net (fo=1, unplaced)         0.066     0.260    clk_s
                          BUFGCE (Prop_BUFGCE_I_O)     0.017     0.277 r  clk_s_BUFG_inst/O
-                         net (fo=6374, unplaced)      1.114     1.391    u_top/i_clk
+                         net (fo=6385, unplaced)      1.114     1.391    u_top/i_clk
                          FDRE                                         r  u_top/addra_reg[5]/C
   -------------------------------------------------------------------    -------------------
                          FDRE (Prop_FDRE_C_Q)         0.039     1.430 r  u_top/addra_reg[5]/Q
@@ -327,7 +327,7 @@ Slack (VIOLATED) :        -0.045ns  (arrival time - required time)
                                                       0.000     0.301 r  CLK_IBUFGDS/IBUFCTRL_INST/O
                          net (fo=1, unplaced)         0.083     0.384    clk_s
                          BUFGCE (Prop_BUFGCE_I_O)     0.019     0.403 r  clk_s_BUFG_inst/O
-                         net (fo=6374, unplaced)      1.259     1.662    u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/prim_init.ram/CLKA
+                         net (fo=6385, unplaced)      1.259     1.662    u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/prim_init.ram/CLKA
                          RAMB18E2                                     r  u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/prim_init.ram/DEVICE_8SERIES.NO_BMM_INFO.SP.SIMPLE_PRIM18.ram/CLKARDCLK
                          clock pessimism             -0.126     1.536    
                          RAMB18E2 (Hold_RAMB18E2_CLKARDCLK_ADDRARDADDR[9])

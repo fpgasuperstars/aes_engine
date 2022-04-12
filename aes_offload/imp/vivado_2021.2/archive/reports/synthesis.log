@@ -8,7 +8,7 @@ File ./.Xil/Vivado-7064-EUL10-797V3J3/dbg_hub_CV.0/out/dcp/dbg_hub.shape
 File ./.Xil/Vivado-7064-EUL10-797V3J3/dbg_hub_CV.0/out/dcp/dbg_hub.synth
 File ./.Xil/Vivado-7064-EUL10-797V3J3/dbg_hub_CV.0/out/dcp/dbg_hub.wdf
 File ./.Xil/Vivado-7064-EUL10-797V3J3/dbg_hub_CV.0/out/dcp/dbg_hub.xn
-File ./.Xil/Vivado-7064-EUL10-797V3J3/dbg_hub_CV.0/out/dcp/dbg_hub_1.edf
+File ./.Xil/Vivado-7064-EUL10-797V3J3/dbg_hub_CV.0/out/dcp/dbg_hub_2.edf
 File ./.Xil/Vivado-7064-EUL10-797V3J3/dbg_hub_CV.0/out/dcp/dbg_hub_in_context.xdc
 File ./.Xil/Vivado-7064-EUL10-797V3J3/dbg_hub_CV.0/out/dcp/dbg_hub_rda.json
 File ./.Xil/Vivado-7064-EUL10-797V3J3/dbg_hub_CV.0/out/dcp/dbg_hub_stub.v
@@ -29,10 +29,14 @@ Dir  ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.0/dc
 Could not delete and skipping directory ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.0/dc
 File ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.1/dc/messagePromote.pb
 Could not delete and skipping file ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.1/dc/messagePromote.pb
-File ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.1/debug_ip_core.tcl
-File ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.1/vivado.log
 Dir  ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.1/dc
 Could not delete and skipping directory ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.1/dc
+File ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.2/dc/messagePromote.pb
+Could not delete and skipping file ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.2/dc/messagePromote.pb
+File ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.2/debug_ip_core.tcl
+File ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.2/vivado.log
+Dir  ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.2/dc
+Could not delete and skipping directory ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.2/dc
 File ./.Xil/Vivado-7064-EUL10-797V3J3/wt/project.wpc
 File ./.Xil/Vivado-7064-EUL10-797V3J3/wt/synthesis.wdf
 File ./.Xil/Vivado-7064-EUL10-797V3J3/wt/synthesis_details.wdf
@@ -43,6 +47,8 @@ Dir  ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.0
 Could not delete and skipping directory ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.0
 Dir  ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.1
 Could not delete and skipping directory ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.1
+Dir  ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.2
+Could not delete and skipping directory ./.Xil/Vivado-7064-EUL10-797V3J3/dc_drv.2
 Dir  ./.Xil/Vivado-7064-EUL10-797V3J3/hdfFromDcp
 Dir  ./.Xil/Vivado-7064-EUL10-797V3J3/HWH
 Dir  ./.Xil/Vivado-7064-EUL10-797V3J3/realtime
@@ -80,7 +86,7 @@ Attempting to get a license for feature 'Synthesis' and/or device 'xczu9eg'
 INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xczu9eg'
 INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
 ---------------------------------------------------------------------------------
-Starting RTL Elaboration : Time (s): cpu = 00:00:08 ; elapsed = 00:00:08 . Memory (MB): peak = 5060.258 ; gain = 0.000
+Starting RTL Elaboration : Time (s): cpu = 00:00:09 ; elapsed = 00:00:10 . Memory (MB): peak = 5228.926 ; gain = 0.000
 ---------------------------------------------------------------------------------
 INFO: [Synth 8-638] synthesizing module 'aes_engine_wrapper' [C:/git/aes_engine/aes_offload/imp/code/devlib/aes_engine/aes_engine_wrapper.vhd:16]
 	Parameter IOSTANDARD bound to: DIFF_SSTL12 - type: string 
@@ -1883,18 +1889,18 @@ WARNING: [Synth 8-7129] Port S_AXI_INJECTDBITERR in module blk_mem_gen_v8_4_5_sy
 WARNING: [Synth 8-7129] Port deepsleep in module blk_mem_gen_v8_4_5 is either unconnected or has no load
 WARNING: [Synth 8-7129] Port shutdown in module blk_mem_gen_v8_4_5 is either unconnected or has no load
 ---------------------------------------------------------------------------------
-Finished RTL Elaboration : Time (s): cpu = 00:00:46 ; elapsed = 00:00:46 . Memory (MB): peak = 5060.258 ; gain = 0.000
+Finished RTL Elaboration : Time (s): cpu = 00:01:29 ; elapsed = 00:01:32 . Memory (MB): peak = 5228.926 ; gain = 0.000
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:00:46 ; elapsed = 00:00:47 . Memory (MB): peak = 5060.258 ; gain = 0.000
+Finished Handling Custom Attributes : Time (s): cpu = 00:01:30 ; elapsed = 00:01:34 . Memory (MB): peak = 5228.926 ; gain = 0.000
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:46 ; elapsed = 00:00:47 . Memory (MB): peak = 5060.258 ; gain = 0.000
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:01:30 ; elapsed = 00:01:34 . Memory (MB): peak = 5228.926 ; gain = 0.000
 ---------------------------------------------------------------------------------
-Netlist sorting complete. Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.401 . Memory (MB): peak = 5060.258 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.857 . Memory (MB): peak = 5228.926 ; gain = 0.000
 INFO: [Netlist 29-17] Analyzing 1 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-570] Preparing netlist for logic optimization
@@ -1905,18 +1911,19 @@ Parsing XDC File [c:/git/aes_engine/aes_offload/imp/code/vendor/vio/vio.gen/sour
 Finished Parsing XDC File [c:/git/aes_engine/aes_offload/imp/code/vendor/vio/vio.gen/sources_1/ip/vio_0/vio_0/vio_0_in_context.xdc] for cell 'vio'
 Parsing XDC File [C:/git/aes_engine/aes_offload/imp/vivado_2021.2/constraints/aes_engine_synth.xdc]
 WARNING: [Vivado 12-2489] -period contains time 3.333300 which will be rounded to 3.333 to ensure it is an integer multiple of 1 picosecond [C:/git/aes_engine/aes_offload/imp/vivado_2021.2/constraints/aes_engine_synth.xdc:1]
+create_clock: Time (s): cpu = 00:00:10 ; elapsed = 00:00:10 . Memory (MB): peak = 5228.926 ; gain = 0.000
 Finished Parsing XDC File [C:/git/aes_engine/aes_offload/imp/vivado_2021.2/constraints/aes_engine_synth.xdc]
 Completed Processing XDC Constraints
 
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.003 . Memory (MB): peak = 5060.258 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.010 . Memory (MB): peak = 5228.926 ; gain = 0.000
 INFO: [Project 1-111] Unisim Transformation Summary:
   A total of 1 instances were transformed.
   IBUFGDS => IBUFDS (DIFFINBUF, IBUFCTRL): 1 instance 
 
-Constraint Validation Runtime : Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.184 . Memory (MB): peak = 5060.258 ; gain = 0.000
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.291 . Memory (MB): peak = 5228.926 ; gain = 0.000
 WARNING: [Timing 38-316] Clock period '10.000' specified during out-of-context synthesis of instance 'vio' at clock pin 'clk' is different from the actual clock period '3.333', this can lead to different synthesis results.
 ---------------------------------------------------------------------------------
-Finished Constraint Validation : Time (s): cpu = 00:01:02 ; elapsed = 00:01:02 . Memory (MB): peak = 5060.258 ; gain = 0.000
+Finished Constraint Validation : Time (s): cpu = 00:02:02 ; elapsed = 00:02:05 . Memory (MB): peak = 5228.926 ; gain = 0.000
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Loading Part and Timing Information
@@ -1924,7 +1931,7 @@ Start Loading Part and Timing Information
 Loading part: xczu9eg-ffvb1156-2-e
 INFO: [Synth 8-6742] Reading net delay rules and data
 ---------------------------------------------------------------------------------
-Finished Loading Part and Timing Information : Time (s): cpu = 00:01:02 ; elapsed = 00:01:02 . Memory (MB): peak = 5060.258 ; gain = 0.000
+Finished Loading Part and Timing Information : Time (s): cpu = 00:02:02 ; elapsed = 00:02:05 . Memory (MB): peak = 5228.926 ; gain = 0.000
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Applying 'set_property' XDC Constraints
@@ -1932,7 +1939,7 @@ Start Applying 'set_property' XDC Constraints
 Applied set_property KEEP_HIERARCHY = SOFT for u_top/u_bram_keys. (constraint file  auto generated constraint).
 Applied set_property KEEP_HIERARCHY = SOFT for vio. (constraint file  auto generated constraint).
 ---------------------------------------------------------------------------------
-Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:01:02 ; elapsed = 00:01:02 . Memory (MB): peak = 5060.258 ; gain = 0.000
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:02:02 ; elapsed = 00:02:05 . Memory (MB): peak = 5228.926 ; gain = 0.000
 ---------------------------------------------------------------------------------
 INFO: [Synth 8-802] inferred FSM for state register 'state_reg' in module 'aes_engine_top'
 ---------------------------------------------------------------------------------------------------
@@ -1945,7 +1952,7 @@ INFO: [Synth 8-802] inferred FSM for state register 'state_reg' in module 'aes_e
 ---------------------------------------------------------------------------------------------------
 INFO: [Synth 8-3354] encoded FSM with state register 'state_reg' using encoding 'sequential' in module 'aes_engine_top'
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 2 : Time (s): cpu = 00:01:19 ; elapsed = 00:01:20 . Memory (MB): peak = 5060.258 ; gain = 0.000
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:02:35 ; elapsed = 00:02:40 . Memory (MB): peak = 5228.926 ; gain = 0.000
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start RTL Component Statistics 
@@ -2118,7 +2125,7 @@ WARNING: [Synth 8-7129] Port DOUTB_I[158] in module blk_mem_output_block is eith
 WARNING: [Synth 8-7129] Port DOUTB_I[157] in module blk_mem_output_block is either unconnected or has no load
 INFO: [Common 17-14] Message 'Synth 8-7129' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
 ---------------------------------------------------------------------------------
-Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:05:15 ; elapsed = 00:09:49 . Memory (MB): peak = 5060.258 ; gain = 0.000
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:04:53 ; elapsed = 00:10:05 . Memory (MB): peak = 5228.926 ; gain = 0.000
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start ROM, RAM, DSP, Shift Register and Retiming Reporting
@@ -2384,13 +2391,13 @@ Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
 Start Applying XDC Timing Constraints
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Applying XDC Timing Constraints : Time (s): cpu = 00:05:21 ; elapsed = 00:09:56 . Memory (MB): peak = 5060.258 ; gain = 0.000
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:04:56 ; elapsed = 00:10:09 . Memory (MB): peak = 5228.926 ; gain = 0.000
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Timing Optimization
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Timing Optimization : Time (s): cpu = 00:08:22 ; elapsed = 00:13:01 . Memory (MB): peak = 5228.926 ; gain = 168.668
+Finished Timing Optimization : Time (s): cpu = 00:06:33 ; elapsed = 00:11:47 . Memory (MB): peak = 5384.473 ; gain = 155.547
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Technology Mapping
@@ -2761,7 +2768,7 @@ WARNING: [Synth 8-6779] Delay data for wire-load model not found, using default 
 WARNING: [Synth 8-6779] Delay data for wire-load model not found, using default value
 WARNING: [Synth 8-6779] Delay data for wire-load model not found, using default value
 ---------------------------------------------------------------------------------
-Finished Technology Mapping : Time (s): cpu = 00:08:51 ; elapsed = 00:14:19 . Memory (MB): peak = 5228.926 ; gain = 168.668
+Finished Technology Mapping : Time (s): cpu = 00:06:52 ; elapsed = 00:12:39 . Memory (MB): peak = 5384.473 ; gain = 155.547
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start IO Insertion
@@ -2895,13 +2902,13 @@ INFO: [Synth 8-7052] The timing for the instance u_top/u_key_expansion/sel__47 (
 Finished Final Netlist Cleanup
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished IO Insertion : Time (s): cpu = 00:09:06 ; elapsed = 00:14:35 . Memory (MB): peak = 5228.926 ; gain = 168.668
+Finished IO Insertion : Time (s): cpu = 00:07:00 ; elapsed = 00:12:47 . Memory (MB): peak = 5384.473 ; gain = 155.547
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Instances
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Instances : Time (s): cpu = 00:09:06 ; elapsed = 00:14:35 . Memory (MB): peak = 5228.926 ; gain = 168.668
+Finished Renaming Generated Instances : Time (s): cpu = 00:07:00 ; elapsed = 00:12:47 . Memory (MB): peak = 5384.473 ; gain = 155.547
 ---------------------------------------------------------------------------------
 WARNING: [Synth 8-6779] Delay data for wire-load model not found, using default value
 WARNING: [Synth 8-6779] Delay data for wire-load model not found, using default value
@@ -3307,7 +3314,7 @@ WARNING: [Synth 8-6779] Delay data for wire-load model not found, using default 
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:09:14 ; elapsed = 00:14:43 . Memory (MB): peak = 5228.926 ; gain = 168.668
+Finished Handling Custom Attributes : Time (s): cpu = 00:07:05 ; elapsed = 00:12:52 . Memory (MB): peak = 5384.473 ; gain = 155.547
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Writing Synthesis Report
@@ -3327,29 +3334,29 @@ Report Cell Usage:
 |1     |vio      |     1|
 |2     |BUFG     |     1|
 |3     |CARRY8   |     5|
-|4     |LUT1     |     5|
-|5     |LUT2     |  1772|
-|6     |LUT3     |  1554|
-|7     |LUT4     |  3433|
-|8     |LUT5     |  2596|
-|9     |LUT6     | 22810|
+|4     |LUT1     |     6|
+|5     |LUT2     |  1781|
+|6     |LUT3     |  1410|
+|7     |LUT4     |  3557|
+|8     |LUT5     |  2706|
+|9     |LUT6     | 22817|
 |10    |MUXF7    |  4833|
 |11    |MUXF8    |  1570|
 |12    |RAMB18E2 |    63|
 |16    |RAMB36E2 |     7|
-|23    |FDRE     |  5927|
+|23    |FDRE     |  5938|
 |24    |FDSE     |     2|
 |25    |IBUFGDS  |     1|
 +------+---------+------+
 ---------------------------------------------------------------------------------
-Finished Writing Synthesis Report : Time (s): cpu = 00:09:14 ; elapsed = 00:14:43 . Memory (MB): peak = 5228.926 ; gain = 168.668
+Finished Writing Synthesis Report : Time (s): cpu = 00:07:05 ; elapsed = 00:12:52 . Memory (MB): peak = 5384.473 ; gain = 155.547
 ---------------------------------------------------------------------------------
 Synthesis finished with 0 errors, 0 critical warnings and 763 warnings.
-Synthesis Optimization Runtime : Time (s): cpu = 00:08:18 ; elapsed = 00:14:40 . Memory (MB): peak = 5228.926 ; gain = 168.668
-Synthesis Optimization Complete : Time (s): cpu = 00:09:14 ; elapsed = 00:14:49 . Memory (MB): peak = 5228.926 ; gain = 168.668
+Synthesis Optimization Runtime : Time (s): cpu = 00:05:14 ; elapsed = 00:12:37 . Memory (MB): peak = 5384.473 ; gain = 155.547
+Synthesis Optimization Complete : Time (s): cpu = 00:07:05 ; elapsed = 00:12:56 . Memory (MB): peak = 5384.473 ; gain = 155.547
 INFO: [Project 1-571] Translating synthesized netlist
 INFO: [Project 1-454] Reading design checkpoint 'c:/git/aes_engine/aes_offload/imp/code/vendor/vio/vio.gen/sources_1/ip/vio_0/vio_0.dcp' for cell 'vio'
-Netlist sorting complete. Time (s): cpu = 00:00:01 ; elapsed = 00:00:01 . Memory (MB): peak = 5228.926 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.574 . Memory (MB): peak = 5384.473 ; gain = 0.000
 INFO: [Netlist 29-17] Analyzing 6426 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-479] Netlist was created with Vivado 2021.2
@@ -3359,7 +3366,6 @@ Parsing XDC File [c:/git/aes_engine/aes_offload/imp/code/vendor/vio/vio.gen/sour
 Finished Parsing XDC File [c:/git/aes_engine/aes_offload/imp/code/vendor/vio/vio.gen/sources_1/ip/vio_0/vio_0.xdc] for cell 'vio'
 Parsing XDC File [C:/git/aes_engine/aes_offload/imp/vivado_2021.2/constraints/aes_engine_synth.xdc]
 WARNING: [Vivado 12-2489] -period contains time 3.333300 which will be rounded to 3.333 to ensure it is an integer multiple of 1 picosecond [C:/git/aes_engine/aes_offload/imp/vivado_2021.2/constraints/aes_engine_synth.xdc:1]
-create_clock: Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 5228.926 ; gain = 0.000
 Finished Parsing XDC File [C:/git/aes_engine/aes_offload/imp/vivado_2021.2/constraints/aes_engine_synth.xdc]
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
 INFO: [Opt 31-422] The CLOCK_DOMAINS attribute on the BRAM cell u_top/u_bram_keys/U0/inst_blk_mem_gen/gnbram.gnativebmg.native_blk_mem_gen/valid.cstr/ramloop[0].ram.r/prim_init.ram/DEVICE_8SERIES.NO_BMM_INFO.SP.SIMPLE_PRIM18.ram has been changed from INDEPENDENT to COMMON to match the clocking topology used for the BRAM.
@@ -3430,17 +3436,17 @@ INFO: [Opt 31-422] The CLOCK_DOMAINS attribute on the BRAM cell u_top/u_key_expa
 INFO: [Opt 31-422] The CLOCK_DOMAINS attribute on the BRAM cell u_top/u_key_expansion/sel__7 has been changed from INDEPENDENT to COMMON to match the clocking topology used for the BRAM.
 INFO: [Opt 31-422] The CLOCK_DOMAINS attribute on the BRAM cell u_top/u_key_expansion/sel__8 has been changed from INDEPENDENT to COMMON to match the clocking topology used for the BRAM.
 INFO: [Opt 31-422] The CLOCK_DOMAINS attribute on the BRAM cell u_top/u_key_expansion/sel__9 has been changed from INDEPENDENT to COMMON to match the clocking topology used for the BRAM.
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.020 . Memory (MB): peak = 5228.926 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.012 . Memory (MB): peak = 5384.473 ; gain = 0.000
 INFO: [Project 1-111] Unisim Transformation Summary:
   A total of 2 instances were transformed.
   BUFG => BUFGCE: 1 instance 
   IBUFGDS => IBUFDS (DIFFINBUF, IBUFCTRL): 1 instance 
 
-Synth Design complete, checksum: e2609629
+Synth Design complete, checksum: 3e17ace3
 INFO: [Common 17-83] Releasing license: Synthesis
 336 Infos, 2471 Warnings, 0 Critical Warnings and 0 Errors encountered.
 synth_design completed successfully
-synth_design: Time (s): cpu = 00:09:43 ; elapsed = 00:15:18 . Memory (MB): peak = 5228.926 ; gain = 168.668
+synth_design: Time (s): cpu = 00:07:20 ; elapsed = 00:13:12 . Memory (MB): peak = 5384.473 ; gain = 155.547
 INFO: [Common 17-600] The following parameters have non-default value.
 general.maxThreads
 
@@ -3449,9 +3455,8 @@ general.maxThreads
 ==========================================
 INFO: [Timing 38-480] Writing timing data to binary archive.
 INFO: [Common 17-1381] The checkpoint 'C:/git/aes_engine/aes_offload/imp/vivado_2021.2/checkpoints/post_synth.dcp' has been generated.
-write_checkpoint: Time (s): cpu = 00:00:34 ; elapsed = 00:00:27 . Memory (MB): peak = 5228.926 ; gain = 0.000
+write_checkpoint: Time (s): cpu = 00:00:19 ; elapsed = 00:00:15 . Memory (MB): peak = 5384.473 ; gain = 0.000
 INFO: [Timing 38-35] Done setting XDC timing constraints.
 INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Temperature grade: E, Delay Type: min_max.
 INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
-report_timing_summary: Time (s): cpu = 00:00:21 ; elapsed = 00:00:06 . Memory (MB): peak = 5228.926 ; gain = 0.000
 

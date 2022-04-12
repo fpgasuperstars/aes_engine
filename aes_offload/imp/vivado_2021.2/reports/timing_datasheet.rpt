@@ -1,7 +1,7 @@
 Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------
 | Tool Version      : Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
-| Date              : Mon Apr 11 12:36:38 2022
+| Date              : Tue Apr 12 12:19:57 2022
 | Host              : EUL10-797V3J3 running 64-bit major release  (build 9200)
 | Command           : report_datasheet -file ../reports/timing_datasheet.rpt -show_oe_timing
 | Design            : aes_engine_wrapper
@@ -18,10 +18,10 @@ Setup between Clocks
 Source                                                                                              | Destination                                                                                         |  Src:Rise     | Process |  Src:Rise     | Process |  Src:Fall     | Process |  Src:Fall     | Process |
 Clock                                                                                               | Clock                                                                                               | Dest:Rise(ns) | Corner  | Dest:Fall(ns) | Corner  | Dest:Rise(ns) | Corner  | Dest:Fall(ns) | Corner  |
 ----------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------+---------------+---------+---------------+---------+---------------+---------+---------------+---------+
-board_clk                                                                                           | board_clk                                                                                           |         3.305 | SLOW    |               |         |               |         |               |         |
-dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/INTERNAL_TCK | board_clk                                                                                           |         5.214 | SLOW    |               |         |               |         |               |         |
-board_clk                                                                                           | dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/INTERNAL_TCK |         1.257 | SLOW    |               |         |               |         |               |         |
-dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/INTERNAL_TCK | dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/INTERNAL_TCK |         2.609 | SLOW    |         9.543 | SLOW    |         4.981 | SLOW    |         8.347 | SLOW    |
+board_clk                                                                                           | board_clk                                                                                           |         3.274 | SLOW    |               |         |               |         |               |         |
+dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/INTERNAL_TCK | board_clk                                                                                           |         5.475 | SLOW    |               |         |               |         |               |         |
+board_clk                                                                                           | dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/INTERNAL_TCK |         1.153 | SLOW    |               |         |               |         |               |         |
+dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/INTERNAL_TCK | dbg_hub/inst/BSCANID.u_xsdbm_id/SWITCH_N_EXT_BSCAN.bscan_inst/SERIES7_BSCAN.bscan_inst/INTERNAL_TCK |         2.685 | SLOW    |        10.159 | SLOW    |         5.124 | SLOW    |         9.011 | SLOW    |
 ----------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------------------------+---------------+---------+---------------+---------+---------------+---------+---------------+---------+
 
 

@@ -1,3 +1,10 @@
+---------------------------------------------------------------------------------------------------------------------------------------------
+-- Copyright nCipher Entrust 2022. All rights reserved.
+-- Filename : aes_engine_wrapper.vhd
+-- Creation date : 2022-01-21
+-- Author(s) : okeefej
+-- Description :
+---------------------------------------------------------------------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;

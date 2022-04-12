@@ -39,20 +39,12 @@ vmap xpm comp_libraries/msim/xpm
 vmap blk_mem_gen_v8_4_5 comp_libraries/msim/blk_mem_gen_v8_4_5
 vmap xil_defaultlib comp_libraries/msim/xil_defaultlib
 
-vlog -work xpm  -incr -mfcu -sv \
-"C:/Xilinx/Vivado/2021.2/data/ip/xpm/xpm_memory/hdl/xpm_memory.sv" \
-
-vcom -work xpm  -93 \
-"C:/Xilinx/Vivado/2021.2/data/ip/xpm/xpm_VCOMP.vhd" \
-
 vlog -work blk_mem_gen_v8_4_5  -incr -mfcu \
 "../../../imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/ipshared/25a8/simulation/blk_mem_gen_v8_4.v" \
 
 vcom -work xil_defaultlib  -93 \
 "../../../imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/ip/aes_engine_key_bram_blk_mem_gen_0_0/synth/aes_engine_key_bram_blk_mem_gen_0_0.vhd" \
 
-vlog -work xil_defaultlib \
-"C:/git/aes_offload/dev_sim/scripts/aes_engine_bram/aes_engine_key_bram_blk_mem_gen_0_0/modelsim/glbl.v"  
 # ==================================================================================================================================
 # aes library
 # ==================================================================================================================================

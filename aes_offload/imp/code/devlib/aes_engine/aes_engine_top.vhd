@@ -5,6 +5,7 @@
 -- Author(s) : okeefej
 -- Description :
 -- This code contains the top level code for the aes engine, it instantiates the number of rounds needed according to the mode thats been set
+-- and controls the behavior of the engine during certain situations which are described in the specification
 ---------------------------------------------------------------------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -15,7 +16,6 @@ use     aes_engine.aes_engine_pkg.all;
 
 library blk_mem_gen_v8_4_5;
 library xil_defaultlib;
-library xpm;
 
 entity aes_engine_top IS
    generic(
@@ -78,19 +78,19 @@ architecture mixed of aes_engine_top is
    
 begin
    
-   -- logic used to flag when the last round is encrypt
+   -- logic used to flag when the last round is, for encryption
    last_rnd  <= (AES128-1 => '1', others => '0') when aes_mode = "00" else
                 (AES192-1 => '1', others => '0') when aes_mode = "01" else
                 (AES256-1 => '1', others => '0') when aes_mode = "10" else
                 (others => '0');
    
-   -- logic used to flag when the last round is encrypt
+   -- logic used to flag when the last round is, for decryption
    last_rnd_dec <= (4 => '1', others => '0') when aes_mode = "00" else
                    (2 => '1', others => '0') when aes_mode = "01" else
                    (0 => '1', others => '0') when aes_mode = "10" else
                    (others => '0');
                 
-   -- logic to pass the mode selected that can be used for the state control                
+   -- logic to pass the mode selected to integer that can be used for the state control                
    gen_mode  <= AES128 when aes_mode = "00" else
                 AES192 when aes_mode = "01" else
                 AES256 when aes_mode = "10" else
@@ -275,7 +275,7 @@ begin
          o_t_last  <= t_last(gen_mode);
          o_t_keep  <= t_keep(gen_mode);  
       elsif en_decr = '1' and speed_en = '1' and en_cnt >= gen_mode and lo_spd_en_cnt > 2 and ini_key_cnt >= gen_mode*3 then
-         o_t_data  <= decrypt((AES256-gen_mode)-1);
+         o_t_data  <= decrypt(AES256-gen_mode);
          o_t_valid <= t_valid(gen_mode);
          o_t_last  <= t_last(gen_mode);
          o_t_keep  <= t_keep(gen_mode); 
@@ -305,9 +305,9 @@ begin
             o_expanded_key => expanded_key
          );
 
-   ---------------------------------------------------------------------------------------
-   -- Encryption or decryption Rounds
-   ---------------------------------------------------------------------------------------
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   -- Encryption and Decryption Rounds
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    -- AXI auxillary signals pipeline  
    t_valid(0) <= t_valid_q;  
    t_last (0) <= t_last_q;   
@@ -316,7 +316,9 @@ begin
    -- initial round key step for both encryption and decryption
    encrypt(0) <= t_data_q xor expanded_key_q(0);
    decrypt(AES256) <= t_data_q xor dec_expanded_key_q(AES256+1);
-
+   ---------------------------------------------------------------------------------------
+   -- Encryption
+   ---------------------------------------------------------------------------------------
    gen_encryption_rounds : for i in 1 to AES256 generate
       u_enc_rnds : entity aes_engine.aes_engine_round
          port map(
@@ -335,7 +337,10 @@ begin
          );
    end generate;
    
-   -- reverse key order for decryption
+   ---------------------------------------------------------------------------------------
+   -- Decryption
+   ---------------------------------------------------------------------------------------
+   -- key order for decryption
    p_dec_keys : process(all)
    begin
       case gen_mode is
@@ -355,7 +360,6 @@ begin
                null;
       end case;
    end process;
-   
    
    gen_decryption_rounds : for i in AES256-1 downto 0 generate
       u_dec_rnds : entity aes_engine.aes_engine_decrypt

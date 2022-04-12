@@ -1,7 +1,7 @@
 Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 -----------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2021.2 (win64) Build 3367213 Tue Oct 19 02:48:09 MDT 2021
-| Date         : Mon Apr 11 12:11:09 2022
+| Date         : Mon Apr 11 12:36:50 2022
 | Host         : EUL10-797V3J3 running 64-bit major release  (build 9200)
 | Command      : report_utilization -hierarchical -hierarchical_depth 10 -file ../reports/post_route_util_hierarch.rpt
 | Design       : aes_engine_wrapper
@@ -22,29 +22,29 @@ Table of Contents
 +-----------------------------------------------------------+------------------------------------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
 |                          Instance                         |                        Module                        | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | URAM | DSP Blocks |
 +-----------------------------------------------------------+------------------------------------------------------+------------+------------+---------+------+------+--------+--------+------+------------+
-| aes_engine_wrapper                                        |                                                (top) |      31448 |      31428 |      20 |    0 | 8259 |      7 |     63 |    0 |          0 |
+| aes_engine_wrapper                                        |                                                (top) |      31006 |      30986 |      20 |    0 | 8270 |      7 |     63 |    0 |          0 |
 |   (aes_engine_wrapper)                                    |                                                (top) |          0 |          0 |       0 |    0 |    0 |      0 |      0 |    0 |          0 |
-|   dbg_hub                                                 |                                              dbg_hub |        433 |        413 |      20 |    0 |  741 |      0 |      0 |    0 |          0 |
+|   dbg_hub                                                 |                                              dbg_hub |        430 |        410 |      20 |    0 |  741 |      0 |      0 |    0 |          0 |
 |     (dbg_hub)                                             |                                              dbg_hub |          0 |          0 |       0 |    0 |    0 |      0 |      0 |    0 |          0 |
-|     inst                                                  |                           dbg_hub_xsdbm_v3_0_0_xsdbm |        433 |        413 |      20 |    0 |  741 |      0 |      0 |    0 |          0 |
-|       BSCANID.u_xsdbm_id                                  |                        dbg_hub_xsdbm_v3_0_0_xsdbm_id |        433 |        413 |      20 |    0 |  741 |      0 |      0 |    0 |          0 |
+|     inst                                                  |                           dbg_hub_xsdbm_v3_0_0_xsdbm |        430 |        410 |      20 |    0 |  741 |      0 |      0 |    0 |          0 |
+|       BSCANID.u_xsdbm_id                                  |                        dbg_hub_xsdbm_v3_0_0_xsdbm_id |        430 |        410 |      20 |    0 |  741 |      0 |      0 |    0 |          0 |
 |         (BSCANID.u_xsdbm_id)                              |                        dbg_hub_xsdbm_v3_0_0_xsdbm_id |         34 |         34 |       0 |    0 |   34 |      0 |      0 |    0 |          0 |
-|         CORE_XSDB.UUT_MASTER                              |                       dbg_hub_xsdbm_v3_0_0_icon2xsdb |        262 |        242 |      20 |    0 |  554 |      0 |      0 |    0 |          0 |
-|           U_ICON_INTERFACE                                |                              dbg_hub_xsdbm_v3_0_0_if |        158 |        138 |      20 |    0 |  450 |      0 |      0 |    0 |          0 |
+|         CORE_XSDB.UUT_MASTER                              |                       dbg_hub_xsdbm_v3_0_0_icon2xsdb |        259 |        239 |      20 |    0 |  554 |      0 |      0 |    0 |          0 |
+|           U_ICON_INTERFACE                                |                              dbg_hub_xsdbm_v3_0_0_if |        155 |        135 |      20 |    0 |  450 |      0 |      0 |    0 |          0 |
 |             (U_ICON_INTERFACE)                            |                              dbg_hub_xsdbm_v3_0_0_if |          6 |          6 |       0 |    0 |   15 |      0 |      0 |    0 |          0 |
 |             U_CMD1                                        |                         dbg_hub_xsdbm_v3_0_0_ctl_reg |          3 |          3 |       0 |    0 |   10 |      0 |      0 |    0 |          0 |
 |             U_CMD2                                        |                        dbg_hub_xsdbm_v3_0_0_stat_reg |          5 |          5 |       0 |    0 |   22 |      0 |      0 |    0 |          0 |
 |             U_CMD3                                        |        dbg_hub_xsdbm_v3_0_0_stat_reg__parameterized0 |          4 |          4 |       0 |    0 |   18 |      0 |      0 |    0 |          0 |
 |             U_CMD4                                        |         dbg_hub_xsdbm_v3_0_0_ctl_reg__parameterized0 |         11 |         11 |       0 |    0 |   62 |      0 |      0 |    0 |          0 |
 |             U_CMD5                                        |         dbg_hub_xsdbm_v3_0_0_ctl_reg__parameterized1 |          9 |          9 |       0 |    0 |   42 |      0 |      0 |    0 |          0 |
-|             U_CMD6_RD                                     |                           dbg_hub_xsdbm_v3_0_0_rdreg |         65 |         55 |      10 |    0 |  134 |      0 |      0 |    0 |          0 |
+|             U_CMD6_RD                                     |                           dbg_hub_xsdbm_v3_0_0_rdreg |         61 |         51 |      10 |    0 |  134 |      0 |      0 |    0 |          0 |
 |               (U_CMD6_RD)                                 |                           dbg_hub_xsdbm_v3_0_0_rdreg |          2 |          2 |       0 |    0 |   20 |      0 |      0 |    0 |          0 |
-|               U_RD_FIFO                                   |                          dbg_hub_xsdbm_v3_0_0_rdfifo |         63 |         53 |      10 |    0 |  114 |      0 |      0 |    0 |          0 |
+|               U_RD_FIFO                                   |                          dbg_hub_xsdbm_v3_0_0_rdfifo |         59 |         49 |      10 |    0 |  114 |      0 |      0 |    0 |          0 |
 |                 (U_RD_FIFO)                               |                          dbg_hub_xsdbm_v3_0_0_rdfifo |         18 |         18 |       0 |    0 |    0 |      0 |      0 |    0 |          0 |
-|                 SUBCORE_FIFO.xsdbm_v3_0_0_rdfifo_inst     |       dbg_hub_fifo_generator_v13_1_4__parameterized0 |         45 |         35 |      10 |    0 |  114 |      0 |      0 |    0 |          0 |
+|                 SUBCORE_FIFO.xsdbm_v3_0_0_rdfifo_inst     |       dbg_hub_fifo_generator_v13_1_4__parameterized0 |         41 |         31 |      10 |    0 |  114 |      0 |      0 |    0 |          0 |
 |                   (SUBCORE_FIFO.xsdbm_v3_0_0_rdfifo_inst) |       dbg_hub_fifo_generator_v13_1_4__parameterized0 |          0 |          0 |       0 |    0 |    0 |      0 |      0 |    0 |          0 |
-|                   inst_fifo_gen                           | dbg_hub_fifo_generator_v13_1_4_synth__parameterized0 |         45 |         35 |      10 |    0 |  114 |      0 |      0 |    0 |          0 |
-|                     gconvfifo.rf                          |           dbg_hub_fifo_generator_top__parameterized0 |         45 |         35 |      10 |    0 |  114 |      0 |      0 |    0 |          0 |
+|                   inst_fifo_gen                           | dbg_hub_fifo_generator_v13_1_4_synth__parameterized0 |         41 |         31 |      10 |    0 |  114 |      0 |      0 |    0 |          0 |
+|                     gconvfifo.rf                          |           dbg_hub_fifo_generator_top__parameterized0 |         41 |         31 |      10 |    0 |  114 |      0 |      0 |    0 |          0 |
 |             U_CMD6_WR                                     |                           dbg_hub_xsdbm_v3_0_0_wrreg |         41 |         31 |      10 |    0 |  110 |      0 |      0 |    0 |          0 |
 |               (U_CMD6_WR)                                 |                           dbg_hub_xsdbm_v3_0_0_wrreg |          2 |          2 |       0 |    0 |   20 |      0 |      0 |    0 |          0 |
 |               U_WR_FIFO                                   |                          dbg_hub_xsdbm_v3_0_0_wrfifo |         39 |         29 |      10 |    0 |   90 |      0 |      0 |    0 |          0 |
@@ -71,18 +71,18 @@ Table of Contents
 |           U_SYNC                                          |                            dbg_hub_xsdbm_v3_0_0_sync |          2 |          2 |       0 |    0 |    8 |      0 |      0 |    0 |          0 |
 |         SWITCH_N_EXT_BSCAN.bscan_inst                     |                           dbg_hub_ltlib_v1_0_0_bscan |          0 |          0 |       0 |    0 |    0 |      0 |      0 |    0 |          0 |
 |         SWITCH_N_EXT_BSCAN.bscan_switch                   |                    dbg_hub_xsdbm_v3_0_0_bscan_switch |        122 |        122 |       0 |    0 |  125 |      0 |      0 |    0 |          0 |
-|   u_top                                                   |                                       aes_engine_top |      30375 |      30375 |       0 |    0 | 6163 |      7 |     63 |    0 |          0 |
-|     (u_top)                                               |                                       aes_engine_top |       2098 |       2098 |       0 |    0 | 2525 |      0 |      0 |    0 |          0 |
-|     gen_decryption_rounds[10].u_dec_rnds                  |                                aes_engine_decrypt__3 |       1176 |       1176 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
-|     gen_decryption_rounds[1].u_dec_rnds                   |                                aes_engine_decrypt__2 |       1094 |       1094 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
-|     gen_decryption_rounds[2].u_dec_rnds                   |                                aes_engine_decrypt__1 |       1130 |       1130 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
-|     gen_decryption_rounds[3].u_dec_rnds                   |                                aes_engine_decrypt__6 |       1091 |       1091 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
-|     gen_decryption_rounds[4].u_dec_rnds                   |                                aes_engine_decrypt__5 |       1055 |       1055 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
-|     gen_decryption_rounds[5].u_dec_rnds                   |                                aes_engine_decrypt__4 |       1016 |       1016 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
-|     gen_decryption_rounds[6].u_dec_rnds                   |                                   aes_engine_decrypt |       1115 |       1115 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
+|   u_top                                                   |                                       aes_engine_top |      29936 |      29936 |       0 |    0 | 6174 |      7 |     63 |    0 |          0 |
+|     (u_top)                                               |                                       aes_engine_top |       2168 |       2168 |       0 |    0 | 2536 |      0 |      0 |    0 |          0 |
+|     gen_decryption_rounds[10].u_dec_rnds                  |                                aes_engine_decrypt__3 |       1060 |       1060 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
+|     gen_decryption_rounds[1].u_dec_rnds                   |                                aes_engine_decrypt__2 |       1134 |       1134 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
+|     gen_decryption_rounds[2].u_dec_rnds                   |                                aes_engine_decrypt__1 |       1008 |       1008 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
+|     gen_decryption_rounds[3].u_dec_rnds                   |                                aes_engine_decrypt__6 |       1015 |       1015 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
+|     gen_decryption_rounds[4].u_dec_rnds                   |                                aes_engine_decrypt__5 |       1045 |       1045 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
+|     gen_decryption_rounds[5].u_dec_rnds                   |                                aes_engine_decrypt__4 |       1008 |       1008 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
+|     gen_decryption_rounds[6].u_dec_rnds                   |                                   aes_engine_decrypt |       1008 |       1008 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
 |     gen_decryption_rounds[7].u_dec_rnds                   |                                aes_engine_decrypt__9 |       1008 |       1008 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
-|     gen_decryption_rounds[8].u_dec_rnds                   |                                aes_engine_decrypt__8 |       1135 |       1135 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
-|     gen_decryption_rounds[9].u_dec_rnds                   |                                aes_engine_decrypt__7 |       1015 |       1015 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
+|     gen_decryption_rounds[8].u_dec_rnds                   |                                aes_engine_decrypt__8 |       1008 |       1008 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
+|     gen_decryption_rounds[9].u_dec_rnds                   |                                aes_engine_decrypt__7 |       1018 |       1018 |       0 |    0 |  128 |      0 |      0 |    0 |          0 |
 |     gen_encryption_rounds[10].u_enc_rnds                  |                                 aes_engine_round__12 |        887 |        887 |       0 |    0 |  146 |      0 |      0 |    0 |          0 |
 |     gen_encryption_rounds[11].u_enc_rnds                  |                                 aes_engine_round__11 |        689 |        689 |       0 |    0 |  146 |      0 |      0 |    0 |          0 |
 |     gen_encryption_rounds[12].u_enc_rnds                  |                                 aes_engine_round__10 |        887 |        887 |       0 |    0 |  146 |      0 |      0 |    0 |          0 |
@@ -118,7 +118,7 @@ Table of Contents
 |                 prim_init.ram                             |        blk_mem_gen_prim_wrapper_init__parameterized5 |          0 |          0 |       0 |    0 |    0 |      1 |      0 |    0 |          0 |
 |               ramloop[7].ram.r                            |               blk_mem_gen_prim_width__parameterized6 |          0 |          0 |       0 |    0 |    0 |      1 |      0 |    0 |          0 |
 |                 prim_init.ram                             |        blk_mem_gen_prim_wrapper_init__parameterized6 |          0 |          0 |       0 |    0 |    0 |      1 |      0 |    0 |          0 |
-|     u_key_expansion                                       |                             aes_engine_key_expansion |       7203 |       7203 |       0 |    0 |  314 |      0 |     62 |    0 |          0 |
+|     u_key_expansion                                       |                             aes_engine_key_expansion |       7216 |       7216 |       0 |    0 |  314 |      0 |     62 |    0 |          0 |
 |   vio                                                     |                                                vio_0 |        640 |        640 |       0 |    0 | 1355 |      0 |      0 |    0 |          0 |
 |     (vio)                                                 |                                                vio_0 |          0 |          0 |       0 |    0 |    0 |      0 |      0 |    0 |          0 |
 |     inst                                                  |                                vio_0_vio_v3_0_22_vio |        640 |        640 |       0 |    0 | 1355 |      0 |      0 |    0 |          0 |

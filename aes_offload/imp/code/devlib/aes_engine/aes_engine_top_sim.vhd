@@ -15,7 +15,6 @@ use     aes_engine.aes_engine_pkg.all;
 
 library blk_mem_gen_v8_4_5;
 library xil_defaultlib;
-library xpm;
 
 entity aes_engine_top IS
    generic(

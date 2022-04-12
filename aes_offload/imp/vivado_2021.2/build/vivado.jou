@@ -12,3 +12,6 @@
 #-----------------------------------------------------------
 source build.tcl -notrace
 build {-no_id_update -debug}
+build {-no_id_update -debug}
+build {-no_id_update -debug}
+build {-no_id_update -debug}
