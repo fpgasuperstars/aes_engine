@@ -51,9 +51,10 @@ COMPONENT vio_0
   );
 END COMPONENT;
 
-  signal rst           : std_logic;
-  signal clk_s,clk_lvcmos         : std_logic;
-
+   signal rst             : std_logic;
+   signal clk_s,clk_lvcmos: std_logic;
+   signal tdata_input     : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal cnt             : unsigned(2 downto 0);
    -- AXI stream M2S                                                    
    signal tdatai          : std_logic_vector(AXI_T_DATA-1 downto 0);     
    signal tvalidi         : std_logic;                                   
@@ -67,7 +68,6 @@ END COMPONENT;
    signal t_datao         : std_logic_vector(AXI_T_DATA-1 downto 0);     
    -- Keys                                                          
    signal key_handle      : std_logic_vector(9 downto 0);                 
-   
    
 begin
    
@@ -83,7 +83,7 @@ begin
    );
  
    -----------------------------------------------------------------------------------------
-   ------ Clock generation
+   -- Clock generation
    -----------------------------------------------------------------------------------------
   -- CLK : clk_wiz_0
   --    port map ( 
@@ -115,6 +115,22 @@ begin
          i_key_handle      => key_handle,
          o_done            => open 
       );
+      
+   -------------------------------------------------------------------------------------------
+   ---- Loop back
+   -------------------------------------------------------------------------------------------
+   --p_loop : process
+   --begin
+   --   wait until rising_edge(clk_s);
+   --   if rst then
+   --      cnt  <= (others  =>  '0');
+   --   elsif cnt < 2 and treadyo = '1' then
+   --      cnt  <= cnt + 1;
+   --   end if;
+   --end process;
+   --
+   --tdata_input  <=  tdatai  when cnt < 1 else
+   --                 t_datao when cnt >= 1; -- loop output data back to input after first clock cycle
 
    vio : vio_0
       port map (

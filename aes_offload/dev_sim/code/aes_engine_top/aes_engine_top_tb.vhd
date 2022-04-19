@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000800" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 222 = lo speed tests, 111 hi speed with tlast tests, 040 = valid go lo during run, 888 = decryption
+      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000888" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 222 = lo speed tests, 111 hi speed with tlast tests, 040 = valid go lo during run, 888 = decryption
    );
 end entity;
 
@@ -152,7 +152,7 @@ begin
          test_msg <= pad_string(" Test case 1 : AES128 HI speed ", ' ', STRING_LENGTH);
          wait for 0 ns;
          report lf & lf & test_msg & lf;
-         speed_sel <= '0';
+         
          rst       <= '1';             
          wait for RESET_DURATION;
          rst       <= '0'; 
@@ -207,7 +207,7 @@ begin
          test_msg <= pad_string(" Test case 2 : AES128 LO speed ", ' ', STRING_LENGTH);
          wait for 0 ns;
          report lf & lf & test_msg & lf;
-         speed_sel <= '1';
+
          rst       <= '1';       
          exp_ct    <= (others => '0');      
          wait for RESET_DURATION;
@@ -302,7 +302,7 @@ begin
          test_msg <= pad_string(" Test case 4 : AES128 decryption HI speed ", ' ', STRING_LENGTH);
          wait for 0 ns;
          report lf & lf & test_msg & lf;
-         speed_sel <= '0';
+         
          rst       <= '1';             
          wait for RESET_DURATION;
          rst       <= '0';           
@@ -342,7 +342,7 @@ begin
          test_msg <= pad_string(" Test case 5 : AES192 HI speed ", ' ', STRING_LENGTH);                                                
          wait for 0 ns;                                                                                                                
          report lf & lf & test_msg & lf;                                                                                               
-         speed_sel <= '0';                                                                                                             
+                                                                                                                      
          rst       <= '1';                                                                                                             
          wait for RESET_DURATION;                                                                                                      
          rst       <= '0';                                                                                                             
@@ -389,48 +389,46 @@ begin
                                                                                                                                        
       ------------------------------------------------------------------------------------                                             
       ---- Test case 5                                                                                                                 
-      ------------------------------------------------------------------------------------                                             
-      if g_test_cases(5) = '1' then                                                                                                    
-         file_open(status, f_192_vectors      , CMD_192_FILE);                                                                         
-         file_open(status, f_192_ct_vectors   , CT_192_FILE );                                                                         
-         key_handle  <= (others  =>  '0');                                                                                             
-         test_msg <= pad_string(" Test case 6 : AES192 LO speed ", ' ', STRING_LENGTH);                                                
-         wait for 0 ns;                                                                                                                
-         report lf & lf & test_msg & lf;                                                                                               
-         speed_sel <= '1';                                                                                                             
-         rst       <= '1';                                                                                                             
-         exp_ct    <= (others => '0');                                                                                                 
-         wait for RESET_DURATION;
-         rst      <= '0';  
-         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key
-         wait until rising_edge(clk);
-         wait until t_ready = '1';
-         t_valid   <= '1'; 
-         get_inputs(f_192_vectors, in_word, key_handle); -- load key
-         for i in 0 to AES192+1 loop -- input next plain text inline with Lo speed 
-            wait until rising_edge(clk);
-         end loop;
-         
-         get_ct(f_192_ct_vectors, exp_ct); -- get data from test vectors
-         assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
-         
-         while not endfile(f_192_vectors) loop 
-            if t_ready = '1' then
-               get_inputs(f_192_vectors, in_word, key_handle); -- get data from test vectors
-               for i in 0 to AES192+1 loop -- input next plain text inline with Lo speed 
-                  wait until rising_edge(clk);
-               end loop;
-               get_ct(f_192_ct_vectors, exp_ct); -- get data from test vectors
-               assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
-            else
-               wait until rising_edge(clk);
-            end if;
-         end loop;
-         wait for clk_period*20;
-         t_valid  <= '0'; 
-         file_close(f_192_vectors);
-         file_close(f_192_ct_vectors);
-      end if;
+      ------------------------------------------------------------------------------------                                       
+      if g_test_cases(5) = '1' then                                                                                               
+         file_open(status, f_192_vectors      , CMD_192_FILE);                                                                    
+         file_open(status, f_192_ct_vectors   , CT_192_FILE );                                                                    
+         key_handle  <= (others  =>  '0');                                                                                        
+         test_msg <= pad_string(" Test case 6 : AES192 LO speed ", ' ', STRING_LENGTH);                                           
+         wait for 0 ns;                                                                                                           
+         report lf & lf & test_msg & lf;                                                                                          
+                                                                                                        
+         rst       <= '1';                                                                                                        
+         exp_ct    <= (others => '0');                                                                                            
+         wait for RESET_DURATION;                                                                                                
+         rst      <= '0';                                                                                                        
+         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key                                                       
+         wait until rising_edge(clk);                                                                                            
+         wait until t_ready = '1';                                                                                               
+         t_valid   <= '1';                                                                                                       
+         get_inputs(f_192_vectors, in_word, key_handle); -- load key                                                             
+                                                                                                                                 
+         for i in 0 to AES192+1 loop -- input next plain text inline with Lo speed                                               
+            wait until rising_edge(clk);                                                                                         
+         end loop;                                                                                                               
+                                                                                                                                                                          
+         while not endfile(f_192_vectors) loop                                                                                   
+            if t_ready = '1' then                                                                                                
+               get_inputs(f_192_vectors, in_word, key_handle); -- get data from test vectors                                     
+               for i in 0 to AES192+1 loop -- input next plain text inline with Lo speed                                         
+                  wait until rising_edge(clk);                                                                                   
+               end loop;                                                                                                         
+               get_ct(f_192_ct_vectors, exp_ct); -- get data from test vectors                                                   
+               assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);                        
+            else                                                                                                                 
+               wait until rising_edge(clk);                                                                                      
+            end if;                                                                                                              
+         end loop;                                                                                                               
+         wait for clk_period*20;                                                                                                 
+         t_valid  <= '0';                                                                                                        
+         file_close(f_192_vectors);                                                                                              
+         file_close(f_192_ct_vectors);                                                                                           
+      end if;                                                                                                                    
       
       ------------------------------------------------------------------------------------
       ---- Test case 6
@@ -442,7 +440,7 @@ begin
          test_msg <= pad_string(" Test case 7 : AES192 HI speed valid low after 51 ", ' ', STRING_LENGTH);
          wait for 0 ns;
          report lf & lf & test_msg & lf;
-         speed_sel <= '0';
+         
          rst       <= '1';             
          wait for RESET_DURATION;
          rst       <= '0';  
@@ -507,7 +505,7 @@ begin
          test_msg <= pad_string(" Test case 8 : AES192 decryption HI speed ", ' ', STRING_LENGTH);
          wait for 0 ns;
          report lf & lf & test_msg & lf;
-         speed_sel <= '0';
+         
          rst       <= '1';             
          wait for RESET_DURATION;
          rst       <= '0';           
@@ -547,7 +545,7 @@ begin
          test_msg <= pad_string(" Test case 9 : AES256 same key HI speed ", ' ', STRING_LENGTH);                                     
          wait for 0 ns;                                                                                                              
          report lf & lf & test_msg & lf;                                                                                             
-         speed_sel <= '0';                                                                                                           
+                                                                                                                    
          rst       <= '1';                                                                                                           
          wait for RESET_DURATION;                                                                                                    
          rst       <= '0';                                                                                                           
@@ -602,7 +600,7 @@ begin
          test_msg <= pad_string(" Test case 10 : AES256 same key LO speed ", ' ', STRING_LENGTH);                                     
          wait for 0 ns;                                                                                                              
          report lf & lf & test_msg & lf;                                                                                             
-         speed_sel <= '1';                                                                                                           
+                                                                                                           
          rst       <= '1';                                                                                                           
          exp_ct    <= (others => '0');                                                                                               
          wait for RESET_DURATION;                                                                                                    
@@ -612,12 +610,10 @@ begin
          wait until t_ready = '1'; -- wait for slave ready
          t_valid   <= '1';  -- now send valid and data
          get_inputs(f_256_vectors, in_word, key_handle); -- load key 
+         
          for i in 0 to AES256+1 loop -- input next plain text inline with Lo speed 
             wait until rising_edge(clk);
          end loop;
-         
-         get_ct(f_256_ct_vectors, exp_ct); -- get data from test vectors
-         assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
          
          while not endfile(f_256_vectors) loop 
             if t_ready = '1' then
@@ -647,7 +643,7 @@ begin
          test_msg <= pad_string(" Test case 11 : AES256 decryption HI speed ", ' ', STRING_LENGTH);
          wait for 0 ns;
          report lf & lf & test_msg & lf;
-         speed_sel <= '0';
+         
          rst       <= '1';             
          wait for RESET_DURATION;
          rst       <= '0';           

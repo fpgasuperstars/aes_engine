@@ -6,11 +6,11 @@ add wave -noupdate /aes_engine_top_tb/dut/i_rst
 add wave -noupdate -expand -group IO /aes_engine_top_tb/dut/i_t_data
 add wave -noupdate -expand -group IO /aes_engine_top_tb/dut/o_t_data
 add wave -noupdate /aes_engine_top_tb/exp_ct
-add wave -noupdate -expand -group {internal values} -expand /aes_engine_top_tb/dut/encrypt
-add wave -noupdate -expand -group {internal values} -expand /aes_engine_top_tb/dut/decrypt
-add wave -noupdate -expand -group {internal values} -expand /aes_engine_top_tb/dut/expanded_key_q
+add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/encrypt
+add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/decrypt
+add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/expanded_key_q
 add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/t_data_q
-add wave -noupdate -expand /aes_engine_top_tb/dut/dec_expanded_key_q
+add wave -noupdate /aes_engine_top_tb/dut/dec_expanded_key_q
 add wave -noupdate -expand -group {axi stream} /aes_engine_top_tb/dut/i_t_last
 add wave -noupdate -expand -group {axi stream} /aes_engine_top_tb/dut/i_t_keep
 add wave -noupdate -expand -group {axi stream} /aes_engine_top_tb/dut/i_t_valid
@@ -35,7 +35,7 @@ add wave -noupdate /aes_engine_top_tb/dut/dec_expanded_key_q
 add wave -noupdate /aes_engine_top_tb/dut/last_rnd_dec
 add wave -noupdate /aes_engine_top_tb/dut/gen_encryption_rounds(5)/u_enc_rnds/o_rndn_cipher_txt
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {489562 ps} 0}
+WaveRestoreCursors {{Cursor 1} {0 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 179
 configure wave -valuecolwidth 526
@@ -51,4 +51,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {1237492 ps}
+WaveRestoreZoom {0 ps} {508007064 ps}
