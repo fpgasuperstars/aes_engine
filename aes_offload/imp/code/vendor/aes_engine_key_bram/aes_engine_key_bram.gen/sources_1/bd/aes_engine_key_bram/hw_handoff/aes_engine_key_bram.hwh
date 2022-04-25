@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Tue Apr  5 11:08:55 2022" VIVADOVERSION="2021.2">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Wed Apr 20 16:37:03 2022" VIVADOVERSION="2021.2">
 
   <SYSTEMINFO ARCH="zynquplus" BOARD="xilinx.com:zcu102:part0:3.4" DEVICE="xczu9eg" NAME="aes_engine_key_bram" PACKAGE="ffvb1156" SPEEDGRADE="-2"/>
 
@@ -63,7 +63,7 @@
         <PARAMETER NAME="C_ADDRB_WIDTH" VALUE="10"/>
         <PARAMETER NAME="C_HAS_MEM_OUTPUT_REGS_A" VALUE="1"/>
         <PARAMETER NAME="C_HAS_MEM_OUTPUT_REGS_B" VALUE="0"/>
-        <PARAMETER NAME="C_HAS_MUX_OUTPUT_REGS_A" VALUE="0"/>
+        <PARAMETER NAME="C_HAS_MUX_OUTPUT_REGS_A" VALUE="1"/>
         <PARAMETER NAME="C_HAS_MUX_OUTPUT_REGS_B" VALUE="0"/>
         <PARAMETER NAME="C_MUX_PIPELINE_STAGES" VALUE="0"/>
         <PARAMETER NAME="C_HAS_SOFTECC_INPUT_REGS_A" VALUE="0"/>
@@ -123,7 +123,7 @@
         <PARAMETER NAME="Operating_Mode_B" VALUE="WRITE_FIRST"/>
         <PARAMETER NAME="Enable_B" VALUE="Always_Enabled"/>
         <PARAMETER NAME="Register_PortA_Output_of_Memory_Primitives" VALUE="true"/>
-        <PARAMETER NAME="Register_PortA_Output_of_Memory_Core" VALUE="false"/>
+        <PARAMETER NAME="Register_PortA_Output_of_Memory_Core" VALUE="true"/>
         <PARAMETER NAME="Use_REGCEA_Pin" VALUE="false"/>
         <PARAMETER NAME="Register_PortB_Output_of_Memory_Primitives" VALUE="false"/>
         <PARAMETER NAME="Register_PortB_Output_of_Memory_Core" VALUE="false"/>

@@ -42,7 +42,7 @@
             "value": "256"
           },
           "Register_PortA_Output_of_Memory_Core": {
-            "value": "false"
+            "value": "true"
           },
           "Register_PortA_Output_of_Memory_Primitives": {
             "value": "true"

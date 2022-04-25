@@ -537,7 +537,8 @@
                                 "nets": [
                                     {
                                         "name": "treadyo",
-                                        "isBus": false
+                                        "isBus": false,
+                                        "parentNetId": 146
                                     }
                                 ]
                             },
@@ -1110,6 +1111,33 @@
                     }
                 ],
                 "parent_nets": [
+                    {
+                        "id": 146,
+                        "name": "u_top/o_t_ready",
+                        "state_reg": [
+                            {
+                                "name": "u_top/FSM_sequential_state_reg[0]",
+                                "states": [
+                                    {
+                                        "name": "config",
+                                        "val": "01"
+                                    },
+                                    {
+                                        "name": "last",
+                                        "val": "00"
+                                    },
+                                    {
+                                        "name": "newkey",
+                                        "val": "10"
+                                    },
+                                    {
+                                        "name": "normal",
+                                        "val": "11"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
                     {
                         "id": 301,
                         "name": "vio/inst/PROBE_OUT_ALL_INST/G_PROBE_OUT[3].PROBE_OUT0_INST/probe_out3[0]",

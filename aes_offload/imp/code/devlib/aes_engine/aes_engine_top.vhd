@@ -22,7 +22,7 @@ entity aes_engine_top IS
      g_speed_sel : std_logic := '0'     -- 1 = LO speed, 0 = HI speed
    );
    port(
-      i_clk               : in  std_logic;
+      i_clk             : in  std_logic;
       i_rst             : in  std_logic;
       -- AXI stream M2S
       i_t_data          : in  std_logic_vector(AXI_T_DATA-1 downto 0);
@@ -77,24 +77,28 @@ architecture mixed of aes_engine_top is
    signal outdata, dina                                       : std_logic_vector(AES256_KEY-1 downto 0);
    
 begin
-   
-   -- logic used to flag when the last round is, for encryption
-   last_rnd  <= (AES128-1 => '1', others => '0') when aes_mode = "00" else
-                (AES192-1 => '1', others => '0') when aes_mode = "01" else
-                (AES256-1 => '1', others => '0') when aes_mode = "10" else
-                (others => '0');
-   
-   -- logic used to flag when the last round is, for decryption
-   last_rnd_dec <= (4 => '1', others => '0') when aes_mode = "00" else
-                   (2 => '1', others => '0') when aes_mode = "01" else
-                   (0 => '1', others => '0') when aes_mode = "10" else
-                   (others => '0');
-                
-   -- logic to pass the mode selected to integer that can be used for the state control                
-   gen_mode  <= AES128 when aes_mode = "00" else
-                AES192 when aes_mode = "01" else
-                AES256 when aes_mode = "10" else
-                0;         
+
+   p_rnd_dec : process
+   begin
+   wait until rising_edge(i_clk);
+   -- logic used to flag when the last round is, for encryption and decryption, also signals number of rounds
+      case aes_mode is
+         when "00"  => 
+            last_rnd_dec <= (4 => '1', others => '0');
+            gen_mode     <= AES128;
+            last_rnd     <= (AES128-1 => '1', others => '0');
+         when "01"  => 
+            last_rnd_dec <= (2 => '1', others => '0');
+            gen_mode     <= AES192;
+            last_rnd     <= (AES192-1 => '1', others => '0');
+         when "10"  => 
+            last_rnd_dec <= (0 => '1', others => '0');
+            gen_mode     <= AES256;
+            last_rnd     <= (AES256-1 => '1', others => '0');
+         when others  => 
+            null;
+      end case;
+   end process;       
                       
    ---------------------------------------------------------------------------------------
    -- Engine control state machine
@@ -155,23 +159,17 @@ begin
                      t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= i_t_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); 
                   end loop;
                   state  <= newkey;
-               elsif last_flag then
-                  if flushout_cnt = (gen_mode *2)+1 then
-                     expanded_key_q <= expanded_key; -- register the expanded keys 
-                     state  <=  last;
-                     t_data_q <= t_data_last;
-                     en_cnt_rst  <= '1';
-                  else
-                     state  <= newkey;
-                  end if;
+               elsif last_flag = '1' and  flushout_cnt = (gen_mode *2)+1 then
+                  expanded_key_q <= expanded_key; -- register the expanded keys 
+                  state  <=  last;
+                  t_data_q <= t_data_last;
+                  en_cnt_rst  <= '1';
+               elsif flushout_cnt = (gen_mode *2)+1 then
+                  expanded_key_q <= expanded_key; -- register the expanded keys 
+                  state  <=  normal;
+                  en_cnt_rst  <= '1';
                else
-                  if flushout_cnt = (gen_mode *2)+1 then
-                     expanded_key_q <= expanded_key; -- register the expanded keys 
-                     state  <=  normal;
-                     en_cnt_rst  <= '1';
-                  else
-                     state  <= newkey;
-                  end if;
+                  state  <= newkey;
                end if;
             
             when last =>
@@ -192,7 +190,7 @@ begin
    new_key     <= '1'      when key_handle_q /= i_key_handle else '0';
    
    --  engine ready logic
-   o_t_ready   <= '0'      when state = newkey or new_key = '1' or (g_speed_sel = '1' and speed_en = '0') or state = last else '1';
+   o_t_ready   <= '0'      when state = newkey or (g_speed_sel = '1' and speed_en = '0') or state = last else '1';
 
    ---------------------------------------------------------------------------------------
    -- Speed selection control
@@ -301,7 +299,7 @@ begin
             i_clk          => i_clk,
             i_rst          => i_rst,
             i_key          => outdata,
-            i_mode         => gen_mode,
+            i_mode         => aes_mode,
             o_expanded_key => expanded_key
          );
 
@@ -314,7 +312,7 @@ begin
    t_keep (0) <= t_keep_q;
    
    -- initial round key step for both encryption and decryption
-   encrypt(0) <= t_data_q xor expanded_key_q(0);
+   encrypt(0)      <= t_data_q xor expanded_key_q(0);
    decrypt(AES256) <= t_data_q xor dec_expanded_key_q(AES256+1);
    ---------------------------------------------------------------------------------------
    -- Encryption
@@ -341,18 +339,19 @@ begin
    -- Decryption
    ---------------------------------------------------------------------------------------
    -- key order for decryption
-   p_dec_keys : process(all)
+   p_dec_keys : process
    begin
-      case gen_mode is
-         when AES128 =>
+      wait until rising_edge(i_clk);
+      case aes_mode is
+         when "00" =>
             for i in AES128 downto 0 loop
                dec_expanded_key_q(i+5)  <= expanded_key_q(i);
             end loop;
-         when AES192 =>
+         when "01" =>
             for i in AES192 downto 0 loop
                dec_expanded_key_q(i+3)  <= expanded_key_q(i);
             end loop;
-         when AES256 =>
+         when "10" =>
             for i in AES256 downto 0 loop
                dec_expanded_key_q(i+1)  <= expanded_key_q(i);
             end loop;

@@ -17,6 +17,7 @@ entity aes_engine_wrapper is
    port(
       i_clk_p : in std_logic;
       i_clk_n : in std_logic
+      
    );
 end entity;
 
@@ -132,20 +133,20 @@ begin
    --tdata_input  <=  tdatai  when cnt < 1 else
    --                 t_datao when cnt >= 1; -- loop output data back to input after first clock cycle
 
-   vio : vio_0
-      port map (
-         clk => clk_s,
-         probe_in0(127 downto 0)   => t_datao,    
-         probe_in1(15 downto 0)    => t_keepo,    
-         probe_in2(0)              => t_lasto,    
-         probe_in3(0)              => t_valido,   
-         probe_in4(0)              => treadyo,    
-         probe_out0(127 downto 0)  => tdatai,       
-         probe_out1(15 downto 0)   => tkeepi,       
-         probe_out2(9 downto 0)    => key_handle,   
-         probe_out3(0)             => rst,          
-         probe_out4(0)             => tlasti,       
-         probe_out5(0)             => tvalidi       
-      );
+ vio : vio_0
+    port map (
+       clk => clk_s,
+       probe_in0(127 downto 0)   => t_datao,    
+       probe_in1(15 downto 0)    => t_keepo,    
+       probe_in2(0)              => t_lasto,    
+       probe_in3(0)              => t_valido,   
+       probe_in4(0)              => treadyo,    
+       probe_out0(127 downto 0)  => tdatai,       
+       probe_out1(15 downto 0)   => tkeepi,       
+       probe_out2(9 downto 0)    => key_handle,   
+       probe_out3(0)             => rst,          
+       probe_out4(0)             => tlasti,       
+       probe_out5(0)             => tvalidi       
+    );
  
 end structural;
