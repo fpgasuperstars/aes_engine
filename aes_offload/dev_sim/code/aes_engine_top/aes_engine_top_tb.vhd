@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000888" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 222 = lo speed tests, 111 hi speed with tlast tests, 040 = valid go lo during run, 888 = decryption
+      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000111" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 222 = lo speed tests, 111 hi speed with tlast tests, 040 = valid go lo during run, 888 = decryption. 1000 = gcm mode test
    );
 end entity;
 
@@ -36,22 +36,21 @@ architecture sim of aes_engine_top_tb is
    signal out_word, in_word   : std_logic_vector(DATA_WIDTH_128-1 downto 0) := (others => '0');
    signal test_msg            : string(1 to STRING_LENGTH);
    signal rst, clk, speed_sel : std_logic := '0';
-   
-   signal test_id   : string(1 to 4);                        
-   signal pt        : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
-   signal key_handle: std_logic_vector(9 downto 0):= (others => '0');
-   signal exp_ct    : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   signal test_id             : string(1 to 4);                        
+   signal pt                  : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   signal key_handle          : std_logic_vector(9 downto 0):= (others => '0');
+   signal exp_ct              : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
    signal test_done, t_valid, t_last : std_logic := '0';
-   signal t_keep    : std_logic_vector((WIDTH_BYTE*2)-1 downto 0):= (others => '1');
-   signal t_ready   : std_logic;
-   signal mode      : integer;
-   
-   signal en_cnt    : unsigned(4 downto 0);
+   signal t_keep              : std_logic_vector((WIDTH_BYTE*2)-1 downto 0):= (others => '1');
+   signal t_ready             : std_logic;
+   signal mode,leng_pt        : integer;
+   signal en_cnt              : unsigned(4 downto 0);
+   signal iv                  : std_logic_vector(95 downto 0):= (others => '0');
    
    -- BRAM
-   signal keys_128  : std_logic_vector(DATA_WIDTH_128-1 downto 0);
-   signal keys_192  : std_logic_vector(DATA_WIDTH_192-1 downto 0);
-   signal keys_256  : std_logic_vector(DATA_WIDTH_256-1 downto 0);
+   signal keys_128            : std_logic_vector(DATA_WIDTH_128-1 downto 0);
+   signal keys_192            : std_logic_vector(DATA_WIDTH_192-1 downto 0);
+   signal keys_256            : std_logic_vector(DATA_WIDTH_256-1 downto 0);
    
 begin
    dut : entity aes_engine.aes_engine_top
@@ -176,7 +175,7 @@ begin
          end if;                                                                                                                                                                                                                                                                        
          if t_ready = '1' then                                                                                                                                                                                                                                                          
             in_word  <= (AES128-1 => '1', others => '0');                                                                                                                                                                                                                               
-            --key_handle  <= std_logic_vector(to_unsigned(0,10)); -- load key -- test 3 different scenarios 1. last(set last here), 2. new key then last(append copy of last line in test vectors and set last here), 3. new key and last(set new kay and last at tsame time here)      
+            --key_handle  <= std_logic_vector(to_unsigned(0,10)); -- load key -- test 3 different scenarios 1. last(set last here), 2. new key then last(append copy of last line in test vectors and set last here), 3. new key and last(set new key and last at same time here)      
             t_last  <= '1';                                                                                                                                                                                                                                                             
             wait until rising_edge(clk);                                                                                                                                                                                                                                                
             t_valid  <= '0';                                                                                                                                                                                                                                                            
@@ -544,7 +543,7 @@ begin
          file_open(status, f_256_vectors      , CMD_256_FILE);                                                                       
          file_open(status, f_256_ct_vectors   , CT_256_FILE );                                                                       
          key_handle  <= (others  =>  '0');                                                                                           
-         test_msg <= pad_string(" Test case 9 : AES256 same key HI speed ", ' ', STRING_LENGTH);                                     
+         test_msg <= pad_string(" Test case 9 : AES256 key HI speed ", ' ', STRING_LENGTH);                                     
          wait for 0 ns;                                                                                                              
          report lf & lf & test_msg & lf;                                                                                             
                                                                                                                     
@@ -600,7 +599,7 @@ begin
          file_open(status, f_256_vectors      , CMD_256_FILE);                                                                       
          file_open(status, f_256_ct_vectors   , CT_256_FILE );                                                                       
          key_handle  <= (others  =>  '0');                                                                                           
-         test_msg <= pad_string(" Test case 10 : AES256 same key LO speed ", ' ', STRING_LENGTH);                                     
+         test_msg <= pad_string(" Test case 10 : AES256 key LO speed ", ' ', STRING_LENGTH);                                     
          wait for 0 ns;                                                                                                              
          report lf & lf & test_msg & lf;                                                                                             
                                                                                                            
@@ -673,6 +672,37 @@ begin
          end if;
       end if;
       
+      ------------------------------------------------------------------------------------                                   
+      ---- Test case 12 
+      ----"tgId"    : 15,               
+      ----"direction": "encrypt",  
+      ----"keyLen": 256,           
+      ----"ivLen": 96,                
+      ----"ivGenMode": "8.2.2",    
+      ----"payloadLen": 1024,      
+      ----"aadLen": 1024,          
+      ----"tagLen": 104,                                                                                                                              
+      ------------------------------------------------------------------------------------                                   
+      if g_test_cases(12) = '1' then                                                                                         
+         file_open(status, f_gcm_vectors      , CMD_GCM_FILE);                                                               
+         file_open(status, f_gcm_ct_vectors   , CT_GCM_FILE);                                                                
+         leng_pt     <= 1024;   --"payloadLen": 1024                                                                                                 
+         key_handle  <= (others  =>  '0');                                                                                   
+         test_msg    <= pad_string(" Test case 12 : GCM mode AES 256", ' ', STRING_LENGTH);                                  
+         wait for 0 ns;                                                                                                      
+         report lf & lf & test_msg & lf;                                                                                     
+         wait until rising_edge(clk);                                                                                              
+         rst       <= '1';             
+         wait for RESET_DURATION;
+         rst       <= '0';           
+         wait until rising_edge(clk);
+         t_valid <= '1'; 
+         get_gcm_inputs(f_gcm_vectors, leng_pt, clk, t_valid, t_ready, in_word, key_handle);
+         wait for clk_period*20;
+         t_valid  <= '0';
+         file_close(f_gcm_vectors);
+         file_close(f_gcm_ct_vectors);
+      end if;
       -- stop simulation
       assert false report "END OF SIMULATION!" severity failure;
       wait;

@@ -16,7 +16,9 @@ use aes_engine.aes_engine_pkg.all;
 entity aes_engine_wrapper is
    port(
       i_clk_p : in std_logic;
-      i_clk_n : in std_logic
+      i_clk_n : in std_logic;
+      -- Led
+      o_done  : out std_logic
       
    );
 end entity;
@@ -114,7 +116,7 @@ begin
          o_t_data          => t_datao  ,
          -- Keys
          i_key_handle      => key_handle,
-         o_done            => open 
+         o_done            => o_done 
       );
       
    -------------------------------------------------------------------------------------------

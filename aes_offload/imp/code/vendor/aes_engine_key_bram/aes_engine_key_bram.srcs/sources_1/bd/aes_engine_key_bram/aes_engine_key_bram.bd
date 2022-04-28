@@ -24,7 +24,7 @@
             "value": "Minimum_Area"
           },
           "Coe_File": {
-            "value": "../../../../../../../init_file/keys_mem_init.coe"
+            "value": "../../../../../../../../../../dev_sim/code/aes_engine_top/keys_mem_init.coe"
           },
           "Enable_32bit_Address": {
             "value": "false"

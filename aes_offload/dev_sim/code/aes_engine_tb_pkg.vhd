@@ -29,6 +29,8 @@ package aes_engine_tb_pkg is
    constant CT_192_FILE           : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\192_ct.txt";
    constant CMD_256_FILE          : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256.txt";
    constant CT_256_FILE           : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\256_ct.txt";
+   constant CMD_GCM_FILE          : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\gcm_mode.txt";
+   constant CT_GCM_FILE           : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\gcm_mode_ct.txt";
    --Keys
    constant KEYS_128_FILE         : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128_keys.txt";
    constant KEYS_192_FILE         : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\192_keys.txt";
@@ -54,13 +56,17 @@ package aes_engine_tb_pkg is
    constant header2                  : string := " MEMORY_INITIALIZATION_RADIX=16;";
    constant header3                  : string := " MEMORY_INITIALIZATION_VECTOR= 00000000000000000000000000000000,";
    constant comma                    : string := ",";
+   -- GCM mode test files
+   file f_gcm_ct_vectors             : text;
+   file f_gcm_vectors                : text;
    
    function pad_string(i_s        : string; pad_char_i : character; i_n : positive) RETURN string;
    function trim(source           : string) return string;
    function reverse_byte_order( a : std_logic_vector) return std_logic_vector; 
    procedure assertion(test_msg_i : string; assertion_msg_i : string; expected_i : std_logic_vector; received_i : std_logic_vector);
-   procedure get_inputs(file f_vectors : text; signal in_word, key: out std_logic_vector );
-   procedure get_ct(file f_vectors : text; signal exp_ct : out std_logic_vector);
+   procedure get_inputs(file f_vectors     : text; signal in_word, key: out std_logic_vector );
+   procedure get_ct(file f_vectors         : text; signal exp_ct      : out std_logic_vector);
+   procedure get_gcm_inputs(file f_vectors : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic;  signal in_word, key: out std_logic_vector);
       
 end package aes_engine_tb_pkg;
 
@@ -146,6 +152,32 @@ package body aes_engine_tb_pkg is
       read(v_iline, v_test_id);      
       hread(v_iline, v_ct);
       exp_ct    <=  reverse_byte_order(v_ct);  -- reverse order of expected ct
+   end;
+   
+   -- extract input data from FIPS test vectors
+   procedure get_gcm_inputs(file f_vectors : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic;  signal in_word, key: out std_logic_vector ) is
+      variable v_iline              : line;
+      variable v_test_id            : string(1 to 4);
+      variable v_space              : character;
+      variable v_pt                 : std_logic_vector(in_word'length-1 downto 0);
+      variable v_key                : integer;
+   begin
+      readline(f_vectors, v_iline);
+      read(v_iline,  v_test_id);
+      read(v_iline,  v_key);
+      read(v_iline,  v_space); 
+      wait for 0 ns;          
+      key       <=  std_logic_vector(to_unsigned(v_key,10)); -- get key handle
+      for i in 0 to leng_pt/128 loop
+         if t_valid and t_ready then   
+            hread(v_iline, v_pt);
+            in_word   <=  reverse_byte_order(v_pt);  -- reverse order of plain text
+            wait until rising_edge(clk);
+         else
+            wait until rising_edge(clk) and t_ready = '1';
+         end if;   
+      end loop;
+      
    end;
 
 end package body aes_engine_tb_pkg;

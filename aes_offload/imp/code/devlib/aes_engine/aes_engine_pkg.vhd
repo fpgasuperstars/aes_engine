@@ -22,6 +22,7 @@ package aes_engine_pkg is
    constant MODE_C          : natural := 8;            -- length of mode field in the configuration data 
    constant IV_C            : natural := 96;           -- length of the iv in the configuration data
    constant AES_MODE_C      : natural := 2;            -- length of aes mode in the configuration data
+   constant GCM_MODE_C      : std_logic_vector(BYTE_WIDTH-1 downto 0) := x"01";            -- GCM mode value
    
    type T_jindex is array (natural range<>) of integer;
    constant j : T_jindex := (0,4,8,12);           -- used for generation of the mixed column logic
