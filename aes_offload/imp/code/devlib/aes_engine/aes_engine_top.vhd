@@ -19,7 +19,8 @@ library xil_defaultlib;
 
 entity aes_engine_top IS
    generic(
-     g_speed_sel : std_logic := '0'     -- 1 = LO speed, 0 = HI speed
+     g_speed_sel      : std_logic := '0'; -- 1 = LO speed, 0 = HI speed
+     g_decryption_sel : std_logic := '0'  -- select whether ECB decryption is needed
    );
    port(
       i_clk             : in  std_logic;
@@ -50,59 +51,54 @@ architecture mixed of aes_engine_top is
    type  T_STATES        is (newkey, normal, config, last);
       
    -- Signals
-   signal state,state_q                                        : T_STATES;
-   signal encrypt, decrypt                                     : T_CIPHER_TXT;
-   signal expanded_key_q, expanded_key, expanded_key_decrypt   : T_EXPANDED_KEYS;
-   signal dec_expanded_key_q                                   : T_EXPANDED_KEYS;
-   signal t_data_q, t_data_last, t_data, gcm_cipher, encrypt_input_data : std_logic_vector(AXI_T_DATA-1 downto 0);
-   signal duty_cycle_cnt, flushout_cnt, en_cnt, lo_spd_en_cnt  : unsigned(4 downto 0);
-   signal ini_key_cnt, config_cnt, nonce_rollover_cnt          : unsigned(5 downto 0);
-   signal speed_en, t_valid_q, t_last_q                        : std_logic;
-   signal new_key, en_decr, en_cnt_rst, last_flag              : std_logic;
-   signal t_keep_q                                             : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
-   signal t_valid, t_last                                      : T_AXI_STREAM;
-   signal t_keep                                               : T_AXI_TKEEP;
-   signal last_rnd                                             : std_logic_vector(AES256-1 downto 0);
-   signal last_rnd_dec                                         : std_logic_vector(0 to AES256-1);
-   signal gen_mode                                             : integer:= AES256;
-   signal nonce_cnt                                            : unsigned(31 downto 0);
-                                                               
-   -- Configuration                                            
-   signal mode                                                 : std_logic_vector(MODE_C-1 downto 0);
-   signal iv                                                   : std_logic_vector(IV_C-1 downto 0);
-   signal aes_mode                                             : std_logic_vector(AES_MODE_C-1 downto 0):= (others  => '0');
-                                                               
-   -- BRAM                                                     
-   signal addra, key_handle_q                                  : std_logic_vector(9 downto 0);
-   signal outdata, dina                                        : std_logic_vector(AES256_KEY-1 downto 0);
+   -- State
+   signal state,state_q                                                                  : T_STATES;
+                                                                                         
+   -- Data                                                                               
+   signal encrypt, decrypt                                                               : T_CIPHER_TXT;
+   signal gcm_cipher, encrypt_input_data                                                 : std_logic_vector(AXI_T_DATA-1 downto 0);
+                                                                                         
+   -- AXI-S                                                                              
+   signal t_data_q, t_data_last, t_data                                                  : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal t_keep_q                                                                       : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
+   signal t_valid, t_last                                                                : T_AXI_STREAM;
+   signal t_keep                                                                         : T_AXI_TKEEP;
+   signal t_valid_q, t_last_q                                                            : std_logic;
+                                                                                         
+   -- Engine control                                                                     
+   signal last_rnd                                                                       : std_logic_vector(AES256-1 downto 0);
+   signal last_rnd_dec                                                                   : std_logic_vector(0 to AES256-1);
+   signal gen_mode                                                                       : integer:= AES256;
+   signal en_decr, last_flag, speed_en, last_rnd_enc_lo, last_rnd_dec_lo                 : std_logic;
+                                                                                         
+   -- GCM                                                                                
+   signal nonce_cnt                                                                      : unsigned(31 downto 0);
+                                                                                         
+   -- Configuration                                                                      
+   signal mode                                                                           : std_logic_vector(MODE_C-1 downto 0);
+   signal iv                                                                             : std_logic_vector(IV_C-1 downto 0);
+   signal aes_mode                                                                       : std_logic_vector(AES_MODE_C-1 downto 0):= (others  => '0');
+                                                                                         
+   -- Key Expansion                                                                      
+   signal new_key                                                                        : std_logic;
+   signal expanded_key_q, expanded_key, dec_expanded_key_q                               : T_EXPANDED_KEYS;
+   signal expanded_key_lo, expanded_key_lo_q, dec_expanded_key_lo, dec_expanded_key_lo_q : std_logic_vector(AXI_T_DATA-1 downto 0);
    
-begin
-
-   p_rnd_dec : process
-   begin
-   wait until rising_edge(i_clk);
-   -- logic used to flag when the last round is, for encryption and decryption, also signals number of rounds that can be used for controlling the engine
-      case aes_mode is
-         when "00"  => 
-            last_rnd_dec <= (4 => '1', others => '0');
-            gen_mode     <= AES128;
-            last_rnd     <= (AES128-1 => '1', others => '0');
-         when "01"  => 
-            last_rnd_dec <= (2 => '1', others => '0');
-            gen_mode     <= AES192;
-            last_rnd     <= (AES192-1 => '1', others => '0');
-         when "10"  => 
-            last_rnd_dec <= (0 => '1', others => '0');
-            gen_mode     <= AES256;
-            last_rnd     <= (AES256-1 => '1', others => '0');
-         when others  => 
-            null;
-      end case;
-   end process;       
+   -- Counter signals
+   signal en_cnt_rst                                                                     : std_logic;
+   signal duty_cycle_cnt, flushout_cnt, en_cnt, lo_spd_en_cnt                            : unsigned(4 downto 0);
+   signal ini_key_cnt, config_cnt, nonce_rollover_cnt                                    : unsigned(5 downto 0);
+   signal lo_spd_cnt_dec, lo_spd_cnt_enc                                                 : integer range 0 to 15 := 0;
+                                                                                         
+   -- BRAM                                                                               
+   signal addra, key_handle_q                                                            : std_logic_vector(9 downto 0);
+   signal outdata, dina                                                                  : std_logic_vector(AES256_KEY-1 downto 0);
+   
+begin    
                       
-   ---------------------------------------------------------------------------------------
-   -- Engine control state machine
-   ---------------------------------------------------------------------------------------
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   -- Engine control and state machine
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    p_control : process
    begin
       wait until rising_edge(i_clk);
@@ -200,6 +196,28 @@ begin
    -- input data control     
    encrypt_input_data  <= std_logic_vector(nonce_cnt) & iv when config_cnt > 0 and mode = GCM_MODE_C else -- IV concatenated with nonce after config data is fed into engine for GCM
                           i_t_data;
+         
+   p_rnd_dec : process
+   begin
+   wait until rising_edge(i_clk);
+   -- logic used to flag when the last round is, for encryption and decryption, also signals number of rounds that can be used for controlling the engine
+      case aes_mode is
+         when "00"  => 
+            last_rnd_dec <= (4 => '1', others => '0');
+            gen_mode     <= AES128;
+            last_rnd     <= (AES128-1 => '1', others => '0');
+         when "01"  => 
+            last_rnd_dec <= (2 => '1', others => '0');
+            gen_mode     <= AES192;
+            last_rnd     <= (AES192-1 => '1', others => '0');
+         when "10"  => 
+            last_rnd_dec <= (0 => '1', others => '0');
+            gen_mode     <= AES256;
+            last_rnd     <= (AES256-1 => '1', others => '0');
+         when others  => 
+            null;
+      end case;
+   end process;   
 
    ---------------------------------------------------------------------------------------
    -- Speed selection control
@@ -231,6 +249,12 @@ begin
       end if;
    end process;
    
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   -- Key control
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   ---------------------------------------------------------------------------------------
+   -- Initial key loading delay
+   ---------------------------------------------------------------------------------------
    p_inital_key : process
    begin
       wait until rising_edge(i_clk);
@@ -241,7 +265,6 @@ begin
       end if;
    end process;
    
-      
    ---------------------------------------------------------------------------------------
    -- flush out when new key detected
    ---------------------------------------------------------------------------------------
@@ -257,54 +280,6 @@ begin
       end if;
    end process;
    
-   ---------------------------------------------------------------------------------------
-   -- Output registers at selected speed
-   ---------------------------------------------------------------------------------------
-   p_outputs : process
-   begin
-      wait until rising_edge(i_clk);
-         key_handle_q <= i_key_handle;
-         t_valid_q  <= i_t_valid;
-         t_last_q   <= i_t_last; 
-         t_keep_q   <= i_t_keep;
-      if i_rst = '1' then
-         t_data      <= (others => '0');
-         gcm_cipher  <= (others => '0');
-         o_t_valid <= '0';
-         o_t_last  <= '0';
-         o_t_keep  <= (others => '0');
-         key_handle_q <= (others => '0');
-         t_valid_q <= '0';  
-         t_last_q  <= '0'; 
-         t_keep_q  <= (others => '0');
-      elsif en_decr = '0' and speed_en = '1' and en_cnt >= gen_mode and lo_spd_en_cnt > 2 and ini_key_cnt >= gen_mode*3 then
-         gcm_cipher<= t_data xor i_t_data;
-         t_data    <= encrypt(gen_mode);
-         o_t_valid <= t_valid(gen_mode);
-         o_t_last  <= t_last(gen_mode);
-         o_t_keep  <= t_keep(gen_mode);  
-      elsif en_decr = '1' and speed_en = '1' and en_cnt >= gen_mode and lo_spd_en_cnt > 2 and ini_key_cnt >= gen_mode*3 then
-         t_data    <= decrypt(AES256-gen_mode);
-         o_t_valid <= t_valid(gen_mode);
-         o_t_last  <= t_last(gen_mode);
-         o_t_keep  <= t_keep(gen_mode); 
-      end if;
-   end process;
-   
-   -- route data to output depending on mode
-   o_t_data  <= gcm_cipher when mode = GCM_MODE_C else t_data; -- as more modes are added this will change
-   
-   -- Enable counter to tell when to output data after the initial pipeline delay
-   p_en_out : process -- counter to determine first valid output after pipeline delays
-   begin
-      wait until rising_edge(i_clk);
-      if i_rst = '1' or state = config or en_cnt_rst = '1' then
-         en_cnt  <= (others  => '0');
-      elsif state /= config and en_cnt <= gen_mode  then
-         en_cnt  <=  en_cnt + 1;
-      end if;
-   end process;
-   
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    -- Key Expansion
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -316,7 +291,7 @@ begin
             i_mode         => aes_mode,
             o_expanded_key => expanded_key
          );
-
+   
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    -- Encryption and Decryption Rounds
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -326,66 +301,147 @@ begin
    t_keep (0) <= t_keep_q;
    
    -- initial round key step for both encryption and decryption
-   encrypt(0)      <= t_data_q xor expanded_key_q(0);
-   decrypt(AES256) <= t_data_q xor dec_expanded_key_q(AES256+1);
+   encrypt(0)      <= t_data_q xor expanded_key_q(0) when g_speed_sel = '0' else
+                      t_data_q xor expanded_key_lo_q when g_speed_sel = '1' and lo_spd_cnt_enc <= 1 else
+                      encrypt(1);
+                      
+   decrypt(AES256) <= t_data_q xor dec_expanded_key_q(AES256+1) when g_speed_sel = '0' else
+                      t_data_q xor dec_expanded_key_q(AES256+1) when g_speed_sel = '1' and lo_spd_cnt_dec = AES256 else
+                      decrypt(AES256-1);
    ---------------------------------------------------------------------------------------
    -- Encryption
    ---------------------------------------------------------------------------------------
-   gen_encryption_rounds : for i in 1 to AES256 generate
-      u_enc_rnds : entity aes_engine.aes_engine_round
-         port map(
-            i_clk             => i_clk,
-            i_rst             => i_rst,
-            i_t_valid         => t_valid(i-1), 
-            i_t_last          => t_last (i-1), 
-            i_t_keep          => t_keep (i-1), 
-            o_t_valid         => t_valid(i), 
-            o_t_last          => t_last (i), 
-            o_t_keep          => t_keep (i), 
-            i_expanded_key    => expanded_key_q(i),
-            i_last_rnd        => last_rnd(i-1),
-            i_plain_txt       => encrypt(i-1),
-            o_rndn_cipher_txt => encrypt(i)
-         );
+   gen_speed_hi_enc : if g_speed_sel = '0' generate
+      gen_encryption_rounds : for i in 1 to AES256 generate
+         u_enc_rnds : entity aes_engine.aes_engine_round
+            port map(
+               i_clk             => i_clk,
+               i_rst             => i_rst,
+               i_t_valid         => t_valid(i-1), 
+               i_t_last          => t_last (i-1), 
+               i_t_keep          => t_keep (i-1), 
+               o_t_valid         => t_valid(i), 
+               o_t_last          => t_last (i), 
+               o_t_keep          => t_keep (i), 
+               i_expanded_key    => expanded_key_q(i),
+               i_last_rnd        => last_rnd(i-1),
+               i_plain_txt       => encrypt(i-1),
+               o_rndn_cipher_txt => encrypt(i)
+            );
+      end generate;
    end generate;
    
+   gen_speed_lo_enc : if g_speed_sel = '1' generate
+      gen_encryption_rounds : for i in 1 to 1 generate
+         u_enc_rnds : entity aes_engine.aes_engine_round
+            port map(
+               i_clk             => i_clk,
+               i_rst             => i_rst,
+               i_t_valid         => t_valid(i-1), 
+               i_t_last          => t_last (i-1), 
+               i_t_keep          => t_keep (i-1), 
+               o_t_valid         => t_valid(i), 
+               o_t_last          => t_last (i), 
+               o_t_keep          => t_keep (i), 
+               i_expanded_key    => expanded_key_lo,
+               i_last_rnd        => last_rnd_enc_lo,
+               i_plain_txt       => encrypt(i-1),
+               o_rndn_cipher_txt => encrypt(i)
+            );
+      end generate;
+   end generate;
+   
+   p_encr_lo_spd_cnt : process
+   begin
+      wait until rising_edge(i_clk);
+      expanded_key_lo_q  <= expanded_key_lo;
+      if i_rst then
+         lo_spd_cnt_enc <= 0;
+      elsif speed_en then
+         lo_spd_cnt_enc <= 0;
+      elsif t_valid_q then
+         lo_spd_cnt_enc <= lo_spd_cnt_enc + 1;
+      end if;
+   end process;
+   
+   last_rnd_enc_lo  <= '1' when lo_spd_cnt_enc = gen_mode else '0';
+   expanded_key_lo  <= expanded_key_q(lo_spd_cnt_enc);
+
    ---------------------------------------------------------------------------------------
    -- Decryption
    ---------------------------------------------------------------------------------------
-   -- key order for decryption
-   p_dec_keys : process
-   begin
-      wait until rising_edge(i_clk);
-      case aes_mode is
-         when "00" =>
-            for i in AES128 downto 0 loop
-               dec_expanded_key_q(i+5)  <= expanded_key_q(i);
-            end loop;
-         when "01" =>
-            for i in AES192 downto 0 loop
-               dec_expanded_key_q(i+3)  <= expanded_key_q(i);
-            end loop;
-         when "10" =>
-            for i in AES256 downto 0 loop
-               dec_expanded_key_q(i+1)  <= expanded_key_q(i);
-            end loop;
-         when others  =>
-               null;
-      end case;
-   end process;
-   
-   gen_decryption_rounds : for i in AES256-1 downto 0 generate
-      u_dec_rnds : entity aes_engine.aes_engine_decrypt
-         port map(
-            i_clk             => i_clk,
-            i_rst             => i_rst,
-            i_expanded_key    => dec_expanded_key_q(i+1),
-            i_last_rnd        => last_rnd_dec(i),
-            i_cipher_txt      => decrypt(i+1),
-            o_rndn_plain_txt  => decrypt(i)
-         );
+   gen_decryption : if g_decryption_sel = '1' generate
+      -- key order for decryption
+      p_dec_keys : process
+      begin
+         wait until rising_edge(i_clk);
+         if i_rst then
+            dec_expanded_key_q  <=  (others  => (others  => '0'));
+         else
+         case aes_mode is
+            when "00" =>
+               for i in AES128 downto 0 loop
+                  dec_expanded_key_q(i+5)  <= expanded_key_q(i);
+               end loop;
+            when "01" =>
+               for i in AES192 downto 0 loop
+                  dec_expanded_key_q(i+3)  <= expanded_key_q(i);
+               end loop;
+            when "10" =>
+               for i in AES256 downto 0 loop
+                  dec_expanded_key_q(i+1)  <= expanded_key_q(i);
+               end loop;
+            when others  =>
+                  null;
+         end case;
+         end if;
+      end process;
+      
+      gen_speed_hi_dec : if g_speed_sel = '0' generate
+         gen_decryption_rounds : for i in AES256-1 downto 0 generate
+            u_dec_rnds : entity aes_engine.aes_engine_decrypt
+               port map(
+                  i_clk             => i_clk,
+                  i_rst             => i_rst,
+                  i_expanded_key    => dec_expanded_key_q(i+1),
+                  i_last_rnd        => last_rnd_dec(i),
+                  i_cipher_txt      => decrypt(i+1),
+                  o_rndn_plain_txt  => decrypt(i)
+               );
+         end generate;
+      end generate;
+      
+      gen_speed_lo_dec : if g_speed_sel = '1' generate
+         gen_encryption_rounds : for i in AES256-1 to AES256-1 generate
+            u_dec_rnds : entity aes_engine.aes_engine_decrypt
+               port map(
+                  i_clk             => i_clk,
+                  i_rst             => i_rst,
+                  i_expanded_key    => dec_expanded_key_lo,
+                  i_last_rnd        => last_rnd_dec_lo,
+                  i_cipher_txt      => decrypt(i+1),
+                  o_rndn_plain_txt  => decrypt(i)
+               );
+         end generate;
+      end generate;
+      
+      p_dec_lo_spd_cnt : process
+      begin
+         wait until rising_edge(i_clk);
+         dec_expanded_key_lo_q  <= dec_expanded_key_lo;
+         if i_rst then
+            lo_spd_cnt_dec <= AES256;
+         elsif speed_en then
+            lo_spd_cnt_dec <= AES256;
+         elsif t_valid_q then
+            lo_spd_cnt_dec <= lo_spd_cnt_dec - 1;
+         end if;
+      end process;
+      
+      last_rnd_dec_lo      <= '1' when lo_spd_cnt_dec = (AES256+1) - gen_mode else '0';
+      dec_expanded_key_lo  <= dec_expanded_key_q(lo_spd_cnt_dec);
    end generate;
-   
+      
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    -- Modes
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -404,10 +460,69 @@ begin
          nonce_cnt  <= nonce_cnt + 1; -- rolls over @ approx 549.756 Gb of data
       end if;
    end process;
+   
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   -- Output registers at selected speed
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   p_outputs : process
+   begin
+      wait until rising_edge(i_clk);
+         key_handle_q <= i_key_handle;
+         t_valid_q    <= i_t_valid;
+         t_last_q     <= i_t_last; 
+         t_keep_q     <= i_t_keep;
+      if i_rst = '1' then
+         t_data       <= (others => '0');
+         gcm_cipher   <= (others => '0');
+         o_t_valid    <= '0';
+         o_t_last     <= '0';
+         o_t_keep     <= (others => '0');
+         key_handle_q <= (others => '0');
+         t_valid_q    <= '0';  
+         t_last_q     <= '0'; 
+         t_keep_q     <= (others => '0');
+      elsif en_decr = '0' and g_speed_sel = '1' and speed_en = '1' and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 then
+         gcm_cipher   <= t_data xor i_t_data;
+         t_data       <= encrypt(1);
+         o_t_valid    <= t_valid(1);
+         o_t_last     <= t_last(1);
+         o_t_keep     <= t_keep(1);
+      elsif en_decr = '1' and g_speed_sel = '1' and en_cnt = gen_mode and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 then
+         t_data       <= decrypt(AES256);
+         o_t_valid    <= t_valid(1);
+         o_t_last     <= t_last(1);
+         o_t_keep     <= t_keep(1);
+      elsif en_decr = '0' and g_speed_sel = '0' and en_cnt >= gen_mode  and ini_key_cnt >= gen_mode*3 then
+         gcm_cipher<= t_data xor i_t_data;
+         t_data       <= encrypt(gen_mode);
+         o_t_valid    <= t_valid(gen_mode);
+         o_t_last     <= t_last(gen_mode);
+         o_t_keep     <= t_keep(gen_mode);  
+      elsif en_decr = '1' and g_speed_sel = '0' and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 then
+         t_data       <= decrypt(AES256-gen_mode);
+         o_t_valid    <= t_valid(gen_mode);
+         o_t_last     <= t_last(gen_mode);
+         o_t_keep     <= t_keep(gen_mode); 
+      end if;
+   end process;
+   
+   -- route data to output depending on mode
+   o_t_data  <= gcm_cipher when mode = GCM_MODE_C else t_data; -- as more modes are added this will change
+   
+   -- Enable counter to tell when to output data after the initial pipeline delay
+   p_en_out : process -- counter to determine first valid output after pipeline delays
+   begin
+      wait until rising_edge(i_clk);
+      if i_rst = '1' or state = config or en_cnt_rst = '1' then
+         en_cnt  <= (others  => '0');
+      elsif state /= config and en_cnt <= gen_mode  then
+         en_cnt  <=  en_cnt + 1;
+      end if;
+   end process;
       
-   -----------------------------------------------------------------------------------------
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    -- BRAM containing the keys
-   -----------------------------------------------------------------------------------------
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    p_key_select : process
    begin
       wait until rising_edge(i_clk);

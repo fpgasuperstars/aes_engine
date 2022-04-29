@@ -54,6 +54,7 @@ COMPONENT vio_0
   );
 END COMPONENT;
 
+   -- Signals
    signal rst             : std_logic;
    signal clk_s,clk_lvcmos: std_logic;
    signal tdata_input     : std_logic_vector(AXI_T_DATA-1 downto 0);
@@ -100,6 +101,10 @@ begin
   --       );
     
    u_top : entity aes_engine.aes_engine_top
+      generic map(
+         g_speed_sel       => '1',
+         g_decryption_sel  => '0'
+       )
       port map(
          i_clk             => clk_s   ,
          i_rst             => rst ,
@@ -117,7 +122,7 @@ begin
          -- Keys
          i_key_handle      => key_handle,
          o_done            => o_done 
-      );
+       );
       
    -------------------------------------------------------------------------------------------
    ---- Loop back
