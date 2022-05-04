@@ -456,8 +456,8 @@ begin
          nonce_rollover_cnt  <= (others  => '0'); 
       elsif nonce_cnt = x"FFFFFFFF" then -- count when rollover of counter occurs
          nonce_rollover_cnt  <= nonce_rollover_cnt + 1; -- count number of rollovers which will be fed back to software when done and will be be used as a field in the configuration for the decryption
-      elsif state = normal then
-         nonce_cnt  <= nonce_cnt + 1; -- rolls over @ approx 549.756 Gb of data
+      elsif state = normal and o_t_ready = '1' then
+         nonce_cnt  <= nonce_cnt + 1; 
       end if;
    end process;
    
@@ -482,7 +482,7 @@ begin
          t_last_q     <= '0'; 
          t_keep_q     <= (others => '0');
       elsif en_decr = '0' and g_speed_sel = '1' and speed_en = '1' and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 then
-         gcm_cipher   <= t_data xor i_t_data;
+         gcm_cipher   <= encrypt(1) xor i_t_data;
          t_data       <= encrypt(1);
          o_t_valid    <= t_valid(1);
          o_t_last     <= t_last(1);
@@ -493,7 +493,7 @@ begin
          o_t_last     <= t_last(1);
          o_t_keep     <= t_keep(1);
       elsif en_decr = '0' and g_speed_sel = '0' and en_cnt >= gen_mode  and ini_key_cnt >= gen_mode*3 then
-         gcm_cipher<= t_data xor i_t_data;
+         gcm_cipher   <= encrypt(gen_mode) xor i_t_data;
          t_data       <= encrypt(gen_mode);
          o_t_valid    <= t_valid(gen_mode);
          o_t_last     <= t_last(gen_mode);

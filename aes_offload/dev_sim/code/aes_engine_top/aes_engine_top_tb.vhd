@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000111" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 222 = lo speed tests, 111 hi speed with tlast tests, 040 = valid go lo during run, 888 = decryption. 1000 = gcm mode test
+      g_test_cases : std_ulogic_vector(31 downto 0) := x"00001000" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 222 = lo speed tests, 111 hi speed with tlast tests, 040 = valid go lo during run, 888 = decryption. 1000 = gcm mode test
    );
 end entity;
 
@@ -58,8 +58,8 @@ architecture sim of aes_engine_top_tb is
 begin
    dut : entity aes_engine.aes_engine_top
       generic map(
-         g_speed_sel    => '0', -- 1 = Lo speed
-         g_decryption_sel  => '1'
+         g_speed_sel    => '1', -- 1 = Lo speed
+         g_decryption_sel  => '0'
       )
       port map(
          i_key_handle   => key_handle,
@@ -715,6 +715,8 @@ begin
          rst       <= '1';             
          wait for RESET_DURATION;
          rst       <= '0';           
+         wait until rising_edge(clk);
+         wait until t_ready = '1';
          wait until rising_edge(clk);
          t_valid <= '1'; 
          get_gcm_inputs(f_gcm_vectors, leng_pt, clk, t_valid, t_ready, in_word, key_handle);
