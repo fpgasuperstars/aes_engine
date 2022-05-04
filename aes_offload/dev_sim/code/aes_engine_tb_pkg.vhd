@@ -21,6 +21,9 @@ package aes_engine_tb_pkg is
    constant DATA_WIDTH_128        : natural := 128;          -- T_data bit width
    constant DATA_WIDTH_192        : natural := 192;          -- 192 key bit width
    constant DATA_WIDTH_256        : natural := 256;          -- 256 key bit width
+   constant MODE256               : natural := 14;          
+   constant MODE192               : natural := 12;          
+   constant MODE128               : natural := 10;          
    -- File locations
    -- commands
    constant CMD_128_FILE          : string  := "C:\git\aes_engine\aes_offload\dev_sim\code\aes_engine_top\128.txt";

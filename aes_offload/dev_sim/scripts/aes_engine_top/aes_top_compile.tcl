@@ -1,5 +1,5 @@
 # ########################################################################################################
-# modelsim compilation script for aes_engine_sbox
+# modelsim compilation script for aes_engine
 # ########################################################################################################
 #  Creation : 21/02/2022 
 #  Author(s): Jack O'Keefe
@@ -38,6 +38,11 @@ vlib comp_libraries/msim/xil_defaultlib
 vmap xpm comp_libraries/msim/xpm
 vmap blk_mem_gen_v8_4_5 comp_libraries/msim/blk_mem_gen_v8_4_5
 vmap xil_defaultlib comp_libraries/msim/xil_defaultlib
+ 
+vlog -work xpm  -incr -mfcu -sv "+incdir+../../../../../../aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo/hdl" \
+"C:/Xilinx/Vivado/2021.2/data/ip/xpm/xpm_cdc/hdl/xpm_cdc.sv" \
+"C:/Xilinx/Vivado/2021.2/data/ip/xpm/xpm_fifo/hdl/xpm_fifo.sv" \
+"C:/Xilinx/Vivado/2021.2/data/ip/xpm/xpm_memory/hdl/xpm_memory.sv" \
 
 vlog -work blk_mem_gen_v8_4_5  -incr -mfcu \
 "../../../imp/code/vendor/aes_engine_key_bram/aes_engine_key_bram.gen/sources_1/bd/aes_engine_key_bram/ipshared/25a8/simulation/blk_mem_gen_v8_4.v" \

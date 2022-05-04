@@ -191,7 +191,7 @@ begin
    new_key     <= '1'      when key_handle_q /= i_key_handle else '0';
    
    -- engine ready logic
-   o_t_ready   <= '0'      when state = newkey or (g_speed_sel = '1' and speed_en = '0') or state = last or (mode = GCM_MODE_C and ((new_key = '1') or (state = normal and state_q /= normal) or en_cnt <= gen_mode)) else '1';
+   o_t_ready   <= '0'      when state = newkey or (g_speed_sel = '1' and (state = normal and state_q /= normal)) or speed_en = '0' or state = last or (mode = GCM_MODE_C and ((new_key = '1') or en_cnt <= gen_mode)) else '1';
       
    -- input data control     
    encrypt_input_data  <= std_logic_vector(nonce_cnt) & iv when config_cnt > 0 and mode = GCM_MODE_C else -- IV concatenated with nonce after config data is fed into engine for GCM

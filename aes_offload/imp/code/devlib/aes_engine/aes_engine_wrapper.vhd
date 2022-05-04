@@ -37,6 +37,25 @@ architecture structural of aes_engine_wrapper is
 -- );
 --end component;
 
+COMPONENT axis_data_fifo_0
+  PORT (
+    s_axis_aresetn : IN STD_LOGIC;
+    s_axis_aclk : IN STD_LOGIC;
+    s_axis_tvalid : IN STD_LOGIC;
+    s_axis_tready : OUT STD_LOGIC;
+    s_axis_tdata : IN STD_LOGIC_VECTOR(127 DOWNTO 0);
+    s_axis_tkeep : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+    s_axis_tlast : IN STD_LOGIC;
+    m_axis_tvalid : OUT STD_LOGIC;
+    m_axis_tready : IN STD_LOGIC;
+    m_axis_tdata : OUT STD_LOGIC_VECTOR(127 DOWNTO 0);
+    m_axis_tkeep : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+    m_axis_tlast : OUT STD_LOGIC;
+    almost_empty : OUT STD_LOGIC;
+    almost_full : OUT STD_LOGIC
+  );
+END COMPONENT;
+
 COMPONENT vio_0
   PORT (
     clk : IN STD_LOGIC;
@@ -99,6 +118,24 @@ begin
   --       clk_in1_p => i_clk_p,
   --       clk_in1_n => i_clk_n
   --       );
+  
+  fifo : axis_data_fifo_0
+  PORT MAP (
+    s_axis_aresetn => rst,
+    s_axis_aclk => clk_s,
+    s_axis_tvalid => t_valido,
+    s_axis_tready => open,
+    s_axis_tdata => t_datao,
+    s_axis_tkeep => t_keepo,
+    s_axis_tlast => t_lasto,
+    m_axis_tvalid => tvalidi,
+    m_axis_tready => treadyo,
+    m_axis_tdata => tdatai,
+    m_axis_tkeep => tkeepi,
+    m_axis_tlast => tlasti,
+    almost_empty => open,
+    almost_full => open
+  );
     
    u_top : entity aes_engine.aes_engine_top
       generic map(
@@ -155,5 +192,7 @@ begin
        probe_out4(0)             => tlasti,       
        probe_out5(0)             => tvalidi       
     );
+    
+    
  
 end structural;
