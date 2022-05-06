@@ -3,18 +3,20 @@ quietly WaveActivateNextPane {} 0
 add wave -noupdate /aes_engine_top_tb/test_msg
 add wave -noupdate -expand -group {clk rst} /aes_engine_top_tb/dut/i_clk
 add wave -noupdate -expand -group {clk rst} /aes_engine_top_tb/dut/i_rst
-add wave -noupdate -expand -group IO /aes_engine_top_tb/dut/i_t_data
-add wave -noupdate -expand -group IO /aes_engine_top_tb/dut/o_t_data
-add wave -noupdate -expand -group IO /aes_engine_top_tb/exp_ct
-add wave -noupdate -expand -group {internal values} -radix decimal /aes_engine_top_tb/dut/lo_spd_cnt_enc
-add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/expanded_key_lo_q
-add wave -noupdate -expand -group {internal values} -expand /aes_engine_top_tb/dut/encrypt
-add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/decrypt
-add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/expanded_key_q
-add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/t_data_q
+add wave -noupdate -expand -group IO -radix hexadecimal /aes_engine_top_tb/dut/i_t_data
+add wave -noupdate -expand -group IO /aes_engine_top_tb/dut/o_t_valid
+add wave -noupdate -expand -group IO /aes_engine_top_tb/dut/o_t_last
+add wave -noupdate -expand -group IO -radix hexadecimal /aes_engine_top_tb/dut/o_t_data
+add wave -noupdate -expand -group IO -radix hexadecimal /aes_engine_top_tb/exp_ct
+add wave -noupdate -expand -group {internal values} -radix hexadecimal /aes_engine_top_tb/dut/lo_spd_cnt_enc
+add wave -noupdate -expand -group {internal values} -radix hexadecimal /aes_engine_top_tb/dut/expanded_key_lo_q
+add wave -noupdate -expand -group {internal values} -radix hexadecimal -childformat {{/aes_engine_top_tb/dut/encrypt(0) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(1) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(2) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(3) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(4) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(5) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(6) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(7) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(8) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(9) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(10) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(11) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(12) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(13) -radix hexadecimal} {/aes_engine_top_tb/dut/encrypt(14) -radix hexadecimal}} -expand -subitemconfig {/aes_engine_top_tb/dut/encrypt(0) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(1) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(2) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(3) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(4) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(5) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(6) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(7) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(8) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(9) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(10) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(11) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(12) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(13) {-height 15 -radix hexadecimal} /aes_engine_top_tb/dut/encrypt(14) {-height 15 -radix hexadecimal}} /aes_engine_top_tb/dut/encrypt
+add wave -noupdate -expand -group {internal values} -radix hexadecimal /aes_engine_top_tb/dut/decrypt
+add wave -noupdate -expand -group {internal values} -radix hexadecimal /aes_engine_top_tb/dut/expanded_key_q
+add wave -noupdate -expand -group {internal values} -radix hexadecimal /aes_engine_top_tb/dut/t_data_q
 add wave -noupdate -expand -group {internal values} /aes_engine_top_tb/dut/nonce_cnt
 add wave -noupdate -expand -group {axi stream} /aes_engine_top_tb/dut/i_t_last
-add wave -noupdate -expand -group {axi stream} /aes_engine_top_tb/dut/i_t_keep
+add wave -noupdate -expand -group {axi stream} -radix hexadecimal /aes_engine_top_tb/dut/i_t_keep
 add wave -noupdate -expand -group {axi stream} /aes_engine_top_tb/dut/i_t_valid
 add wave -noupdate -expand -group {axi stream} /aes_engine_top_tb/dut/o_t_ready
 add wave -noupdate -expand -group {control and status} /aes_engine_top_tb/dut/speed_en
@@ -23,7 +25,7 @@ add wave -noupdate -expand -group {control and status} -radix unsigned /aes_engi
 add wave -noupdate -expand -group {control and status} /aes_engine_top_tb/dut/new_key
 add wave -noupdate -expand -group {control and status} -radix unsigned /aes_engine_top_tb/dut/flushout_cnt
 add wave -noupdate -expand -group {control and status} /aes_engine_top_tb/dut/state
-add wave -noupdate -expand -group {control and status} /aes_engine_top_tb/dut/key_handle_q
+add wave -noupdate -expand -group {control and status} -radix hexadecimal /aes_engine_top_tb/dut/key_handle_q
 add wave -noupdate -expand -group {control and status} -expand -group configuration /aes_engine_top_tb/dut/mode
 add wave -noupdate -expand -group {control and status} -expand -group configuration /aes_engine_top_tb/dut/iv
 add wave -noupdate -expand -group {control and status} -expand -group configuration /aes_engine_top_tb/dut/aes_mode
@@ -33,9 +35,19 @@ add wave -noupdate -group BRAM /aes_engine_top_tb/dut/u_bram_keys/ena
 add wave -noupdate -group BRAM -radix unsigned /aes_engine_top_tb/dut/u_bram_keys/addra
 add wave -noupdate -group BRAM /aes_engine_top_tb/dut/u_bram_keys/douta
 add wave -noupdate -group BRAM -radix unsigned /aes_engine_top_tb/dut/i_key_handle
-add wave -noupdate /aes_engine_top_tb/dut/encrypt_input_data
+add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/encrypt_input_data
+add wave -noupdate -expand -group fifo /aes_engine_top_tb/u_fifo/s_axis_tvalid
+add wave -noupdate -expand -group fifo /aes_engine_top_tb/u_fifo/s_axis_tready
+add wave -noupdate -expand -group fifo -radix hexadecimal /aes_engine_top_tb/u_fifo/s_axis_tdata
+add wave -noupdate -expand -group fifo /aes_engine_top_tb/u_fifo/m_axis_tvalid
+add wave -noupdate -expand -group fifo /aes_engine_top_tb/u_fifo/m_axis_tready
+add wave -noupdate -expand -group fifo -radix hexadecimal /aes_engine_top_tb/u_fifo/m_axis_tdata
+add wave -noupdate -expand -group fifo /aes_engine_top_tb/u_fifo/almost_empty
+add wave -noupdate -expand -group fifo /aes_engine_top_tb/u_fifo/almost_full
+add wave -noupdate -expand -group fifo /aes_engine_top_tb/u_fifo/s_axis_tlast
+add wave -noupdate -expand -group fifo /aes_engine_top_tb/u_fifo/m_axis_tlast
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {88963 ps} 0}
+WaveRestoreCursors {{Cursor 1} {26558118534 fs} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 179
 configure wave -valuecolwidth 526
@@ -51,4 +63,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {1348512 ps}
+WaveRestoreZoom {0 fs} {96174750 ps}

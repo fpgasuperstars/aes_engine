@@ -1,0 +1,23 @@
+#-----------------------------------------------------------
+# Vivado v2021.2 (64-bit)
+# SW Build 3367213 on Tue Oct 19 02:48:09 MDT 2021
+# IP Build 3369179 on Thu Oct 21 08:25:16 MDT 2021
+# Start of session at: Tue May  3 17:31:42 2022
+# Process ID: 12220
+# Current directory: C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent24104 C:\git\aes_engine\aes_offload\imp\code\vendor\aes_engine_fifo\aes_engine_fifo.xpr
+# Log file: C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo/vivado.log
+# Journal file: C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo\vivado.jou
+# Running On: EUL10-797V3J3, OS: Windows, CPU Frequency: 1690 MHz, CPU Physical cores: 4, Host memory: 33723 MB
+#-----------------------------------------------------------
+start_gui
+open_project C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo/aes_engine_fifo.xpr
+update_compile_order -fileset sources_1
+report_compile_order -used_in simulation
+compile_simlib -simulator modelsim -simulator_exec_path {C:/modelsim_dlx64_2021.3/win64pe} -family all -language all -library unisim -dir {C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo/aes_engine_fifo.cache/compile_simlib/modelsim} -force
+compile_simlib -simulator modelsim -simulator_exec_path {C:/modelsim_dlx64_2021.3/win64pe} -family all -language all -library unisim -dir {C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo/aes_engine_fifo.cache/compile_simlib/modelsim} -force
+compile_simlib -simulator modelsim -simulator_exec_path {C:/modelsim_dlx64_2021.3/win64pe} -family all -language all -library unisim -dir {C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo/aes_engine_fifo.cache/compile_simlib/modelsim} -force
+compile_simlib -simulator modelsim -simulator_exec_path {C:/modelsim_dlx64_2021.3/win64pe} -family all -language all -library unisim -dir {C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo/aes_engine_fifo.cache/compile_simlib/modelsim} -force
+set_property target_simulator ModelSim [current_project]
+set_property simulator_language Mixed [current_project]
+compile_simlib -simulator modelsim -simulator_exec_path {C:/modelsim_dlx64_2021.3/win64pe} -family all -language all -library unisim -dir {C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo/aes_engine_fifo.cache/compile_simlib/modelsim} -force

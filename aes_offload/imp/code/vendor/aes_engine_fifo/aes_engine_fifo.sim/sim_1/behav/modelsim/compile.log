@@ -1,0 +1,94 @@
+# do {aes_engine_top_tb_compile.do}
+# Model Technology ModelSim DE-64 vmap 2021.3 Lib Mapping Utility 2021.07 Jul 13 2021
+# vmap xil_defaultlib modelsim_lib/msim/xil_defaultlib 
+# Modifying modelsim.ini
+# Model Technology ModelSim DE-64 vmap 2021.3 Lib Mapping Utility 2021.07 Jul 13 2021
+# vmap aes_engine modelsim_lib/msim/aes_engine 
+# Modifying modelsim.ini
+# Model Technology ModelSim DE-64 vmap 2021.3 Lib Mapping Utility 2021.07 Jul 13 2021
+# vmap tb_lib modelsim_lib/msim/tb_lib 
+# Modifying modelsim.ini
+# Model Technology ModelSim DE-64 vlog 2021.3 Compiler 2021.07 Jul 13 2021
+# Start time: 19:37:15 on May 05,2022
+# vlog -incr -mfcu -work xil_defaultlib "+incdir+../../../../aes_engine_fifo.ip_user_files/ipstatic/hdl" ../../../../aes_engine_fifo.gen/sources_1/ip/axis_data_fifo_0/sim/axis_data_fifo_0.v ../../../../aes_engine_fifo.gen/sources_1/ip/aes_engine_key_bram_blk_mem_gen_0_0/sim/aes_engine_key_bram_blk_mem_gen_0_0.v 
+# -- Compiling module axis_data_fifo_0
+# -- Compiling module aes_engine_key_bram_blk_mem_gen_0_0
+# 
+# Top level modules:
+# 	axis_data_fifo_0
+# 	aes_engine_key_bram_blk_mem_gen_0_0
+# End time: 19:37:15 on May 05,2022, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim DE-64 vcom 2021.3 Compiler 2021.07 Jul 13 2021
+# Start time: 19:37:15 on May 05,2022
+# vcom -2008 -work aes_engine ../../../../aes_engine_fifo.srcs/sources_1/imports/aes_engine/aes_engine_pkg.vhd ../../../../aes_engine_fifo.srcs/sources_1/imports/aes_engine/aes_engine_decrypt.vhd ../../../../aes_engine_fifo.srcs/sources_1/imports/aes_engine/aes_engine_key_expansion.vhd ../../../../aes_engine_fifo.srcs/sources_1/imports/aes_engine/aes_engine_round.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling package aes_engine_pkg
+# -- Loading package NUMERIC_STD
+# -- Loading package aes_engine_pkg
+# -- Compiling entity aes_engine_decrypt
+# -- Compiling architecture rtl of aes_engine_decrypt
+# -- Compiling entity aes_engine_key_expansion
+# -- Compiling architecture rtl of aes_engine_key_expansion
+# -- Compiling entity aes_engine_round
+# -- Compiling architecture rtl of aes_engine_round
+# End time: 19:37:15 on May 05,2022, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim DE-64 vcom 2021.3 Compiler 2021.07 Jul 13 2021
+# Start time: 19:37:15 on May 05,2022
+# vcom -2008 -work tb_lib ../../../../aes_engine_fifo.srcs/sim_1/imports/code/aes_engine_tb_pkg.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package std_logic_textio
+# -- Loading package NUMERIC_STD
+# -- Compiling package aes_engine_tb_pkg
+# -- Compiling package body aes_engine_tb_pkg
+# -- Loading package aes_engine_tb_pkg
+# End time: 19:37:15 on May 05,2022, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim DE-64 vcom 2021.3 Compiler 2021.07 Jul 13 2021
+# Start time: 19:37:16 on May 05,2022
+# vcom -2008 -work aes_engine ../../../../aes_engine_fifo.srcs/sources_1/imports/aes_engine/aes_engine_top.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Loading package aes_engine_pkg
+# -- Compiling entity aes_engine_top
+# -- Compiling architecture mixed of aes_engine_top
+# -- Loading entity aes_engine_key_expansion
+# -- Loading entity aes_engine_round
+# -- Loading entity aes_engine_decrypt
+# -- Loading package vl_types
+# -- Loading entity aes_engine_key_bram_blk_mem_gen_0_0
+# End time: 19:37:16 on May 05,2022, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim DE-64 vcom 2021.3 Compiler 2021.07 Jul 13 2021
+# Start time: 19:37:16 on May 05,2022
+# vcom -2008 -work xil_defaultlib ../../../../aes_engine_fifo.srcs/sim_1/imports/code/aes_engine_top/aes_engine_top_tb.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Loading package std_logic_textio
+# -- Loading package aes_engine_pkg
+# -- Loading package aes_engine_tb_pkg
+# -- Compiling entity aes_engine_top_tb
+# -- Compiling architecture sim of aes_engine_top_tb
+# -- Loading entity aes_engine_top
+# -- Loading package vl_types
+# -- Loading entity axis_data_fifo_0
+# End time: 19:37:16 on May 05,2022, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim DE-64 vlog 2021.3 Compiler 2021.07 Jul 13 2021
+# Start time: 19:37:17 on May 05,2022
+# vlog -work xil_defaultlib glbl.v 
+# -- Compiling module glbl
+# 
+# Top level modules:
+# 	glbl
+# End time: 19:37:17 on May 05,2022, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0

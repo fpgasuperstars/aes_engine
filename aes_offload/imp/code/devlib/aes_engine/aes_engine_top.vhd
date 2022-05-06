@@ -116,7 +116,7 @@ begin
          case state is
             when config =>
                config_cnt  <= config_cnt + 1;
-               if i_t_valid then
+               if i_t_valid = '1' and i_t_last = '0' then
                   mode        <= encrypt_input_data(MODE_C-1 downto 0);
                   iv          <= encrypt_input_data((IV_C+MODE_C)-1 downto MODE_C);
                   aes_mode    <= encrypt_input_data((AES_MODE_C+IV_C+MODE_C)-1 downto IV_C+MODE_C);
@@ -133,6 +133,10 @@ begin
                   for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
                      t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= encrypt_input_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
                   end loop;
+               elsif last_flag = '1' and en_cnt >= gen_mode then
+                  en_cnt_rst  <= '1';
+                  state  <= last;
+                  t_data_q <= t_data_last;
                elsif i_t_last then
                   last_flag  <= '1';
                   for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
@@ -145,10 +149,6 @@ begin
                      t_data_q((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= encrypt_input_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0');
                   end loop; 
                   state <= normal;
-               elsif last_flag = '1' and en_cnt >= gen_mode then
-                  en_cnt_rst  <= '1';
-                  state  <= last;
-                  t_data_q <= t_data_last;
                end if;
                
             when newkey =>
@@ -191,8 +191,8 @@ begin
    new_key     <= '1'      when key_handle_q /= i_key_handle else '0';
    
    -- engine ready logic
-   o_t_ready   <= '0'      when state = newkey or (g_speed_sel = '1' and (state = normal and state_q /= normal)) or speed_en = '0' or state = last or (mode = GCM_MODE_C and ((new_key = '1') or en_cnt <= gen_mode)) else '1';
-      
+   o_t_ready   <= '0'      when state = newkey or speed_en = '0' or state = last or (mode = GCM_MODE_C and ((new_key = '1') or en_cnt <= gen_mode)) else '1';
+
    -- input data control     
    encrypt_input_data  <= std_logic_vector(nonce_cnt) & iv when config_cnt > 0 and mode = GCM_MODE_C else -- IV concatenated with nonce after config data is fed into engine for GCM
                           i_t_data;
