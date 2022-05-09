@@ -69,7 +69,7 @@ package aes_engine_tb_pkg is
    procedure assertion(test_msg_i : string; assertion_msg_i : string; expected_i : std_logic_vector; received_i : std_logic_vector);
    procedure get_inputs(file f_vectors     : text; signal in_word, key: out std_logic_vector );
    procedure get_ct(file f_vectors         : text; signal exp_ct      : out std_logic_vector);
-   procedure get_gcm_inputs(file f_vectors : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic;  signal in_word, key: out std_logic_vector);
+   procedure get_gcm_inputs(file f_vectors : text; signal leng_pt : in integer; signal clk, t_ready : in std_logic;  signal in_word, key: out std_logic_vector);
       
 end package aes_engine_tb_pkg;
 
@@ -158,7 +158,7 @@ package body aes_engine_tb_pkg is
    end;
    
    -- extract input data from FIPS test vectors
-   procedure get_gcm_inputs(file f_vectors : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic;  signal in_word, key: out std_logic_vector ) is
+   procedure get_gcm_inputs(file f_vectors : text; signal leng_pt : in integer; signal clk, t_ready : in std_logic;  signal in_word, key: out std_logic_vector ) is
       variable v_iline              : line;
       variable v_test_id            : string(1 to 4);
       variable v_space              : character;
@@ -172,7 +172,7 @@ package body aes_engine_tb_pkg is
       wait for 0 ns;          
       key       <=  std_logic_vector(to_unsigned(v_key,10)); -- get key handle
       for i in 0 to leng_pt/128 loop
-         if t_valid and t_ready then   
+         if t_ready then   
             hread(v_iline, v_pt);
             in_word   <=  reverse_byte_order(v_pt);  -- reverse order of plain text
             wait until rising_edge(clk);

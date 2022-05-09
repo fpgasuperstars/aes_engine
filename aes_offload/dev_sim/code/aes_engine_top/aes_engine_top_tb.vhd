@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000040" -- select 1 test at a time,128/192/256, 2/2/2 = lo speed tests, 1/1/1 hi speed, 0/4/0 = asyncronous test, 8/8/8 = decryption. 1/0/0/0 = gcm mode test
+      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000111" -- select 1 test at a time,128/192/256, 2/2/2 = lo speed tests, 1/1/1 hi speed, 0/4/0 = asyncronous test, 8/8/8 = decryption. 1/0/0/0 = gcm mode test
    );
 end entity;
 
@@ -44,7 +44,7 @@ architecture sim of aes_engine_top_tb is
    signal exp_ct              : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
    signal test_done, t_valid, o_t_valid, t_last, fifo_to_engine_t_last, o_t_ready : std_logic := '0';
    signal t_keep, fifo_to_engine_keep              : std_logic_vector((WIDTH_BYTE*2)-1 downto 0):= (others => '1');
-   signal t_ready, async      : std_logic := '0';
+   signal t_ready             : std_logic := '0';
    signal mode,leng_pt        : integer;
    signal en_cnt              : unsigned(4 downto 0);
    signal iv                  : std_logic_vector(95 downto 0):= (others => '0');
@@ -61,7 +61,7 @@ begin
    dut : entity aes_engine.aes_engine_top
       generic map(
          g_speed_sel       => '0', -- 1 = Lo speed
-         g_decryption_sel  => '1'
+         g_decryption_sel  => '0'
       )
       port map(
          i_key_handle   => key_handle,
@@ -114,7 +114,7 @@ begin
       wait for clk_period_100/2;
    end process;
    
-   engine_clk <= clk when async = '0' else clk_100;
+   engine_clk <= clk when g_test_cases /= x"00000040" else clk_100;
 
    -- reverse keys for initialisation file of BRAM due to key format being wrong way round MSB and LSB 
    p_rev_keys : process
@@ -209,6 +209,7 @@ begin
          rst       <= '0';                                                                                                                                                                                                                                                              
          key_handle  <= std_logic_vector(to_unsigned(0,10)); -- load key                                                                                                                                                                                                                
          wait until rising_edge(clk);                                                                                                                                                                                                                                                  
+         wait until t_ready = '1';                                                                                                                                                                                                                                                  
          if t_ready = '1' then                                                                                                                                                                                                                                                          
             t_valid   <= '1';                                                                                                                                                                                                                                                         
             get_inputs(f_128_vectors, in_word, key_handle); -- load key                                                                                                                                                                                                                 
@@ -256,6 +257,7 @@ begin
          rst      <= '0';  
          key_handle  <= std_logic_vector(to_unsigned(0,10)); -- load key
          wait until rising_edge(clk);
+         wait until t_ready = '1';
          if t_ready = '1' then
             t_valid   <= '1'; 
             get_inputs(f_128_vectors, in_word, key_handle); -- load key
@@ -312,7 +314,8 @@ begin
          wait for RESET_DURATION;                                                                                                                                                                                                                                                       
          rst       <= '0';                                                                                                                                                                                                                                                              
          key_handle  <= std_logic_vector(to_unsigned(0,10)); -- load key                                                                                                                                                                                                                
-         wait until rising_edge(clk);                                                                                                                                                                                                                                                  
+         wait until rising_edge(clk);
+         wait until t_ready = '1';                                                                                                                                                                                                                                                 
          if t_ready = '1' then                                                                                                                                                                                                                                                          
             t_valid   <= '1'; 
             t_keep   <= std_logic_vector(to_unsigned(1, 16));                                                                                                                                                                                                                                                        
@@ -359,7 +362,8 @@ begin
          wait for RESET_DURATION;                                                                                                                                  
          rst       <= '0';
          key_handle  <= std_logic_vector(to_unsigned(0,10)); -- load key                                                                                                                                             
-         wait until rising_edge(clk);                                                                                                                              
+         wait until rising_edge(clk); 
+         wait until t_ready = '1';                                                                                                                             
          if t_ready = '1' then                                                                                                                                     
             t_valid   <= '1';                                                                                                                                      
             get_inputs(f_ct_vectors, in_word, key_handle); -- load key                                                                                             
@@ -406,7 +410,9 @@ begin
          t_valid   <= '0';                                                                                                             
          wait for RESET_DURATION;                                                                                                      
          rst       <= '0';                                                                                                             
-         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key                                                                                                                                                                                                                                                                 
+         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key
+         wait until rising_edge(clk); 
+         wait until t_ready = '1';                                                                                                                                                                                                                                                                 
          if t_ready = '1' then                                                                                                         
             t_valid   <= '1';                                                                                                          
             get_inputs(f_192_vectors, in_word, key_handle); -- load key                                                                                                                                              
@@ -451,8 +457,9 @@ begin
          exp_ct    <= (others => '0');                                                                                                          
          wait for RESET_DURATION;                                                                                                               
          rst      <= '0';                                                                                                                       
-         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key                                                                      
-         wait until rising_edge(clk);                                                                                                                                                                                                                                             
+         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key 
+         wait until rising_edge(clk); 
+         wait until t_ready = '1';                                                                                                                                                                                                                                                                                                                 
          if t_ready = '1' then                                                                                                                  
             t_valid   <= '1';                                                                                                                    
             get_inputs(f_192_vectors, in_word, key_handle); -- load key                                                                          
@@ -501,7 +508,7 @@ begin
          test_msg <= pad_string(" Test case 7 : AES192 asyncronous clocks", ' ', STRING_LENGTH);
          wait for 0 ns;                                                                                                                         
          report lf & lf & test_msg & lf;                                                                                                        
-         async     <= '1';                                                                                                                                       
+                                                                                                                                    
          rst       <= '1';                                                                                                                      
          t_last    <= '0';                                                                                                                      
          t_valid   <= '0';                                                                                                                      
@@ -566,7 +573,8 @@ begin
          wait for RESET_DURATION;                                                                                                         
          rst       <= '0';                                                                                                                
          key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key                                                                                                            
-         wait until rising_edge(clk);                                                                                                     
+         wait until rising_edge(clk);
+         wait until t_ready = '1';                                                                                                      
          if t_ready = '1' then                                                                                                            
             t_valid   <= '1';                                                                                                             
             get_inputs(f_192_ct_vectors, in_word, key_handle); -- load key                                                                
@@ -614,7 +622,8 @@ begin
          wait for RESET_DURATION;                                                                                                              
          rst       <= '0';                                                                                                                     
          key_handle  <= std_logic_vector(to_unsigned(367,10)); -- load key                                                                     
-         wait until rising_edge(clk);                                                                                                                                                                                                                                                                       
+         wait until rising_edge(clk);
+         wait until t_ready = '1';                                                                                                                                                                                                                                                                       
          if t_ready = '1' then                                                                                                                 
             t_valid   <= '1';                                                                                                                  
             get_inputs(f_256_vectors, in_word, key_handle); -- load key                                                                        
@@ -660,7 +669,8 @@ begin
          wait for RESET_DURATION;                                                                                                                                              
          rst      <= '0';                                                                                                                                                      
          key_handle  <= std_logic_vector(to_unsigned(367,10)); -- load key                                                                                                     
-         wait until rising_edge(clk);                                                                                                                                          
+         wait until rising_edge(clk);
+         wait until t_ready = '1';                                                                                                                                          
          if t_ready = '1' then                                                                                                                                                 
             t_valid   <= '1';  -- now send valid and data                                                                                                                         
             get_inputs(f_256_vectors, in_word, key_handle); -- load key                                                                                                           
@@ -717,7 +727,8 @@ begin
          wait for RESET_DURATION;                                                                                                                              
          rst       <= '0';                                                                                                                                     
          key_handle <= std_logic_vector(to_unsigned(367,10)); -- load key                                                                                      
-         wait until rising_edge(clk);                                                                                                                          
+         wait until rising_edge(clk);
+         wait until t_ready = '1';                                                                                                                          
          if t_ready = '1' then                                                                                                                                 
             t_valid   <= '1';                                                                                                                                  
             get_inputs(f_256_ct_vectors, in_word, key_handle); -- load key                                                                                     
@@ -772,7 +783,7 @@ begin
          wait until t_ready = '1';
          wait until rising_edge(clk);
          t_valid <= '1'; 
-         get_gcm_inputs(f_gcm_vectors, leng_pt, clk, t_valid, t_ready, in_word, key_handle);
+         get_gcm_inputs(f_gcm_vectors, leng_pt, clk, t_ready, in_word, key_handle);
          wait for clk_period*20;
          t_valid  <= '0';
          file_close(f_gcm_vectors);
