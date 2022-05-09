@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000111" -- AES128 = 0000000F, AES192 = 000000F0, AES256 = 00000F00 222 = lo speed tests, 111 hi speed with tlast tests, 040 = valid go lo during run, 888 = decryption. 1000 = gcm mode test
+      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000040" -- select 1 test at a time,128/192/256, 2/2/2 = lo speed tests, 1/1/1 hi speed, 0/4/0 = asyncronous test, 8/8/8 = decryption. 1/0/0/0 = gcm mode test
    );
 end entity;
 
@@ -32,17 +32,19 @@ architecture sim of aes_engine_top_tb is
    -- Constants
    constant KEY               : std_logic_vector(DATA_WIDTH_128-1 downto 0) := (others => '0'); 
    constant clk_period        : time := 5 ns; 
+   constant clk_period_100    : time := 10 ns;
+   
    -- Signals
    signal out_word, in_word, fifo_to_engine_data   : std_logic_vector(DATA_WIDTH_128-1 downto 0) := (others => '0');
    signal test_msg            : string(1 to STRING_LENGTH);
-   signal rst, clk, speed_sel : std_logic := '0';
+   signal rst, clk, clk_100, engine_clk   : std_logic := '0';
    signal test_id             : string(1 to 4);                        
    signal pt                  : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
    signal key_handle          : std_logic_vector(9 downto 0):= (others => '0');
    signal exp_ct              : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
    signal test_done, t_valid, o_t_valid, t_last, fifo_to_engine_t_last, o_t_ready : std_logic := '0';
    signal t_keep, fifo_to_engine_keep              : std_logic_vector((WIDTH_BYTE*2)-1 downto 0):= (others => '1');
-   signal t_ready             : std_logic;
+   signal t_ready, async      : std_logic := '0';
    signal mode,leng_pt        : integer;
    signal en_cnt              : unsigned(4 downto 0);
    signal iv                  : std_logic_vector(95 downto 0):= (others => '0');
@@ -59,14 +61,14 @@ begin
    dut : entity aes_engine.aes_engine_top
       generic map(
          g_speed_sel       => '0', -- 1 = Lo speed
-         g_decryption_sel  => '0'
+         g_decryption_sel  => '1'
       )
       port map(
          i_key_handle   => key_handle,
          i_t_valid      => o_t_valid,
          i_t_last       => fifo_to_engine_t_last,
          i_t_keep       => fifo_to_engine_keep,
-         i_clk          => clk,
+         i_clk          => engine_clk,
          i_rst          => rst,
          i_t_data       => fifo_to_engine_data, 
          o_t_data       => out_word,
@@ -74,7 +76,7 @@ begin
          o_done         => open
       );
       
-   u_fifo : entity work.axis_data_fifo_0
+   u_fifo : entity xil_defaultlib.axis_data_fifo_0
       PORT MAP (
          s_axis_aresetn => not rst,
          s_axis_aclk    => clk,
@@ -85,6 +87,7 @@ begin
          s_axis_tkeep   => t_keep,
          s_axis_tlast   => t_last,
          
+         m_axis_aclk    => engine_clk,
          m_axis_tvalid  => o_t_valid,
          m_axis_tready  => o_t_ready,
          m_axis_tdata   => fifo_to_engine_data,
@@ -102,6 +105,16 @@ begin
       clk <= '0';
       wait for clk_period/2;
    end process;
+   
+   p_clk_slow : process
+   begin
+      clk_100 <= '1';
+      wait for clk_period_100/2;
+      clk_100 <= '0';
+      wait for clk_period_100/2;
+   end process;
+   
+   engine_clk <= clk when async = '0' else clk_100;
 
    -- reverse keys for initialisation file of BRAM due to key format being wrong way round MSB and LSB 
    p_rev_keys : process
@@ -246,8 +259,9 @@ begin
          if t_ready = '1' then
             t_valid   <= '1'; 
             get_inputs(f_128_vectors, in_word, key_handle); -- load key
-            
-            for i in 0 to AES128+1 loop -- input next plain text inline with Lo speed 
+            wait until rising_edge(clk);
+            t_valid   <= '0'; 
+            for i in 0 to AES128 loop -- input next plain text inline with Lo speed 
                wait until rising_edge(clk);
             end loop;
             
@@ -258,16 +272,19 @@ begin
                   wait for 0 ns;
                   get_ct(f_ct_vectors, exp_ct); -- get data from test vectors
                   assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
-                  for i in 0 to AES128+1 loop -- input next plain text inline with Lo speed 
+                  wait until rising_edge(clk);
+                  t_valid   <= '0'; 
+                  for i in 0 to AES128 loop -- input next plain text inline with Lo speed 
                      wait until rising_edge(clk);
                   end loop;
                else
+                  
                   wait until rising_edge(clk);
                end if;
             end loop;
          end if;
-         wait until t_ready = '1';
-         if t_ready = '1' then                                                                                                                                                                                                                                                          
+         if t_ready = '1' then
+            t_valid  <= '1'; 
             in_word  <= (AES128-1 => '1', others => '0');                                                                                                                                                                                                                                    
             t_last  <= '1';                                                                                                                                                                                                                                                              
             wait until rising_edge(clk);  
@@ -328,49 +345,50 @@ begin
       ------------------------------------------------------------------------------------
       ---- Test case 4
       ------------------------------------------------------------------------------------
-      if g_test_cases(3) = '1' then
-         file_open(status, f_128_vectors  , CMD_128_FILE);
-         file_open(status, f_ct_vectors   , CT_128_FILE);
-         key_handle  <= (others  =>  '0');
-         test_msg <= pad_string(" Test case 4 : AES128 decryption HI speed ", ' ', STRING_LENGTH);
-         wait for 0 ns;
-         report lf & lf & test_msg & lf;
-         
-         rst       <= '1';
-         t_last    <= '0';
-         t_valid   <= '0';             
-         wait for RESET_DURATION;
-         rst       <= '0';           
-         wait until rising_edge(clk);
-         if t_ready = '1' then
-            t_valid   <= '1'; 
-            get_inputs(f_ct_vectors, in_word, key_handle); -- load key
-            wait until rising_edge(clk);
-            while not endfile(f_ct_vectors) loop -- run at full speed
-               if t_ready = '1' then
-                  get_inputs(f_ct_vectors, in_word, key_handle); -- get data from test vectors
-                  wait until rising_edge(clk);
-                  get_ct(f_128_vectors, exp_ct); -- get data from test vectors
-                  wait for 1 ns;
-                  assertion(test_msg, "compare output cipher with text file FIPS cipher", ct_del(MODE128-1), out_word);
-               else
-                  wait until rising_edge(clk);
-               end if;
-            end loop;
-         end if;
-         if t_ready = '1' then                                                                                                                                                                                                                                                          
-            in_word  <= (AES128-1 => '1', others => '0');                                                                                                                                                                                                                                    
-            t_last  <= '1';                                                                                                                                                                                                                                                             
-            wait until rising_edge(clk);                                                                                                                                                                                                                                                
-            t_valid  <= '0';                                                                                                                                                                                                                                                            
-            wait for clk_period*50;
-            file_close(f_128_vectors);
-            file_close(f_ct_vectors);
-         end if;
-      end if;
-      
-      --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      -- AES 192
+      if g_test_cases(3) = '1' then                                                                                                                                
+         file_open(status, f_128_vectors  , CMD_128_FILE);                                                                                                         
+         file_open(status, f_ct_vectors   , CT_128_FILE);                                                                                                          
+         key_handle  <= (others  =>  '0');                                                                                                                         
+         test_msg <= pad_string(" Test case 4 : AES128 decryption HI speed ", ' ', STRING_LENGTH);                                                                 
+         wait for 0 ns;                                                                                                                                            
+         report lf & lf & test_msg & lf;                                                                                                                           
+                                                                                                                                                                   
+         rst       <= '1';                                                                                                                                         
+         t_last    <= '0';                                                                                                                                         
+         t_valid   <= '0';                                                                                                                                         
+         wait for RESET_DURATION;                                                                                                                                  
+         rst       <= '0';
+         key_handle  <= std_logic_vector(to_unsigned(0,10)); -- load key                                                                                                                                             
+         wait until rising_edge(clk);                                                                                                                              
+         if t_ready = '1' then                                                                                                                                     
+            t_valid   <= '1';                                                                                                                                      
+            get_inputs(f_ct_vectors, in_word, key_handle); -- load key                                                                                             
+            wait until rising_edge(clk);                                                                                                                           
+            while not endfile(f_ct_vectors) loop -- run at full speed                                                                                              
+               if t_ready = '1' then                                                                                                                               
+                  get_inputs(f_ct_vectors, in_word, key_handle); -- get data from test vectors                                                                     
+                  wait until rising_edge(clk);                                                                                                                     
+                  get_ct(f_128_vectors, exp_ct); -- get data from test vectors                                                                                     
+                  wait for 1 ns;                                                                                                                                   
+                  assertion(test_msg, "compare output cipher with text file FIPS cipher", ct_del(MODE128-1), out_word);                                            
+               else                                                                                                                                                
+                  wait until rising_edge(clk);                                                                                                                     
+               end if;                                                                                                                                             
+            end loop;                                                                                                                                              
+         end if;                                                                                                                                                   
+         if t_ready = '1' then                                                                                                                                                                                                                                                                                 
+            in_word  <= (AES128-1 => '1', others => '0');                                                                                                                                                                                                                                                           
+            t_last  <= '1';                                                                                                                                                                                                                                                                                    
+            wait until rising_edge(clk);                                                                                                                                                                                                                                                                       
+            t_valid  <= '0';                                                                                                                                                                                                                                                                                   
+            wait for clk_period*50;                                                                                                                                
+            file_close(f_128_vectors);                                                                                                                             
+            file_close(f_ct_vectors);                                                                                                                              
+         end if;                                                                                                                                                   
+      end if;                                                                                                                                                      
+                                                                                                                                                                   
+      --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                                                                  
+      -- AES 192                                                                                                                                                                                                                                                                             
       --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       ------------------------------------------------------------------------------------
       ---- Test case 4
@@ -388,9 +406,7 @@ begin
          t_valid   <= '0';                                                                                                             
          wait for RESET_DURATION;                                                                                                      
          rst       <= '0';                                                                                                             
-         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key                                                             
-         wait until rising_edge(clk);                                                                                                  
-         wait until t_ready = '1';                                                                                                  
+         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key                                                                                                                                                                                                                                                                 
          if t_ready = '1' then                                                                                                         
             t_valid   <= '1';                                                                                                          
             get_inputs(f_192_vectors, in_word, key_handle); -- load key                                                                                                                                              
@@ -420,174 +436,163 @@ begin
                                                                                                                                        
       ------------------------------------------------------------------------------------                                             
       ---- Test case 5                                                                                                                 
+      ------------------------------------------------------------------------------------                                    
+      if g_test_cases(5) = '1' then                                                                                                             
+         file_open(status, f_192_vectors      , CMD_192_FILE);                                                                                  
+         file_open(status, f_192_ct_vectors   , CT_192_FILE );                                                                                  
+         key_handle  <= (others  =>  '0');                                                                                                      
+         test_msg <= pad_string(" Test case 6 : AES192 LO speed ", ' ', STRING_LENGTH);                                                         
+         wait for 0 ns;                                                                                                                         
+         report lf & lf & test_msg & lf;                                                                                                        
+                                                                                                                                                
+         rst       <= '1';                                                                                                                      
+         t_last    <= '0';                                                                                                                      
+         t_valid   <= '0';                                                                                                                      
+         exp_ct    <= (others => '0');                                                                                                          
+         wait for RESET_DURATION;                                                                                                               
+         rst      <= '0';                                                                                                                       
+         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key                                                                      
+         wait until rising_edge(clk);                                                                                                                                                                                                                                             
+         if t_ready = '1' then                                                                                                                  
+            t_valid   <= '1';                                                                                                                    
+            get_inputs(f_192_vectors, in_word, key_handle); -- load key                                                                          
+            wait until rising_edge(clk);                                                                                                        
+            t_valid   <= '0';                                                                                                                                                  
+            for i in 0 to AES192 loop -- input next plain text inline with Lo speed                                                            
+               wait until rising_edge(clk);                                                                                                      
+            end loop;                                                                                                                            
+                                                                                                                                                                                          
+            while not endfile(f_192_vectors) loop                                                                                                
+               if t_ready = '1' then                                                                                                            
+                  t_valid   <= '1';                                                                                                             
+                  get_inputs(f_192_vectors, in_word, key_handle); -- get data from test vectors                                                 
+                  wait for 0 ns;                                                                                                                
+                  get_ct(f_192_ct_vectors, exp_ct); -- get data from test vectors                                                                
+                  assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
+                  wait until rising_edge(clk);       
+                  t_valid   <= '0';                                                                    
+                  for i in 0 to AES192 loop -- input next plain text inline with Lo speed                                                      
+                     wait until rising_edge(clk);                                                                                                
+                  end loop;                                                                                                                                             
+               else                                                                                                                              
+                  wait until rising_edge(clk);                                                                                                   
+               end if;                                                                                                                           
+            end loop;                                                                                                                           
+         end if;                                                                                                                                                                                                                                                          
+         if t_ready = '1' then                                                                                                                  
+            t_valid  <= '1';
+            in_word  <= (AES128-1 => '1', others => '0');                                                                                                                                                                                                                                                 
+            t_last  <= '1';                                                                                                                                                                                                                                                                           
+            wait until rising_edge(clk);                                                                                                        
+            t_valid  <= '0';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+            wait for clk_period*600;                                                                                                            
+            file_close(f_192_vectors);                                                                                                          
+            file_close(f_192_ct_vectors);                                                                                                                        
+         end if;                                                                                                                                
+      end if;                                                                                                                                   
+                                                                                                                                                
+      ------------------------------------------------------------------------------------                                                      
+      ---- Test case 6                                                                                                           
       ------------------------------------------------------------------------------------                                       
-      if g_test_cases(5) = '1' then                                                                                               
-         file_open(status, f_192_vectors      , CMD_192_FILE);                                                                    
-         file_open(status, f_192_ct_vectors   , CT_192_FILE );                                                                    
-         key_handle  <= (others  =>  '0');                                                                                        
-         test_msg <= pad_string(" Test case 6 : AES192 LO speed ", ' ', STRING_LENGTH);                                           
-         wait for 0 ns;                                                                                                           
-         report lf & lf & test_msg & lf;                                                                                          
-                                                                                                        
-         rst       <= '1';
-         t_last    <= '0';
-         t_valid   <= '0';                                                                                                        
-         exp_ct    <= (others => '0');                                                                                            
-         wait for RESET_DURATION;                                                                                                
-         rst      <= '0';                                                                                                        
-         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key                                                       
-         wait until rising_edge(clk); 
-         wait until t_ready = '1';                                                                                            
-         if t_ready = '1' then                                                                                               
-            t_valid   <= '1';                                                                                                       
-            get_inputs(f_192_vectors, in_word, key_handle); -- load key                                                             
-                                                                                                                                    
-            for i in 0 to AES192+1 loop -- input next plain text inline with Lo speed                                               
-               wait until rising_edge(clk);                                                                                         
-            end loop;                                                                                                               
-                                                                                                                                                                             
-            while not endfile(f_192_vectors) loop                                                                                   
-               if t_ready = '1' then 
-                  t_valid   <= '1';                                                                                              
-                  get_inputs(f_192_vectors, in_word, key_handle); -- get data from test vectors
-                  wait for 0 ns; 
-                  get_ct(f_192_ct_vectors, exp_ct); -- get data from test vectors                                                   
-                  assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);                                     
-                  for i in 0 to AES192+1 loop -- input next plain text inline with Lo speed                                         
-                     wait until rising_edge(clk);                                                                                   
-                  end loop;                                                                                                                                
-               else                                                                                                                 
-                  wait until rising_edge(clk);                                                                                      
-               end if;                                                                                                              
-            end loop;
-         end if;  
-         wait until t_ready = '1';                                                                                                              
-         if t_ready = '1' then                                                             
-            in_word  <= (AES128-1 => '1', others => '0');                                                                                                                                                                                                                                    
-            t_last  <= '1';                                                                                                                                                                                                                                                              
-            wait until rising_edge(clk);  
-            t_valid  <= '0';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-            wait for clk_period*600;                                                        
-            file_close(f_192_vectors);                                                     
-            file_close(f_192_ct_vectors);                                                                                                           
-         end if;                                                                                             
-      end if;                                                                                                                    
-      
-      ------------------------------------------------------------------------------------
-      ---- Test case 6
-      ------------------------------------------------------------------------------------
       if g_test_cases(6) = '1' then
          file_open(status, f_192_vectors      , CMD_192_FILE);
          file_open(status, f_192_ct_vectors   , CT_192_FILE );
          key_handle  <= (others  =>  '0');
-         test_msg <= pad_string(" Test case 7 : AES192 HI speed valid low after 51 ", ' ', STRING_LENGTH);
-         wait for 0 ns;
-         report lf & lf & test_msg & lf;
-         
-         rst       <= '1';
-         t_last    <= '0';
-         t_valid   <= '0';             
-         wait for RESET_DURATION;
-         rst       <= '0';  
-         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key
-         wait until rising_edge(clk);
-         wait until t_ready = '1';
-         t_valid   <= '1'; 
-         get_inputs(f_192_vectors, in_word, key_handle); -- load key
-         -- account for delay in pipeline
-         wait until rising_edge(clk);
-         for i in 0 to 50 loop -- run at full speed
-         if t_ready = '1' then
-               wait until rising_edge(clk);
-               get_inputs(f_192_vectors, in_word, key_handle); -- get data from test vectors
-               get_ct(f_192_ct_vectors, exp_ct); -- get data from test vectors
-               wait for 2 ns;
-               assertion(test_msg, "compare output cipher with text file FIPS cipher", ct_del(MODE192-1), out_word);
-            else
-               wait until rising_edge(clk);
-            end if;
-         end loop;
-         wait until rising_edge(clk);
-         t_valid   <= '0'; -- set valid low for 100 cycles and see if output is invalid and output t_valid goes low, OK
-         for i in 0 to 100 loop -- run at full speed
-         if t_ready = '1' then
-               wait until rising_edge(clk);
-               get_inputs(f_192_vectors, in_word, key_handle); -- get data from test vectors
-               get_ct(f_192_ct_vectors, exp_ct); -- get data from test vectors
-               wait for 2 ns;
-               assertion(test_msg, "compare output cipher with text file FIPS cipher", ct_del(MODE192-1), out_word);
-            else
-               wait until rising_edge(clk);
-            end if;
-         end loop;
-         wait until rising_edge(clk);
-         t_valid   <= '1'; 
-         
-         while not endfile(f_192_vectors) loop -- run at full speed
-         if t_ready = '1' then
-               wait until rising_edge(clk);
-               get_inputs(f_192_vectors, in_word, key_handle); -- get data from test vectors
-               get_ct(f_192_ct_vectors, exp_ct); -- get data from test vectors
-               wait for 2 ns;
-               assertion(test_msg, "compare output cipher with text file FIPS cipher", ct_del(MODE192-1), out_word);
-            else
-               wait until rising_edge(clk);
-            end if;
-         end loop;
-         if t_ready = '1' then                                                             
-            in_word  <= (AES128-1 => '1', others => '0');                                  
-            t_last  <= '1'; 
-            wait until rising_edge(clk);  
-            t_valid   <= '0';                                                                                                                            
-            wait for clk_period*300;                                                        
-            file_close(f_192_vectors);                                                     
-            file_close(f_192_ct_vectors);                                                                                                           
-         end if;   
-      end if;
+         test_msg <= pad_string(" Test case 7 : AES192 asyncronous clocks", ' ', STRING_LENGTH);
+         wait for 0 ns;                                                                                                                         
+         report lf & lf & test_msg & lf;                                                                                                        
+         async     <= '1';                                                                                                                                       
+         rst       <= '1';                                                                                                                      
+         t_last    <= '0';                                                                                                                      
+         t_valid   <= '0';                                                                                                                      
+         exp_ct    <= (others => '0');                                                                                                          
+         wait for RESET_DURATION;                                                                                                               
+         rst      <= '0';                                                                                                                       
+         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key                                                                      
+         wait until rising_edge(clk); 
+         wait until t_ready = '1';                                                                                                                                                                                                                                            
+         if t_ready = '1' then                                                                                                                  
+            t_valid   <= '1';                                                                                                                    
+            get_inputs(f_192_vectors, in_word, key_handle); -- load key                                                                          
+            wait until rising_edge(clk);                                                                                                        
+            t_valid   <= '0';                                                                                                                                                  
+            for i in 0 to AES192+4 loop -- input next plain text inline with Lo speed                                                            
+               wait until rising_edge(clk);                                                                                                      
+            end loop;                                                                                                                            
+                                                                                                                                                                                          
+            while not endfile(f_192_vectors) loop                                                                                                
+               if t_ready = '1' then                                                                                                            
+                  t_valid   <= '1';                                                                                                             
+                  get_inputs(f_192_vectors, in_word, key_handle); -- get data from test vectors                                                 
+                  wait for 0 ns;                                                                                                                
+                  get_ct(f_192_ct_vectors, exp_ct); -- get data from test vectors                                                                
+                  assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
+                  wait until rising_edge(clk);       
+                  t_valid   <= '0';                                                                    
+                  for i in 0 to AES192+4 loop -- input next plain text inline with Lo speed                                                      
+                     wait until rising_edge(clk);                                                                                                
+                  end loop;                                                                                                                                             
+               else                                                                                                                              
+                  wait until rising_edge(clk);                                                                                                   
+               end if;                                                                                                                           
+            end loop;                                                                                                                           
+         end if;                                                                                                                                                                                                                                                          
+         if t_ready = '1' then                                                                                                                  
+            t_valid  <= '1';
+            in_word  <= (AES128-1 => '1', others => '0');                                                                                                                                                                                                                                                 
+            t_last  <= '1';                                                                                                                                                                                                                                                                           
+            wait until rising_edge(clk);                                                                                                        
+            t_valid  <= '0';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+            wait for clk_period*600;                                                                                                            
+            file_close(f_192_vectors);                                                                                                          
+            file_close(f_192_ct_vectors);                                                                                                                        
+         end if;                                                                                                                                
+      end if; 
       
       ------------------------------------------------------------------------------------
       ---- Test case 8
       ------------------------------------------------------------------------------------
-      if g_test_cases(7) = '1' then                                                                                                
-         file_open(status, f_192_vectors  , CMD_192_FILE);                                                                         
-         file_open(status, f_192_ct_vectors   , CT_192_FILE);                                                                      
-         key_handle  <= (others  =>  '0');                                                                                         
-         test_msg <= pad_string(" Test case 8 : AES192 decryption HI speed ", ' ', STRING_LENGTH);                                 
-         wait for 0 ns;                                                                                                            
-         report lf & lf & test_msg & lf;                                                                                           
-         wait until rising_edge(clk);                                                                                                                            
-         rst       <= '1';
-         t_last    <= '0';
-         t_valid   <= '0';                                                                                                         
-         wait for RESET_DURATION;                                                                                                  
-         rst       <= '0';                                                                                                         
-         wait until rising_edge(clk);                                                                                              
-         if t_ready = '1' then                                                                                                     
-            t_valid   <= '1';                                                                                                      
-            get_inputs(f_192_ct_vectors, in_word, key_handle); -- load key                                                         
-            wait until rising_edge(clk);                                                                                           
-            while not endfile(f_192_ct_vectors) loop -- run at full speed                                                          
-               if t_ready = '1' then                                                                                               
-                  get_inputs(f_192_ct_vectors, in_word, key_handle); -- get data from test vectors                                 
-                  wait until rising_edge(clk);                                                                                     
-                  get_ct(f_192_vectors, exp_ct); -- get data from test vectors                                                     
-                  wait for 2 ns;                                                                                                   
+      if g_test_cases(7) = '1' then                                                                                                       
+         file_open(status, f_192_vectors  , CMD_192_FILE);                                                                                
+         file_open(status, f_192_ct_vectors   , CT_192_FILE);                                                                             
+         key_handle  <= (others  =>  '0');                                                                                                
+         test_msg <= pad_string(" Test case 8 : AES192 decryption HI speed ", ' ', STRING_LENGTH);                                        
+         wait for 0 ns;                                                                                                                   
+         report lf & lf & test_msg & lf;                                                                                                  
+                                                                                                                                          
+         rst       <= '1';                                                                                                                
+         t_last    <= '0';                                                                                                                
+         t_valid   <= '0';                                                                                                                
+         wait for RESET_DURATION;                                                                                                         
+         rst       <= '0';                                                                                                                
+         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key                                                                                                            
+         wait until rising_edge(clk);                                                                                                     
+         if t_ready = '1' then                                                                                                            
+            t_valid   <= '1';                                                                                                             
+            get_inputs(f_192_ct_vectors, in_word, key_handle); -- load key                                                                
+            wait until rising_edge(clk);                                                                                                  
+            while not endfile(f_192_ct_vectors) loop -- run at full speed                                                                 
+               if t_ready = '1' then                                                                                                      
+                  get_inputs(f_192_ct_vectors, in_word, key_handle); -- get data from test vectors                                        
+                  wait until rising_edge(clk);                                                                                            
+                  get_ct(f_192_vectors, exp_ct); -- get data from test vectors                                                            
+                  wait for 2 ns;                                                                                                          
                   assertion(test_msg, "compare output cipher with text file FIPS cipher", ct_del(MODE192-1), out_word);                       
-               else                                                                                                                
-                  wait until rising_edge(clk);                                                                                     
-               end if;                                                                                                             
-            end loop;                                                                                                              
-         end if;                                                                                                 
-         if t_ready = '1' then                                                             
-            in_word  <= (AES128-1 => '1', others => '0');                                  
-            t_last  <= '1'; 
-            wait until rising_edge(clk);  
+               else                                                                                                                       
+                  wait until rising_edge(clk);                                                                                            
+               end if;                                                                                                                    
+            end loop;                                                                                                                     
+         end if;                                                                                                                          
+         if t_ready = '1' then                                                                                                            
+            in_word  <= (AES128-1 => '1', others => '0');                                                                                 
+            t_last  <= '1';                                                                                                               
+            wait until rising_edge(clk);                                                                                                  
             t_valid   <= '0';                                                                                                                            
-            wait for clk_period*50;                                                        
-            file_close(f_192_vectors);                                                     
+            wait for clk_period*50;                                                                                                       
+            file_close(f_192_vectors);                                                                                                    
             file_close(f_192_ct_vectors);                                                                                                           
          end if;                                                                                                                                                                                                              
-      end if;                                                                                                                      
+      end if;                                                                                                                             
       
       --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       -- AES 256
@@ -595,146 +600,151 @@ begin
       ------------------------------------------------------------------------------------
       ---- Test case 9
       ------------------------------------------------------------------------------------
-      if g_test_cases(8) = '1' then                                                                                                  
-         file_open(status, f_256_vectors      , CMD_256_FILE);                                                                       
-         file_open(status, f_256_ct_vectors   , CT_256_FILE );                                                                       
-         key_handle  <= (others  =>  '0');                                                                                           
-         test_msg <= pad_string(" Test case 9 : AES256 key HI speed ", ' ', STRING_LENGTH);                                     
-         wait for 0 ns;                                                                                                              
-         report lf & lf & test_msg & lf;                                                                                             
-                                                                                                                    
-         rst       <= '1';
-         t_last    <= '0';
-         t_valid   <= '0';                                                                                                           
-         wait for RESET_DURATION;                                                                                                    
-         rst       <= '0';                                                                                                           
-         key_handle  <= std_logic_vector(to_unsigned(367,10)); -- load key                                                           
-         wait until rising_edge(clk);
-         wait until t_ready = '1';                                                                                                                                                                 
-         if t_ready = '1' then                                                                                   
-            t_valid   <= '1';                                                                                    
-            get_inputs(f_256_vectors, in_word, key_handle); -- load key                                          
-            wait until rising_edge(clk);                                                                         
-            while not endfile(f_256_vectors) loop -- run at full speed                                           
-               if t_ready = '1' then                                                                             
-                  get_inputs(f_256_vectors, in_word, key_handle); -- get data from test vectors                  
-                  wait until rising_edge(clk);                                                                   
-                  get_ct(f_256_ct_vectors, exp_ct); -- get data from test vectors       
-                  wait for 1 ns;                    
-                  assertion(test_msg, "compare output cipher with text file FIPS cipher", ct_del(MODE256-1), out_word);     
-               else                                                                                              
-                  wait until rising_edge(clk);                                                                   
-               end if;                                                                                           
-            end loop;                                                                                            
-         end if;                                                                                                 
-         if t_ready = '1' then                                                                                   
-            in_word  <= (AES128-1 => '1', others => '0');                                                                                           
-            t_last  <= '1';                                                                                      
-            wait until rising_edge(clk);                                                                         
-            t_valid  <= '0';                                                                                                                                                                         
-            wait for clk_period*50;                                                                            
-            file_close(f_256_vectors);                                                                           
-            file_close(f_256_ct_vectors);                                                                                                                                              
-         end if;                                                                                                                                                                           
+      if g_test_cases(8) = '1' then                                                                                                            
+         file_open(status, f_256_vectors      , CMD_256_FILE);                                                                                 
+         file_open(status, f_256_ct_vectors   , CT_256_FILE );                                                                                 
+         key_handle  <= (others  =>  '0');                                                                                                     
+         test_msg <= pad_string(" Test case 9 : AES256 key HI speed ", ' ', STRING_LENGTH);                                                    
+         wait for 0 ns;                                                                                                                        
+         report lf & lf & test_msg & lf;                                                                                                       
+                                                                                                                                               
+         rst       <= '1';                                                                                                                     
+         t_last    <= '0';                                                                                                                     
+         t_valid   <= '0';                                                                                                                     
+         wait for RESET_DURATION;                                                                                                              
+         rst       <= '0';                                                                                                                     
+         key_handle  <= std_logic_vector(to_unsigned(367,10)); -- load key                                                                     
+         wait until rising_edge(clk);                                                                                                                                                                                                                                                                       
+         if t_ready = '1' then                                                                                                                 
+            t_valid   <= '1';                                                                                                                  
+            get_inputs(f_256_vectors, in_word, key_handle); -- load key                                                                        
+            wait until rising_edge(clk);                                                                                                       
+            while not endfile(f_256_vectors) loop -- run at full speed                                                                         
+               if t_ready = '1' then                                                                                                           
+                  get_inputs(f_256_vectors, in_word, key_handle); -- get data from test vectors                                                
+                  wait until rising_edge(clk);                                                                                                 
+                  get_ct(f_256_ct_vectors, exp_ct); -- get data from test vectors                                                              
+                  wait for 1 ns;                                                                                                               
+                  assertion(test_msg, "compare output cipher with text file FIPS cipher", ct_del(MODE256-1), out_word);                        
+               else                                                                                                                            
+                  wait until rising_edge(clk);                                                                                                 
+               end if;                                                                                                                         
+            end loop;                                                                                                                          
+         end if;                                                                                                                               
+         if t_ready = '1' then                                                                                                                 
+            in_word  <= (AES128-1 => '1', others => '0');                                                                                        
+            t_last  <= '1';                                                                                                                    
+            wait until rising_edge(clk);                                                                                                       
+            t_valid  <= '0';                                                                                                                                                                      
+            wait for clk_period*50;                                                                                                            
+            file_close(f_256_vectors);                                                                                                         
+            file_close(f_256_ct_vectors);                                                                                                                                           
+         end if;                                                                                                                               
       end if;                                                                                                                        
                                                                                                                                      
       ------------------------------------------------------------------------------------                                           
       ---- Test case 10                                                                                                               
       ------------------------------------------------------------------------------------                                           
-      if g_test_cases(9) = '1' then                                                                                                  
-         file_open(status, f_256_vectors      , CMD_256_FILE);                                                                       
-         file_open(status, f_256_ct_vectors   , CT_256_FILE );                                                                       
-         key_handle  <= (others  =>  '0');                                                                                           
-         test_msg <= pad_string(" Test case 10 : AES256 key LO speed ", ' ', STRING_LENGTH);                                     
-         wait for 0 ns;                                                                                                              
-         report lf & lf & test_msg & lf;                                                                                             
-                                                                                                           
-         rst       <= '1';
-         t_last    <= '0';
-         t_valid   <= '0';                                                                                                           
-         exp_ct    <= (others => '0');                                                                                               
-         wait for RESET_DURATION;                                                                                                    
-         rst      <= '0';                                                                                                            
-         key_handle  <= std_logic_vector(to_unsigned(367,10)); -- load key                                                           
-         wait until rising_edge(clk);                                                                                                
-         wait until t_ready = '1'; -- wait for slave ready
-         t_valid   <= '1';  -- now send valid and data
-         get_inputs(f_256_vectors, in_word, key_handle); -- load key 
-         
-         for i in 0 to AES256+1 loop -- input next plain text inline with Lo speed 
-            wait until rising_edge(clk);
+      if g_test_cases(9) = '1' then                                                                                                                                            
+         file_open(status, f_256_vectors      , CMD_256_FILE);                                                                                                                 
+         file_open(status, f_256_ct_vectors   , CT_256_FILE );                                                                                                                 
+         key_handle  <= (others  =>  '0');                                                                                                                                     
+         test_msg <= pad_string(" Test case 10 : AES256 key LO speed ", ' ', STRING_LENGTH);                                                                                   
+         wait for 0 ns;                                                                                                                                                        
+         report lf & lf & test_msg & lf;                                                                                                                                       
+                                                                                                                                                                               
+         rst       <= '1';                                                                                                                                                     
+         t_last    <= '0';                                                                                                                                                     
+         t_valid   <= '0';                                                                                                                                                     
+         exp_ct    <= (others => '0');                                                                                                                                         
+         wait for RESET_DURATION;                                                                                                                                              
+         rst      <= '0';                                                                                                                                                      
+         key_handle  <= std_logic_vector(to_unsigned(367,10)); -- load key                                                                                                     
+         wait until rising_edge(clk);                                                                                                                                          
+         if t_ready = '1' then                                                                                                                                                 
+            t_valid   <= '1';  -- now send valid and data                                                                                                                         
+            get_inputs(f_256_vectors, in_word, key_handle); -- load key                                                                                                           
+            wait until rising_edge(clk);                                                                                                                                          
+         t_valid   <= '0'; 
+         for i in 0 to AES256 loop -- input next plain text inline with Lo speed                                                                                             
+            wait until rising_edge(clk);                                                                                                                                       
+         end loop;                                                                                                                                                             
+                                                                                                                                                                               
+         while not endfile(f_256_vectors) loop                                                                                                                                 
+            if t_ready = '1' then                                                                                                                                              
+               t_valid   <= '1';                                                                                                                                               
+               get_inputs(f_256_vectors, in_word, key_handle); -- get data from test vectors                                                                                   
+               wait for 0 ns;                                                                                                                                                  
+               get_ct(f_256_ct_vectors, exp_ct); -- get data from test vectors                                                                                                 
+               assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);                                                                      
+               wait until rising_edge(clk); 
+               t_valid   <= '0';
+               for i in 0 to AES256 loop -- input next plain text inline with Lo speed                                                                                       
+                  wait until rising_edge(clk);                                                                                                                                 
+               end loop;                                                                                                                                                       
+            else                                                                                                                                                               
+               wait until rising_edge(clk);                                                                                                                                    
+            end if;                                                                                                                                                            
          end loop;
-         
-         while not endfile(f_256_vectors) loop 
-            if t_ready = '1' then
-               t_valid   <= '1';
-               get_inputs(f_256_vectors, in_word, key_handle); -- get data from test vectors
-               wait for 0 ns;
-               get_ct(f_256_ct_vectors, exp_ct); -- get data from test vectors
-               assertion(test_msg, "compare output cipher with text file FIPS cipher", exp_ct, out_word);
-               for i in 0 to AES256+1 loop -- input next plain text inline with Lo speed 
-                  wait until rising_edge(clk);
-               end loop;
-            else
-               wait until rising_edge(clk);
-            end if;
-         end loop;
-         wait until t_ready = '1'; 
-         if t_ready = '1' then                                                                                   
-            in_word  <= (AES128-1 => '1', others => '0');                                                                                                                                                                                                                                    
-            t_last  <= '1';                                                                                                                                                                                                                                                              
-            wait until rising_edge(clk);  
-            t_valid  <= '0';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-            wait for clk_period*600;                                                                            
-            file_close(f_256_vectors);                                                                           
-            file_close(f_256_ct_vectors);                                                                                                                                              
-         end if;   
-      end if;
-      
-      ------------------------------------------------------------------------------------
-      ---- Test case 11
-      ------------------------------------------------------------------------------------
-      if g_test_cases(11) = '1' then
-         file_open(status, f_256_vectors  , CMD_256_FILE);
-         file_open(status, f_256_ct_vectors   , CT_256_FILE);
-         key_handle  <= (others  =>  '0');
-         test_msg <= pad_string(" Test case 11 : AES256 decryption HI speed ", ' ', STRING_LENGTH);
-         wait for 0 ns;
-         report lf & lf & test_msg & lf;
-         wait until rising_edge(clk);  
-         rst       <= '1';
-         t_last    <= '0';
-         t_valid   <= '0';             
-         wait for RESET_DURATION;
-         rst       <= '0';           
-         wait until rising_edge(clk);
-         if t_ready = '1' then
-            t_valid   <= '1'; 
-            get_inputs(f_256_ct_vectors, in_word, key_handle); -- load key
-            wait until rising_edge(clk);
-            while not endfile(f_256_ct_vectors) loop -- run at full speed
-               if t_ready = '1' then
-                  get_inputs(f_256_ct_vectors, in_word, key_handle); -- get data from test vectors
-                  wait until rising_edge(clk);
-                  get_ct(f_256_vectors, exp_ct); -- get data from test vectors
-                  wait for 2 ns;
-                  assertion(test_msg, "compare output cipher with text file FIPS cipher", ct_del(MODE256-1), out_word);
-               else
-                  wait until rising_edge(clk);
-               end if;
-            end loop;
-         end if;
-         if t_ready = '1' then                                                                                   
-            in_word  <= (AES128-1 => '1', others => '0');                                                                                           
-            t_last  <= '1';                                                                                      
-            wait until rising_edge(clk);                                                                         
-            t_valid  <= '0';                                                                                                                                                                         
-            wait for clk_period*50;                                                                            
-            file_close(f_256_vectors);                                                                           
-            file_close(f_256_ct_vectors);                                                                                                                                              
-         end if;   
-      end if;
-      
+         end if;                                                                                                                                                             
+                                                                                                                                          
+         if t_ready = '1' then                                                                                                                                                 
+            t_valid  <= '1';   
+            in_word  <= (AES128-1 => '1', others => '0');                                                                                                                                                                                                                                                                            
+            t_last  <= '1';                                                                                                                                                                                                                                                                                                      
+            wait until rising_edge(clk);                                                                                                                                       
+            t_valid  <= '0';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+            wait for clk_period*600;                                                                                                                                           
+            file_close(f_256_vectors);                                                                                                                                         
+            file_close(f_256_ct_vectors);                                                                                                                                                                                      
+         end if;                                                                                                                                                               
+      end if;                                                                                                                                                                  
+                                                                                                                                                                               
+      ------------------------------------------------------------------------------------                                                                                     
+      ---- Test case 11                                                                                                                                                        
+      ------------------------------------------------------------------------------------                                                                                     
+      if g_test_cases(11) = '1' then                                                                                                                                                               
+         file_open(status, f_256_vectors  , CMD_256_FILE);                                                                                                     
+         file_open(status, f_256_ct_vectors   , CT_256_FILE);                                                                                                  
+         key_handle  <= (others  =>  '0');                                                                                                                     
+         test_msg <= pad_string(" Test case 11 : AES256 decryption HI speed ", ' ', STRING_LENGTH);                                                            
+         wait for 0 ns;                                                                                                                                        
+         report lf & lf & test_msg & lf;                                                                                                                       
+                                                                                                                                           
+         rst       <= '1';                                                                                                                                     
+         t_last    <= '0';                                                                                                                                     
+         t_valid   <= '0';                                                                                                                                     
+         wait for RESET_DURATION;                                                                                                                              
+         rst       <= '0';                                                                                                                                     
+         key_handle <= std_logic_vector(to_unsigned(367,10)); -- load key                                                                                      
+         wait until rising_edge(clk);                                                                                                                          
+         if t_ready = '1' then                                                                                                                                 
+            t_valid   <= '1';                                                                                                                                  
+            get_inputs(f_256_ct_vectors, in_word, key_handle); -- load key                                                                                     
+            wait until rising_edge(clk);                                                                                                                       
+            while not endfile(f_256_ct_vectors) loop -- run at full speed                                                                                      
+               if t_ready = '1' then                                                                                                                           
+                  get_inputs(f_256_ct_vectors, in_word, key_handle); -- get data from test vectors                                                             
+                  wait until rising_edge(clk);                                                                                                                 
+                  get_ct(f_256_vectors, exp_ct); -- get data from test vectors                                                                                 
+                  wait for 1 ns;                                                                                                                               
+                  assertion(test_msg, "compare output cipher with text file FIPS cipher", ct_del(MODE256-1), out_word);                                        
+               else                                                                                                                                            
+                  wait until rising_edge(clk);                                                                                                                 
+               end if;                                                                                                                                         
+            end loop;                                                                                                                                          
+         end if;                                                                                                                                               
+         if t_ready = '1' then                                                                                                                                 
+            in_word  <= (AES128-1 => '1', others => '0');                                                                                                               
+            t_last  <= '1';                                                                                                                                    
+            wait until rising_edge(clk);                                                                                                                       
+            t_valid  <= '0';                                                                                                                                                                                             
+            wait for clk_period*50;                                                                                                                            
+            file_close(f_256_vectors);                                                                                                                         
+            file_close(f_256_ct_vectors);                                                                                                                                                                  
+         end if;                                                                                                                                               
+      end if;                                                                                                                                                  
+                                                                                                                                                               
       ------------------------------------------------------------------------------------                                   
       ---- Test case 12 
       ----"tgId"    : 15,               

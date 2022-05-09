@@ -61,6 +61,7 @@ COMPONENT axis_data_fifo_0
     s_axis_tdata : IN STD_LOGIC_VECTOR(127 DOWNTO 0);
     s_axis_tkeep : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
     s_axis_tlast : IN STD_LOGIC;
+    m_axis_aclk : IN STD_LOGIC;
     m_axis_tvalid : OUT STD_LOGIC;
     m_axis_tready : IN STD_LOGIC;
     m_axis_tdata : OUT STD_LOGIC_VECTOR(127 DOWNTO 0);
@@ -85,6 +86,7 @@ your_instance_name : axis_data_fifo_0
     s_axis_tdata => s_axis_tdata,
     s_axis_tkeep => s_axis_tkeep,
     s_axis_tlast => s_axis_tlast,
+    m_axis_aclk => m_axis_aclk,
     m_axis_tvalid => m_axis_tvalid,
     m_axis_tready => m_axis_tready,
     m_axis_tdata => m_axis_tdata,

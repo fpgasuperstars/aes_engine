@@ -70,6 +70,7 @@ proc create_report { reportName command } {
   }
 }
 OPTRACE "axis_data_fifo_0_synth_1" START { ROLLUP_AUTO }
+set_param simulator.modelsimInstallPath C:/modelsim_dlx64_2021.3/win64pe
 set_param project.vivado.isBlockSynthRun true
 set_msg_config -msgmgr_mode ooc_run
 OPTRACE "Creating in-memory project" START { }
@@ -81,7 +82,7 @@ set_param synth.vivado.isSynthRun true
 set_msg_config -source 4 -id {IP_Flow 19-2162} -severity warning -new_severity info
 set_property webtalk.parent_dir C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo/aes_engine_fifo.cache/wt [current_project]
 set_property parent.project_path C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo/aes_engine_fifo.xpr [current_project]
-set_property XPM_LIBRARIES {XPM_CDC XPM_FIFO} [current_project]
+set_property XPM_LIBRARIES XPM_MEMORY [current_project]
 set_property default_lib xil_defaultlib [current_project]
 set_property target_language VHDL [current_project]
 set_property board_part xilinx.com:zcu102:part0:3.4 [current_project]
@@ -89,7 +90,7 @@ set_property ip_output_repo c:/git/aes_engine/aes_offload/imp/code/vendor/aes_en
 set_property ip_cache_permissions {read write} [current_project]
 OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
-read_ip -quiet c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo/aes_engine_fifo.srcs/sources_1/ip/axis_data_fifo_0/axis_data_fifo_0.xci
+read_ip -quiet C:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo/aes_engine_fifo.srcs/sources_1/ip/axis_data_fifo_0/axis_data_fifo_0.xci
 set_property used_in_implementation false [get_files -all c:/git/aes_engine/aes_offload/imp/code/vendor/aes_engine_fifo/aes_engine_fifo.gen/sources_1/ip/axis_data_fifo_0/axis_data_fifo_0_ooc.xdc]
 
 OPTRACE "Adding files" END { }
