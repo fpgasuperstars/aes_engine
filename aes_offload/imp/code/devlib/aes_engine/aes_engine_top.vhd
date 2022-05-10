@@ -60,8 +60,7 @@ architecture mixed of aes_engine_top is
                                                                                          
    -- AXI-S                                                                              
    signal t_data_q, t_data_last, t_data                                                  : std_logic_vector(AXI_T_DATA-1 downto 0);
-   signal t_keep_q                                                                       : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
-   signal t_valid, t_last                                                                : T_AXI_STREAM := (others  => '0');
+   signal t_keep_q ,t_valid, t_last                                                      : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
    signal t_keep                                                                         : T_AXI_TKEEP;
    signal t_valid_q, t_last_q                                                            : std_logic;
                                                                                          
@@ -485,11 +484,13 @@ begin
    p_data_outputs : process
    begin
       wait until rising_edge(i_clk);
-         key_handle_q <= i_key_handle;
-         t_valid_q    <= i_t_valid;
-         t_last_q     <= i_t_last; 
-         t_keep_q     <= i_t_keep;
-         speed_en_q   <= speed_en; 
+         key_handle_q       <= i_key_handle;
+         t_valid_q          <= i_t_valid;
+         t_last_q           <= i_t_last; 
+         t_keep_q           <= i_t_keep;
+         speed_en_q         <= speed_en;
+         t_valid(AES256+1)  <= t_valid(AES256);
+         t_last(AES256+1)  <= t_last(AES256);
       if i_rst = '1' then
          t_data       <= (others => '0');
          gcm_cipher   <= (others => '0');
@@ -500,28 +501,26 @@ begin
       elsif en_decr = '0' and g_speed_sel = '1' and speed_en = '1' and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 then
          gcm_cipher   <= encrypt(1) xor i_t_data;
          t_data       <= encrypt(1);
-         o_t_last     <= t_last(0)      ;
          o_t_keep     <= t_keep(0)      ;
       elsif en_decr = '1' and g_speed_sel = '1' and speed_en = '1' and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 then
          t_data       <= decrypt(AES256);
-         o_t_last     <= t_last(0)      ;
          o_t_keep     <= t_keep(0)      ;
       elsif en_decr = '0' and g_speed_sel = '0' and en_cnt >= gen_mode  and ini_key_cnt >= gen_mode*3 then
          gcm_cipher   <= encrypt(gen_mode) xor i_t_data;
          t_data       <= encrypt(gen_mode);
-         o_t_last     <= t_last(gen_mode) ;
          o_t_keep     <= t_keep(gen_mode) ;
       elsif en_decr = '1' and g_speed_sel = '0' and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 then
          t_data       <= decrypt(AES256-gen_mode);
-         o_t_last     <= t_last(gen_mode) ; 
          o_t_keep     <= t_keep(gen_mode) ;          
       end if;
    end process;
    
-   o_t_valid  <= t_valid(gen_mode+1) when g_speed_sel = '0' and en_cnt > gen_mode  and ini_key_cnt >= gen_mode*3 else
-                 t_valid(0)          when g_speed_sel = '1' and speed_en_q = '1'   and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 else
+   o_t_valid  <= t_valid(gen_mode+1)   when g_speed_sel = '0' and en_cnt > gen_mode  and ini_key_cnt >= gen_mode*3 else
+                 t_valid(0)            when g_speed_sel = '1' and speed_en_q = '1'   and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 else
                  '0';
-   
+                 
+   o_t_last   <= t_last(gen_mode+1)    when o_t_valid = '1' and g_speed_sel = '0' else              
+                 t_last(0)             when o_t_valid = '1' and g_speed_sel = '1' else '0';
    
    -- route data to output depending on mode
    o_t_data  <= gcm_cipher when mode = GCM_MODE_C else t_data; -- as more modes are added this will change

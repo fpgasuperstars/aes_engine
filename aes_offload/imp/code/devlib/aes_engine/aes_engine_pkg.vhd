@@ -43,7 +43,7 @@ package aes_engine_pkg is
    type     T_SBOX_ARRAY    is array (0 to (2**BYTE_WIDTH)-1) of std_logic_vector(BYTE_WIDTH-1 downto 0);   -- contains the Sbox data
    type     T_COLUMN_32     is array (0 to 3)                 of std_logic_vector(BYTE_WIDTH-1 downto 0);   -- column data for mix column function
    -- axi
-   type     T_AXI_STREAM    is array(0 to AES256+1)           of std_logic;
+   type     T_AXI_STREAM    is array(0 to 16)           of std_logic;
    type     T_AXI_TKEEP     is array(0 to AES256)             of std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
    
    -- Encrpytion
