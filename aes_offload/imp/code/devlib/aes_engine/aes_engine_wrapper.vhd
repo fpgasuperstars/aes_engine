@@ -56,22 +56,22 @@ COMPONENT axis_data_fifo_0
   );
 END COMPONENT;
 
-COMPONENT vio_0
-  PORT (
-    clk : IN STD_LOGIC;
-    probe_in0 : IN STD_LOGIC_VECTOR(127 DOWNTO 0);
-    probe_in1 : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
-    probe_in2 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
-    probe_in3 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
-    probe_in4 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
-    probe_out0 : OUT STD_LOGIC_VECTOR(127 DOWNTO 0);
-    probe_out1 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
-    probe_out2 : OUT STD_LOGIC_VECTOR(9 DOWNTO 0);
-    probe_out3 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
-    probe_out4 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
-    probe_out5 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0)
-  );
-END COMPONENT;
+--COMPONENT vio_0
+--  PORT (
+--    clk : IN STD_LOGIC;
+--    probe_in0 : IN STD_LOGIC_VECTOR(127 DOWNTO 0);
+--    probe_in1 : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+--    probe_in2 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+--    probe_in3 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+--    probe_in4 : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+--    probe_out0 : OUT STD_LOGIC_VECTOR(127 DOWNTO 0);
+--    probe_out1 : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+--    probe_out2 : OUT STD_LOGIC_VECTOR(9 DOWNTO 0);
+--    probe_out3 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+--    probe_out4 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+--    probe_out5 : OUT STD_LOGIC_VECTOR(0 DOWNTO 0)
+--  );
+--END COMPONENT;
 
    -- Signals
    signal rst             : std_logic;
@@ -119,27 +119,27 @@ begin
   --       clk_in1_n => i_clk_n
   --       );
   
-  fifo : axis_data_fifo_0
-  PORT MAP (
-    s_axis_aresetn => rst,
-    s_axis_aclk => clk_s,
-    s_axis_tvalid => t_valido,
-    s_axis_tready => open,
-    s_axis_tdata => t_datao,
-    s_axis_tkeep => t_keepo,
-    s_axis_tlast => t_lasto,
-    m_axis_tvalid => tvalidi,
-    m_axis_tready => treadyo,
-    m_axis_tdata => tdatai,
-    m_axis_tkeep => tkeepi,
-    m_axis_tlast => tlasti,
-    almost_empty => open,
-    almost_full => open
-  );
+  --fifo : axis_data_fifo_0
+  --PORT MAP (
+  --  s_axis_aresetn => rst,
+  --  s_axis_aclk => clk_s,
+  --  s_axis_tvalid => t_valido,
+  --  s_axis_tready => open,
+  --  s_axis_tdata => t_datao,
+  --  s_axis_tkeep => t_keepo,
+  --  s_axis_tlast => t_lasto,
+  --  m_axis_tvalid => tvalidi,
+  --  m_axis_tready => treadyo,
+  --  m_axis_tdata => tdatai,
+  --  m_axis_tkeep => tkeepi,
+  --  m_axis_tlast => tlasti,
+  --  almost_empty => open,
+  --  almost_full => open
+  --);
     
    u_top : entity aes_engine.aes_engine_top
       generic map(
-         g_speed_sel       => '1',
+         g_speed_sel       => '0',
          g_decryption_sel  => '0'
        )
       port map(

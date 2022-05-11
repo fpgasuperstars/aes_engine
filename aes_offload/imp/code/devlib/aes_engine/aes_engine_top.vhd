@@ -39,8 +39,7 @@ entity aes_engine_top IS
       -- Keys
       i_key_handle      : in  std_logic_vector(9 downto 0);
       -- status
-      o_done            : out std_logic;
-      o_nonce_roll      : out unsigned(5 downto 0)
+      o_done            : out std_logic
    );
 end entity;
 
@@ -56,7 +55,7 @@ architecture mixed of aes_engine_top is
                                                                                          
    -- Data                                                                               
    signal encrypt, decrypt                                                               : T_CIPHER_TXT;
-   signal gcm_cipher, encrypt_input_data                                                 : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal encrypt_input_data                                                             : std_logic_vector(AXI_T_DATA-1 downto 0);
                                                                                          
    -- AXI-S                                                                              
    signal t_data_q, t_data_last, t_data                                                  : std_logic_vector(AXI_T_DATA-1 downto 0);
@@ -71,7 +70,7 @@ architecture mixed of aes_engine_top is
    signal en_decr, last_flag, speed_en, speed_en_q, last_rnd_enc_lo, last_rnd_dec_lo     : std_logic;
                                                                                          
    -- GCM                                                                                
-   signal nonce_cnt                                                                      : unsigned(31 downto 0);
+   signal nonce_cnt, nonce_cnt_rev                                                       : unsigned((BYTE_WIDTH*4-1) downto 0);
                                                                                          
    -- Configuration                                                                      
    signal mode                                                                           : std_logic_vector(MODE_C-1 downto 0);
@@ -86,11 +85,11 @@ architecture mixed of aes_engine_top is
    -- Counter signals
    signal en_cnt_rst, last_cnt_rst                                                       : std_logic;
    signal duty_cycle_cnt, flushout_cnt, en_cnt, lo_spd_en_cnt, last_cnt                  : unsigned(4 downto 0);
-   signal ini_key_cnt, config_cnt, nonce_rollover_cnt                                    : unsigned(5 downto 0);
-   signal lo_spd_cnt_dec, lo_spd_cnt_enc                                                 : integer range 0 to 15 := 0;
+   signal ini_key_cnt, config_cnt                                                        : unsigned(5 downto 0);
+   signal lo_spd_cnt_dec, lo_spd_cnt_enc                                                 : integer range 0 to AES256+1 := 0;
                                                                                          
    -- BRAM                                                                               
-   signal addra, key_handle_q                                                            : std_logic_vector(9 downto 0);
+   signal addra, key_handle_q                                                            : std_logic_vector(BYTE_WIDTH+1 downto 0);
    signal outdata, dina                                                                  : std_logic_vector(AES256_KEY-1 downto 0);
    
 begin    
@@ -178,13 +177,11 @@ begin
                   state         <= config;
                   config_cnt    <= (others  => '0');
                   last_flag     <= '0';
-                  o_nonce_roll  <= nonce_rollover_cnt;
                   o_done        <= '1';
                elsif speed_en = '1' and g_speed_sel = '1' then
                   state         <= config;
                   config_cnt    <= (others  => '0');
                   last_flag     <= '0';
-                  o_nonce_roll  <= nonce_rollover_cnt;
                   o_done        <= '1';
                end if;
 
@@ -206,12 +203,9 @@ begin
    
    -- new key detection logic
    new_key     <= '1'      when key_handle_q /= i_key_handle else '0';
-   
-   -- engine ready logic
-   o_t_ready   <= '0'      when state = newkey or speed_en = '0' or (mode = GCM_MODE_C and ((new_key = '1') or en_cnt <= gen_mode)) else '1';
 
    -- input data control     
-   encrypt_input_data  <= std_logic_vector(nonce_cnt) & iv when config_cnt > 0 and mode = GCM_MODE_C else -- IV concatenated with nonce after config data is fed into engine for GCM
+   encrypt_input_data  <= std_logic_vector(nonce_cnt_rev) & iv when config_cnt > 0 and mode = GCM_MODE_C else -- IV concatenated with nonce after config data is fed into engine for GCM
                           i_t_data;
          
    p_rnd_dec : process
@@ -469,14 +463,15 @@ begin
    begin
       wait until rising_edge(i_clk);
       if i_rst then
-         nonce_cnt           <= (others  => '0'); 
-         nonce_rollover_cnt  <= (others  => '0'); 
-      elsif nonce_cnt = x"FFFFFFFF" then -- count when rollover of counter occurs
-         nonce_rollover_cnt  <= nonce_rollover_cnt + 1; -- count number of rollovers which will be fed back to software when done and will be be used as a field in the configuration for the decryption
-      elsif state = normal and o_t_ready = '1' then
-         nonce_cnt  <= nonce_cnt + 1; 
+         nonce_cnt           <= to_unsigned(1,32); 
+      elsif (state = normal and g_speed_sel = '0') or (state = normal and g_speed_sel = '1' and speed_en = '1' and en_cnt >= gen_mode) then
+         nonce_cnt  <= nonce_cnt + 1;
       end if;
    end process;
+   -- all values must be reversed byte order due to the input data entering the engine having the lsB at the msB side
+   gen_rev_byte : for i in 0 to (nonce_cnt'length/BYTE_WIDTH)-1 generate
+      nonce_cnt_rev((i + 1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH)  <=  nonce_cnt(((nonce_cnt'length/BYTE_WIDTH)-i)*BYTE_WIDTH-1 downto ((nonce_cnt'length/BYTE_WIDTH-1)-i)*BYTE_WIDTH);
+   end generate;
    
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    -- Output registers at selected speed
@@ -490,40 +485,45 @@ begin
          t_keep_q           <= i_t_keep;
          speed_en_q         <= speed_en;
          t_valid(AES256+1)  <= t_valid(AES256);
-         t_last(AES256+1)  <= t_last(AES256);
+         t_last(AES256+1)   <= t_last(AES256);
       if i_rst = '1' then
-         t_data       <= (others => '0');
-         gcm_cipher   <= (others => '0');
-         key_handle_q <= (others => '0');
-         t_valid_q    <= '0';  
-         t_last_q     <= '0'; 
-         t_keep_q     <= (others => '0');
+         t_data             <= (others => '0');
+         key_handle_q       <= (others => '0');
+         t_valid_q          <= '0';  
+         t_last_q           <= '0'; 
+         t_keep_q           <= (others => '0');
+         o_t_keep           <= (others => '0');
       elsif en_decr = '0' and g_speed_sel = '1' and speed_en = '1' and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 then
-         gcm_cipher   <= encrypt(1) xor i_t_data;
-         t_data       <= encrypt(1);
-         o_t_keep     <= t_keep(0)      ;
+         t_data             <= encrypt(1);
+         o_t_keep           <= t_keep(0);
       elsif en_decr = '1' and g_speed_sel = '1' and speed_en = '1' and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 then
-         t_data       <= decrypt(AES256);
-         o_t_keep     <= t_keep(0)      ;
-      elsif en_decr = '0' and g_speed_sel = '0' and en_cnt >= gen_mode  and ini_key_cnt >= gen_mode*3 then
-         gcm_cipher   <= encrypt(gen_mode) xor i_t_data;
-         t_data       <= encrypt(gen_mode);
-         o_t_keep     <= t_keep(gen_mode) ;
+         t_data             <= decrypt(AES256);
+         o_t_keep           <= t_keep(0);
+      elsif en_decr = '0' and g_speed_sel = '0' and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 then
+         t_data             <= encrypt(gen_mode);
+         o_t_keep           <= t_keep(gen_mode) ;
       elsif en_decr = '1' and g_speed_sel = '0' and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 then
-         t_data       <= decrypt(AES256-gen_mode);
-         o_t_keep     <= t_keep(gen_mode) ;          
+         t_data             <= decrypt(AES256-gen_mode);
+         o_t_keep           <= t_keep(gen_mode);         
       end if;
    end process;
    
-   o_t_valid  <= t_valid(gen_mode+1)   when g_speed_sel = '0' and en_cnt > gen_mode  and ini_key_cnt >= gen_mode*3 else
-                 t_valid(0)            when g_speed_sel = '1' and speed_en_q = '1'   and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 else
+   o_t_ready  <= '0'                   when state = newkey or speed_en = '0' or (mode = GCM_MODE_C and ((new_key = '1') or en_cnt <= gen_mode)) else '1';
+   
+   o_t_valid  <= t_valid(gen_mode+1)   when  g_speed_sel = '0' and en_cnt > gen_mode  and ini_key_cnt >= gen_mode*3 and mode /= GCM_MODE_C else
+                 t_valid(0)            when  g_speed_sel = '1' and speed_en_q = '1'   and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 and mode /= GCM_MODE_C else
+                 i_t_valid             when  en_cnt > gen_mode and mode = GCM_MODE_C  and speed_en = '1' and nonce_cnt > 1 else
                  '0';
                  
-   o_t_last   <= t_last(gen_mode+1)    when o_t_valid = '1' and g_speed_sel = '0' else              
-                 t_last(0)             when o_t_valid = '1' and g_speed_sel = '1' else '0';
+   o_t_last   <= t_last(gen_mode+1)    when o_t_valid = '1' and g_speed_sel = '0' and mode /= GCM_MODE_C else              
+                 t_last(0)             when o_t_valid = '1' and g_speed_sel = '1' and mode /= GCM_MODE_C else
+                 i_t_last              when mode = GCM_MODE_C and last_flag = '1'                        else
+                 '0';
    
    -- route data to output depending on mode
-   o_t_data  <= gcm_cipher when mode = GCM_MODE_C else t_data; -- as more modes are added this will change
+   o_t_data   <= encrypt(gen_mode) xor i_t_data when mode = GCM_MODE_C and en_cnt >  gen_mode and g_speed_sel = '0' else -- GCM hi speed
+                 encrypt(1)        xor i_t_data when mode = GCM_MODE_C and en_cnt >= gen_mode and g_speed_sel = '1' and speed_en = '1' else -- GCM lo speed
+                 t_data; -- ECB,  as more modes are added this will change
    
    -- Enable counter to tell when to output data after the initial pipeline delay
    p_en_out : process -- counter to determine first valid output after pipeline delays

@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases : std_ulogic_vector(31 downto 0) := x"00000111" -- select 1 test at a time,128/192/256, 2/2/2 = lo speed tests, 1/1/1 hi speed, 0/4/0 = asyncronous test, 8/8/8 = decryption. 1/0/0/0 = gcm mode test
+      g_test_cases : std_ulogic_vector(31 downto 0) := x"00001000" -- select 1 test at a time,128/192/256, 2/2/2 = lo speed tests, 1/1/1 hi speed, 0/4/0 = asyncronous test, 8/8/8 = decryption. 1/0/0/0 = gcm mode test
    );
 end entity;
 
@@ -60,7 +60,7 @@ architecture sim of aes_engine_top_tb is
 begin
    dut : entity aes_engine.aes_engine_top
       generic map(
-         g_speed_sel       => '0', -- 1 = Lo speed
+         g_speed_sel       => '1', -- 1 = Lo speed
          g_decryption_sel  => '0'
       )
       port map(
@@ -116,63 +116,6 @@ begin
    
    engine_clk <= clk when g_test_cases /= x"00000040" else clk_100;
 
-   -- reverse keys for initialisation file of BRAM due to key format being wrong way round MSB and LSB 
-   p_rev_keys : process
-      variable v_oline : line;
-      variable status               : file_open_status;
-   begin
-      if g_test_cases(31) = '1' then
-         file_open(status, f_keys_128   , KEYS_128_FILE);
-         file_open(status, f_keys_192   , KEYS_192_FILE);
-         file_open(status, f_keys_256   , KEYS_256_FILE);
-         file_open(status, f_output_keys, KEYS_OUT_FILE, write_mode);
-         
-         wait until rising_edge(clk);
-         
-         wait for 2 ns;
-         write(v_OLINE, header1);
-         writeline(f_output_keys, v_OLINE);
-         wait for 2 ns;
-         write(v_OLINE, header2);
-         writeline(f_output_keys, v_OLINE);
-         wait for 2 ns;
-         write(v_OLINE, header3);
-         writeline(f_output_keys, v_OLINE);
-         
-         while not endfile(f_keys_128) loop -- run at full speed
-         get_ct(f_keys_128,keys_128 ); -- get data from 128 key file and reverse the order
-         wait for 2 ns;
-            hwrite(v_OLINE, keys_128);
-            write(v_OLINE, comma);
-            writeline(f_output_keys, v_OLINE);
-         end loop;
-      
-         while not endfile(f_keys_192) loop -- run at full speed
-         get_ct(f_keys_192,keys_192 ); -- get data from 192 key file and reverse the order
-         wait for 2 ns;
-         hwrite(v_OLINE, keys_192);
-         write(v_OLINE, comma);
-            writeline(f_output_keys, v_OLINE);
-         end loop;
-         
-         while not endfile(f_keys_256) loop -- run at full speed
-         get_ct(f_keys_256,keys_256 ); -- get data from 256 key file and reverse the order
-         wait for 2 ns;
-         hwrite(v_OLINE, keys_256);
-         write(v_OLINE, comma);
-            writeline(f_output_keys, v_OLINE);
-         end loop;
-      
-         wait until rising_edge(clk);
-          
-         file_close(f_keys_128);
-         file_close(f_keys_192);
-         file_close(f_keys_256);
-         file_close(f_output_keys);
-      end if;
-      wait;
-   end process;
-   
    p_delay_ct : process -- used to align the expected data with the output data for testing values are the same
    begin
       wait for 0 ns;
@@ -186,6 +129,7 @@ begin
    end process;
 
    p_main_tests : process
+      variable v_oline : line;
       variable status               : file_open_status;
    begin
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -774,8 +718,7 @@ begin
          key_handle  <= (others  =>  '0');                                                                                   
          test_msg    <= pad_string(" Test case 12 : GCM mode AES 256", ' ', STRING_LENGTH);                                  
          wait for 0 ns;                                                                                                      
-         report lf & lf & test_msg & lf;                                                                                     
-         wait until rising_edge(clk);                                                                                              
+         report lf & lf & test_msg & lf;                                                                                                                                                                                   
          rst       <= '1';             
          wait for RESET_DURATION;
          rst       <= '0';           
@@ -783,12 +726,73 @@ begin
          wait until t_ready = '1';
          wait until rising_edge(clk);
          t_valid <= '1'; 
-         get_gcm_inputs(f_gcm_vectors, leng_pt, clk, t_ready, in_word, key_handle);
-         wait for clk_period*20;
-         t_valid  <= '0';
+         get_gcm_inputs(f_gcm_vectors, leng_pt, clk, t_valid,  t_ready, in_word, key_handle);
+         in_word  <= (AES128-1 => '1', others => '0');                                                                                                               
+         t_last   <= '1';                                                                                                                                    
+         wait until rising_edge(clk);                                                                                                                       
+         t_valid  <= '0'; 
+         t_last   <= '0';                  
+         wait for clk_period*1000;
          file_close(f_gcm_vectors);
          file_close(f_gcm_ct_vectors);
       end if;
+      
+      ------------------------------------------------------------------------------------                                                                                     
+      ---- print memory .coe file for keys                                                                                                                                                        
+      ------------------------------------------------------------------------------------ 
+      if g_test_cases(31) = '1' then
+         test_msg <= pad_string(" write coe file ", ' ', STRING_LENGTH);                                                                                                                                                                                                 
+         wait for 0 ns;                                                                                                                                                                                                                                                                 
+         report lf & lf & test_msg & lf;  
+         file_open(status, f_keys_128   , KEYS_128_FILE);
+         file_open(status, f_keys_192   , KEYS_192_FILE);
+         file_open(status, f_keys_256   , KEYS_256_FILE);
+         file_open(status, f_output_keys, KEYS_OUT_FILE, write_mode);
+         
+         wait until rising_edge(clk);
+         
+         wait for 2 ns;
+         write(v_OLINE, header1);
+         writeline(f_output_keys, v_OLINE);
+         wait for 2 ns;
+         write(v_OLINE, header2);
+         writeline(f_output_keys, v_OLINE);
+         wait for 2 ns;
+         write(v_OLINE, header3);
+         writeline(f_output_keys, v_OLINE);
+         
+         while not endfile(f_keys_128) loop -- run at full speed
+            get_ct(f_keys_128,keys_128 ); -- get data from 128 key file and reverse the order
+            wait for 2 ns;
+            hwrite(v_OLINE, keys_128);
+            write(v_OLINE, comma);
+            writeline(f_output_keys, v_OLINE);
+         end loop;
+      
+         while not endfile(f_keys_192) loop -- run at full speed
+            get_ct(f_keys_192,keys_192 ); -- get data from 192 key file and reverse the order
+            wait for 2 ns;
+            hwrite(v_OLINE, keys_192);
+            write(v_OLINE, comma);
+            writeline(f_output_keys, v_OLINE);
+         end loop;
+         
+         while not endfile(f_keys_256) loop -- run at full speed
+            get_ct(f_keys_256,keys_256 ); -- get data from 256 key file and reverse the order
+            wait for 2 ns;
+            hwrite(v_OLINE, keys_256);
+            write(v_OLINE, comma);
+            writeline(f_output_keys, v_OLINE);
+         end loop;
+      
+         wait until rising_edge(clk);
+          
+         file_close(f_keys_128);
+         file_close(f_keys_192);
+         file_close(f_keys_256);
+         file_close(f_output_keys);
+      end if;
+      
       -- stop simulation
       assert false report "END OF SIMULATION!" severity failure;
       wait;
