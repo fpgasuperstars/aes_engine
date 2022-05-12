@@ -27,9 +27,9 @@ architecture rtl of aes_engine_key_expansion is
    signal expanded_key_192                                                      : T_EXP_KEYS_192:= (others => (others => '0')); 
    signal expanded_key_128, expanded_key_19, expanded_key_256, expanded_key     : T_EXPANDED_KEYS:= (others => (others => '0')); 
    signal left_shift_256, left_shift_128, left_shift_192, g_function_input_256, h_function_input_256, g_func_out_256, g_func_out_256_q, h_func_out_256, h_func_out_256_q, g_function_input_192, g_func_out_192, g_func_out_192_q, g_function_input_128, g_func_out_128, g_func_out_128_q, h_func_out_128 : T_G_FUNC;
-   signal sbox_out_h_256, sbox_out_g_256, sbox_out, sbox_out_192, sbox_out_128 : T_G_SBOX_ARRAY;
+   signal sbox_out_h_256, sbox_out_g_256, sbox_out, sbox_out_192, sbox_out_128  : T_G_SBOX_ARRAY;
    signal temp_192_assign                                                       : T_TEMP_192:= (others => (others => '0'));
-   signal key_128, key_192,key_256, key_q                                              : std_logic_vector(AES256_KEY-1 downto 0);
+   signal key_128, key_192,key_256, key_q                                       : std_logic_vector(AES256_KEY-1 downto 0);
 begin
 
    p_key_selection : process

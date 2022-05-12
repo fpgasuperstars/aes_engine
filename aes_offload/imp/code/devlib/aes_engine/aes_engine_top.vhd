@@ -145,9 +145,7 @@ begin
                elsif new_key then
                   state       <= newkey;
                elsif i_t_valid then
-                  for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
-                     t_data_q((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= encrypt_input_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0');
-                  end loop; 
+                  t_data_q <= encrypt_input_data; 
                   state       <= normal;
                end if;
                

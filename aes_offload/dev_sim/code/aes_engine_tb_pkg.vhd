@@ -63,14 +63,17 @@ package aes_engine_tb_pkg is
    file f_gcm_ct_vectors             : text;
    file f_gcm_vectors                : text;
    
-   function pad_string(i_s        : string; pad_char_i : character; i_n : positive) RETURN string;
-   function trim(source           : string) return string;
-   function reverse_byte_order( a : std_logic_vector) return std_logic_vector; 
-   procedure assertion(test_msg_i : string; assertion_msg_i : string; expected_i : std_logic_vector; received_i : std_logic_vector);
-   procedure get_inputs(file f_vectors     : text; signal in_word, key: out std_logic_vector );
+   type T_GCM_EXP  is array (0 TO T_DATA_BYTES) of std_logic_vector(DATA_WIDTH_128-1 downto 0);
+   signal ct_gcm_arr : T_GCM_EXP;
+   function pad_string(i_s                 : string; pad_char_i : character; i_n : positive) RETURN string;
+   function trim(source                    : string) return string;
+   function reverse_byte_order( a          : std_logic_vector) return std_logic_vector; 
+   procedure assertion(test_msg_i          : string; assertion_msg_i : string; expected_i : std_logic_vector; received_i : std_logic_vector);
+   procedure get_inputs(file f_vectors     : text; signal in_word, key: out std_logic_vector;signal last : out std_logic  );
    procedure get_ct(file f_vectors         : text; signal exp_ct      : out std_logic_vector);
-   procedure get_gcm_inputs(file f_vectors : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic;  signal in_word, key: out std_logic_vector);
-      
+   procedure get_gcm_inputs(file f_vectors, f_ct : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic; signal ct_result : in std_logic_vector;  signal in_word, key, exp_ct: out std_logic_vector; signal ct_gcm_arr: out T_GCM_EXP);
+   procedure assertion_array(test_msg_i : string; assertion_msg_i : string; expected_i : T_GCM_EXP; received_i : T_GCM_EXP);   
+   procedure test(file f_vectors : text; PATH : string; signal t_ready, clk : in std_logic; signal in_word : out std_logic_vector; signal key_handle : out std_logic_vector; signal t_last, t_valid, rst : out std_logic);
 end package aes_engine_tb_pkg;
 
 package body aes_engine_tb_pkg is
@@ -120,7 +123,33 @@ package body aes_engine_tb_pkg is
    ------------------------------------------------
    -- Procedures
    ------------------------------------------------
-   -- Assertion
+   -- test case
+   procedure test(file f_vectors : text; PATH : string; signal t_ready, clk : in std_logic; signal in_word : out std_logic_vector; signal key_handle : out std_logic_vector; signal t_last, t_valid, rst : out std_logic) is
+   variable status               : file_open_status;
+   constant clk_period           : time := 5 ns; 
+   begin
+      file_open(status, f_vectors, PATH);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+      rst       <= '1';
+      t_last    <= '0';
+      t_valid   <= '0';                                                                                                                                                                                                                                                              
+      wait for RESET_DURATION;                                                                                                                                                                                                                                                       
+      rst       <= '0';                                                                                                                                                                                                                                                              
+      key_handle<= std_logic_vector(to_unsigned(0,10)); -- load key                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+      wait until t_ready = '1';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+      while not endfile(f_vectors) loop                                                                                                                                                                                                                  
+         if t_ready = '1' then
+            t_valid   <= '1';
+            get_inputs(f_vectors, in_word, key_handle, t_last); -- get data from test vectors                                                                                                                                                                                                                                                     
+         end if; 
+      wait until rising_edge(clk);                                                                                                                                                                                                                                                                 
+      end loop;
+      wait for clk_period*600; 
+      file_close(f_vectors);
+   end;
+   
+   
+   
+   -- Assertions
    procedure assertion(test_msg_i : string; assertion_msg_i : string; expected_i : std_logic_vector; received_i : std_logic_vector) is
    begin
       assert expected_i = received_i
@@ -128,21 +157,35 @@ package body aes_engine_tb_pkg is
       severity error;
    end;
    
+   procedure assertion_array(test_msg_i : string; assertion_msg_i : string; expected_i : T_GCM_EXP; received_i : T_GCM_EXP) is
+   begin
+      for i in 1 to WIDTH_BYTE-1 loop
+         wait for 0 ns; 
+         assert expected_i = received_i
+         report trim(test_msg_i) & " - " & assertion_msg_i & " - Expected value: 0x" & to_hstring(expected_i(i-1)) & ", received value: 0x" & to_hstring(received_i(i)) & " <=== error!!!" & lf
+         severity error;
+      end loop;
+   end;
+   
    -- extract input data from FIPS test vectors
-   procedure get_inputs(file f_vectors : text; signal in_word, key : out std_logic_vector ) is
+   procedure get_inputs(file f_vectors : text; signal in_word, key : out std_logic_vector; signal last : out std_logic ) is
       variable v_iline              : line;
       variable v_test_id            : string(1 to 4);
       variable v_space              : character;
       variable v_pt                 : std_logic_vector(in_word'length-1 downto 0);
       variable v_key                : integer;
+      variable v_last               : std_logic;
    begin
       readline(f_vectors, v_iline);
       read(v_iline, v_test_id);
       hread(v_iline, v_pt);
       read(v_iline, v_space);           
-      read(v_iline, v_key);   
+      read(v_iline, v_key);
+      read(v_iline, v_space);           
+      read(v_iline, v_last);   
       in_word   <=  reverse_byte_order(v_pt);  -- reverse order of plain text
       key       <=  std_logic_vector(to_unsigned(v_key,10)); -- get key handle
+      last      <=  v_last;
    end;
 
    -- extract cipher text data from FIPS test vectors
@@ -158,17 +201,21 @@ package body aes_engine_tb_pkg is
    end;
    
    -- extract input data from FIPS test vectors
-   procedure get_gcm_inputs(file f_vectors : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic;  signal in_word, key: out std_logic_vector ) is
-      variable v_iline              : line;
-      variable v_test_id            : string(1 to 4);
-      variable v_space              : character;
-      variable v_pt                 : std_logic_vector(in_word'length-1 downto 0);
+   procedure get_gcm_inputs(file f_vectors, f_ct : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic; signal ct_result : in std_logic_vector;  signal in_word, key, exp_ct : out std_logic_vector; signal ct_gcm_arr: out T_GCM_EXP) is
+      variable v_iline,v_line_ct    : line;
+      variable v_test_id, v_test_id_ct : string(1 to 4);
+      variable v_space, v_space_ct  : character;
+      variable v_pt, v_ct           : std_logic_vector(in_word'length-1 downto 0);
       variable v_key                : integer;
+      variable v_ct_array           : T_GCM_EXP;
    begin
       readline(f_vectors, v_iline);
+      readline(f_ct, v_line_ct);
       read(v_iline,  v_test_id);
+      read(v_line_ct,  v_test_id_ct);
       read(v_iline,  v_key);
       read(v_iline,  v_space); 
+      read(v_line_ct,  v_space_ct); 
       wait for 0 ns;          
       key       <=  std_logic_vector(to_unsigned(v_key,10)); -- get key handle
       for i in 0 to leng_pt/128 loop
@@ -176,11 +223,14 @@ package body aes_engine_tb_pkg is
             hread(v_iline, v_pt);
             in_word   <=  reverse_byte_order(v_pt);  -- reverse order of plain text
             wait until rising_edge(clk);
+            hread(v_line_ct, v_ct);
+            exp_ct   <=  reverse_byte_order(v_ct);
+            wait for 0 ns; 
+            v_ct_array(i) := exp_ct; 
          else
             wait until rising_edge(clk) and t_ready = '1';
-         end if;   
+         end if;
       end loop;
-      
+      ct_gcm_arr <= v_ct_array;
    end;
-
 end package body aes_engine_tb_pkg;
