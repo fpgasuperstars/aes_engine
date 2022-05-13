@@ -130,7 +130,7 @@ begin
                   last_flag  <= '1';
                   state <= newkey;
                   for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
-                     t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= encrypt_input_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
+                     t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= encrypt_input_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when i_t_keep(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
                   end loop;
                elsif last_flag = '1' and en_cnt >= gen_mode and g_speed_sel = '0' then
                   state       <= last;
@@ -140,7 +140,7 @@ begin
                elsif i_t_last then
                   last_flag   <= '1';
                   for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
-                     t_data_q((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= encrypt_input_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0');
+                     t_data_q((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= encrypt_input_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when i_t_keep(i) = '1' else (others  => '0');
                   end loop;
                elsif new_key then
                   state       <= newkey;
@@ -153,7 +153,7 @@ begin
                if i_t_last then
                   last_flag  <= '1';
                   for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
-                     t_data_q((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= encrypt_input_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when t_keep_q(i) = '1' else (others  => '0'); 
+                     t_data_q((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= encrypt_input_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when i_t_keep(i) = '1' else (others  => '0'); 
                   end loop;
                   state       <= newkey;
                elsif last_flag = '1' and  flushout_cnt = (gen_mode *2)+1 then
@@ -171,7 +171,7 @@ begin
             
             when last =>
                last_cnt_rst  <= '0';
-               if last_cnt = gen_mode and g_speed_sel = '0' then
+               if last_cnt = gen_mode-2 and g_speed_sel = '0' then
                   state         <= config;
                   config_cnt    <= (others  => '0');
                   last_flag     <= '0';
@@ -314,8 +314,8 @@ begin
                       t_data_q xor expanded_key_lo_q when g_speed_sel = '1' and lo_spd_cnt_enc <= 1 else
                       encrypt(1);
                       
-   decrypt(AES256) <= t_data_q xor dec_expanded_key_q(AES256+1) when g_speed_sel = '0' else
-                      t_data_q xor dec_expanded_key_q(AES256+1) when g_speed_sel = '1' and lo_spd_cnt_dec = AES256 else
+   decrypt(AES256) <= t_data_q xor dec_expanded_key_q(AES256+1)    when g_speed_sel = '0' else
+                      t_data_q xor dec_expanded_key_lo_q           when g_speed_sel = '1' and lo_spd_cnt_dec = AES256 else
                       decrypt(AES256-1);
    ---------------------------------------------------------------------------------------
    -- Encryption
@@ -439,9 +439,9 @@ begin
          wait until rising_edge(i_clk);
          dec_expanded_key_lo_q  <= dec_expanded_key_lo;
          if i_rst then
-            lo_spd_cnt_dec <= AES256;
+            lo_spd_cnt_dec <= AES256+1;
          elsif speed_en then
-            lo_spd_cnt_dec <= AES256;
+            lo_spd_cnt_dec <= AES256+1;
          elsif t_valid_q then
             lo_spd_cnt_dec <= lo_spd_cnt_dec - 1;
          end if;
@@ -449,6 +449,7 @@ begin
       
       last_rnd_dec_lo      <= '1' when lo_spd_cnt_dec = (AES256+1) - gen_mode else '0';
       dec_expanded_key_lo  <= dec_expanded_key_q(lo_spd_cnt_dec);
+      
    end generate;
       
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

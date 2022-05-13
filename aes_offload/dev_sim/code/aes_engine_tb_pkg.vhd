@@ -42,26 +42,26 @@ package aes_engine_tb_pkg is
    
    -- Files
    -- AES 128 files
-   file f_128_vectors                : text;
-   file f_ct_vectors                 : text;
+   file f_128_vectors             : text;
+   file f_ct_vectors              : text;
    -- AES 192 files
-   file f_192_vectors                : text;
-   file f_192_ct_vectors             : text;
+   file f_192_vectors             : text;
+   file f_192_ct_vectors          : text;
    -- AES 256 files
-   file f_256_vectors                : text;
-   file f_256_ct_vectors             : text;
+   file f_256_vectors             : text;
+   file f_256_ct_vectors          : text;
    -- Generate .coe file for BRAM
-   file f_keys_128                   : text;
-   file f_keys_192                   : text;
-   file f_keys_256                   : text;
-   file f_output_keys                : text;
-   constant header1                  : string := " ;The data memory generated is";
-   constant header2                  : string := " MEMORY_INITIALIZATION_RADIX=16;";
-   constant header3                  : string := " MEMORY_INITIALIZATION_VECTOR= 00000000000000000000000000000000,";
-   constant comma                    : string := ",";
+   file f_keys_128                : text;
+   file f_keys_192                : text;
+   file f_keys_256                : text;
+   file f_output_keys             : text;
+   constant header1               : string := " ;The data memory generated is";
+   constant header2               : string := " MEMORY_INITIALIZATION_RADIX=16;";
+   constant header3               : string := " MEMORY_INITIALIZATION_VECTOR= 00000000000000000000000000000000,";
+   constant comma                 : string := ",";
    -- GCM mode test files
-   file f_gcm_ct_vectors             : text;
-   file f_gcm_vectors                : text;
+   file f_gcm_ct_vectors          : text;
+   file f_gcm_vectors             : text;
    
    type T_GCM_EXP  is array (0 TO T_DATA_BYTES) of std_logic_vector(DATA_WIDTH_128-1 downto 0);
    signal ct_gcm_arr : T_GCM_EXP;
@@ -69,11 +69,11 @@ package aes_engine_tb_pkg is
    function trim(source                    : string) return string;
    function reverse_byte_order( a          : std_logic_vector) return std_logic_vector; 
    procedure assertion(test_msg_i          : string; assertion_msg_i : string; expected_i : std_logic_vector; received_i : std_logic_vector);
-   procedure get_inputs(file f_vectors     : text; signal in_word, key: out std_logic_vector;signal last : out std_logic  );
+   procedure get_inputs(file f_vectors     : text; signal in_word, key: out std_logic_vector;signal last : out std_logic; signal t_keep : out std_logic_vector  );
    procedure get_ct(file f_vectors         : text; signal exp_ct      : out std_logic_vector);
    procedure get_gcm_inputs(file f_vectors, f_ct : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic; signal ct_result : in std_logic_vector;  signal in_word, key, exp_ct: out std_logic_vector; signal ct_gcm_arr: out T_GCM_EXP);
    procedure assertion_array(test_msg_i : string; assertion_msg_i : string; expected_i : T_GCM_EXP; received_i : T_GCM_EXP);   
-   procedure test(file f_vectors : text; PATH : string; signal t_ready, clk : in std_logic; signal in_word : out std_logic_vector; signal key_handle : out std_logic_vector; signal t_last, t_valid, rst : out std_logic);
+   procedure test(file f_vectors : text; PATH : string; signal t_ready, clk : in std_logic; signal in_word : out std_logic_vector; signal key_handle : out std_logic_vector; signal t_last, t_valid, rst : out std_logic; signal t_keep : out std_logic_vector);
 end package aes_engine_tb_pkg;
 
 package body aes_engine_tb_pkg is
@@ -124,7 +124,7 @@ package body aes_engine_tb_pkg is
    -- Procedures
    ------------------------------------------------
    -- test case
-   procedure test(file f_vectors : text; PATH : string; signal t_ready, clk : in std_logic; signal in_word : out std_logic_vector; signal key_handle : out std_logic_vector; signal t_last, t_valid, rst : out std_logic) is
+   procedure test(file f_vectors : text; PATH : string; signal t_ready, clk : in std_logic; signal in_word : out std_logic_vector; signal key_handle : out std_logic_vector; signal t_last, t_valid, rst : out std_logic; signal t_keep : out std_logic_vector) is
    variable status               : file_open_status;
    constant clk_period           : time := 5 ns; 
    begin
@@ -139,7 +139,7 @@ package body aes_engine_tb_pkg is
       while not endfile(f_vectors) loop                                                                                                                                                                                                                  
          if t_ready = '1' then
             t_valid   <= '1';
-            get_inputs(f_vectors, in_word, key_handle, t_last); -- get data from test vectors                                                                                                                                                                                                                                                     
+            get_inputs(f_vectors, in_word, key_handle, t_last, t_keep); -- get data from test vectors                                                                                                                                                                                                                                                     
          end if; 
       wait until rising_edge(clk);                                                                                                                                                                                                                                                                 
       end loop;
@@ -168,24 +168,28 @@ package body aes_engine_tb_pkg is
    end;
    
    -- extract input data from FIPS test vectors
-   procedure get_inputs(file f_vectors : text; signal in_word, key : out std_logic_vector; signal last : out std_logic ) is
+   procedure get_inputs(file f_vectors : text; signal in_word, key : out std_logic_vector; signal last : out std_logic; signal t_keep : out std_logic_vector ) is
       variable v_iline              : line;
       variable v_test_id            : string(1 to 4);
       variable v_space              : character;
       variable v_pt                 : std_logic_vector(in_word'length-1 downto 0);
       variable v_key                : integer;
       variable v_last               : std_logic;
+      variable v_keep               : std_logic_vector((WIDTH_BYTE*2)-1 downto 0);
    begin
       readline(f_vectors, v_iline);
       read(v_iline, v_test_id);
       hread(v_iline, v_pt);
       read(v_iline, v_space);           
-      read(v_iline, v_key);
+      read(v_iline, v_key); 
       read(v_iline, v_space);           
-      read(v_iline, v_last);   
+      read(v_iline, v_last);
+      read(v_iline, v_space);           
+      hread(v_iline, v_keep);    
       in_word   <=  reverse_byte_order(v_pt);  -- reverse order of plain text
       key       <=  std_logic_vector(to_unsigned(v_key,10)); -- get key handle
       last      <=  v_last;
+      t_keep    <=  v_keep;
    end;
 
    -- extract cipher text data from FIPS test vectors

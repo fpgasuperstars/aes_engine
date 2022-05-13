@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases   : std_logic_vector(31 downto 0) := x"00000001"; -- select 1 test at a time,128/192/256, 1/1/1 encryp, 8/8/8 = decryption. 1/0/0/0 = gcm mode test
+      g_test_cases   : std_logic_vector(31 downto 0) := x"00001000"; -- select 1 test at a time,128/192/256, 1/1/1 encryp, 8/8/8 = decryption. 1/0/0/0 = gcm mode test
       g_asyncronous  : std_logic := '0';
       g_decryption   : std_logic := '0';
       g_speed_select : std_logic := '1' -- 1 = Lo speed
@@ -36,24 +36,27 @@ architecture sim of aes_engine_top_tb is
    constant KEY               : std_logic_vector(DATA_WIDTH_128-1 downto 0) := (others => '0'); 
    constant clk_period        : time := 5 ns; 
    constant clk_period_100    : time := 10 ns;
+   constant pad               : string := "                                                                     ";
    
    -- Signals
    signal out_word, out_word_q, out_word_qq, in_word, fifo_to_engine_data   : std_logic_vector(DATA_WIDTH_128-1 downto 0) := (others => '0');
-   signal test_msg            : string(1 to STRING_LENGTH);
-   signal rst, clk, clk_100, engine_clk   : std_logic := '0';
-   signal test_id             : string(1 to 4);                        
-   signal pt                  : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
-   signal key_handle          : std_logic_vector(9 downto 0):= (others => '0');
+   signal test_msg                                             : string(1 to STRING_LENGTH);
+   signal rst, clk, clk_100, engine_clk                        : std_logic := '0';
+   signal test_id                                              : string(1 to 4);                        
+   signal pt                                                   : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   signal key_handle                                           : std_logic_vector(9 downto 0):= (others => '0');
    signal exp_ct,exp_ct_128,exp_ct_192,exp_ct_256,gcm_ct_exp   : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
-   signal test_done, t_valid, valid_out, o_t_valid, t_last, fifo_to_engine_t_last, o_t_ready : std_logic := '0';
-   signal t_keep, fifo_to_engine_keep              : std_logic_vector((WIDTH_BYTE*2)-1 downto 0):= (others => '1');
-   signal t_ready             : std_logic := '0';
-   signal mode,leng_pt        : integer;
-   signal en_cnt              : unsigned(4 downto 0);
-   signal iv                  : std_logic_vector(95 downto 0):= (others => '0');  
+   signal test_done, t_valid, valid_out, valid_out_q, o_t_valid: std_logic := '0';
+   signal t_last, fifo_to_engine_t_last, o_t_ready             : std_logic := '0';
+   signal t_keep, fifo_to_engine_keep                          : std_logic_vector((WIDTH_BYTE*2)-1 downto 0):= (others => '1');
+   signal t_ready                                              : std_logic := '0';
+   signal mode,leng_pt                                         : integer;
+   signal en_cnt                                               : unsigned(4 downto 0);
+   signal iv                                                   : std_logic_vector(95 downto 0):= (others => '0'); 
+   
+   -- assertions/ result
    type T_CT_ARRAY   is array (0 to 100) of std_logic_vector(DATA_WIDTH_128-1 downto 0);
    signal ct_del : T_CT_ARRAY;
-
    signal ct_gcm_arr, out_word_arr : T_GCM_EXP;
    
    -- BRAM
@@ -105,8 +108,9 @@ begin
       
    p_clk : process
    begin
-      out_word_q  <= out_word;
+      out_word_q   <= out_word;
       out_word_qq  <= out_word_q;
+      valid_out_q  <= valid_out;
       clk <= '1';
       wait for clk_period/2;
       clk <= '0';
@@ -120,11 +124,11 @@ begin
       clk_100 <= '0';
       wait for clk_period_100/2;
    end process;
-   
+   -- change to asyncronous clocks when mode selected
    engine_clk <= clk when g_asyncronous = '0' else clk_100;
 
    p_assertions : process -- used to align the expected data with the output data for testing values are the same
-      variable status               : file_open_status;
+      variable status : file_open_status;
    begin
       if g_decryption = '0' then
          file_open(status, f_ct_vectors    , CT_128_FILE ); 
@@ -132,16 +136,24 @@ begin
          file_open(status, f_256_ct_vectors, CT_256_FILE ); 
          while not endfile(f_ct_vectors) loop 
             if valid_out = '1' then
-               get_ct(f_ct_vectors, exp_ct_128);
-               get_ct(f_192_ct_vectors, exp_ct_192);
-               get_ct(f_256_ct_vectors, exp_ct_256);
-               wait for 1 ns;
-               if g_test_cases = x"00000001" then
-                  assertion(test_msg, "compare output cipher with text file FIPS cipher",  exp_ct_128, out_word_qq);
-               elsif g_test_cases = x"00000010" then
-                  assertion(test_msg, "compare output cipher with text file FIPS cipher",  exp_ct_192, out_word_qq);
-               elsif g_test_cases = x"00000100" then
-                  assertion(test_msg, "compare output cipher with text file FIPS cipher",  exp_ct_256, out_word_qq);
+               if test_msg = "Test case 1 : AES128 Encryption" & pad then
+                  get_ct(f_ct_vectors, exp_ct_128);
+                  wait for 0 ns;
+                  if valid_out_q = '1' then
+                     assertion(test_msg, "compare output cipher with text file FIPS cipher",  exp_ct_128, out_word_qq);
+                  end if;
+               elsif test_msg = "Test case 3 : AES192 Encryption" & pad then
+                  get_ct(f_192_ct_vectors, exp_ct_192);
+                  wait for 0 ns;
+                  if valid_out_q = '1' then
+                     assertion(test_msg, "compare output cipher with text file FIPS cipher",  exp_ct_192, out_word_qq);
+                  end if;
+               elsif test_msg = "Test case 5 : AES256 Encryption" & pad then
+                  get_ct(f_256_ct_vectors, exp_ct_256);
+                  wait for 0 ns;
+                  if valid_out_q = '1' then
+                     assertion(test_msg, "compare output cipher with text file FIPS cipher",  exp_ct_256, out_word_qq);
+                  end if;
                end if;
             end if;
             wait until rising_edge(clk);
@@ -155,17 +167,25 @@ begin
          file_open(status, f_256_vectors, CMD_256_FILE );
          while not endfile(f_128_vectors) loop 
             if valid_out = '1' then
-               get_ct(f_128_vectors, exp_ct_128);
-               get_ct(f_192_vectors, exp_ct_192);
-               get_ct(f_256_vectors, exp_ct_256);
-               wait for 1 ns;
-               if g_test_cases = x"00000008" then                                                                      
-                  assertion(test_msg, "compare output cipher with text file FIPS cipher",  exp_ct_128, out_word_qq);   
-               elsif g_test_cases = x"00000080" then                                                                   
-                  assertion(test_msg, "compare output cipher with text file FIPS cipher",  exp_ct_192, out_word_qq);   
-               elsif g_test_cases = x"00000800" then                                                                   
-                  assertion(test_msg, "compare output cipher with text file FIPS cipher",  exp_ct_256, out_word_qq);   
-               end if;                                                                                                  
+               if test_msg = "Test case 2 : AES128 Decryption" & pad then
+                  get_ct(f_128_vectors, exp_ct_128);
+                  wait for 0 ns;
+                  if valid_out_q = '1' then
+                     assertion(test_msg, "compare output cipher with text file FIPS cipher",  exp_ct_128, out_word_qq);
+                  end if;
+               elsif test_msg = "Test case 4 : AES192 Decryption" & pad then
+                  get_ct(f_192_vectors, exp_ct_192);
+                  wait for 0 ns;
+                  if valid_out_q = '1' then
+                     assertion(test_msg, "compare output cipher with text file FIPS cipher",  exp_ct_192, out_word_qq);
+                  end if;
+               elsif test_msg = "Test case 6 : AES256 Decryption" & pad then
+                  get_ct(f_256_vectors, exp_ct_256);
+                  wait for 0 ns;
+                  if valid_out_q = '1' then
+                     assertion(test_msg, "compare output cipher with text file FIPS cipher",  exp_ct_256, out_word_qq);
+                  end if;
+               end if;
             end if;
             wait until rising_edge(clk);
          end loop;
@@ -183,11 +203,15 @@ begin
             out_word_arr(i) <= out_word;
       end loop;
    end process;
-
+   
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   -- Test Cases
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
    p_main_tests : process
       variable v_oline : line;
-      variable status               : file_open_status;
+      variable status : file_open_status;
    begin
+      
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    -- AES 128
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
@@ -195,145 +219,64 @@ begin
       ---- Test case 1
       ------------------------------------------------------------------------------------
       if g_test_cases(0) = '1' then                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-         test_msg <= pad_string(" Test case 1 : AES128 ", ' ', STRING_LENGTH);                                                                                                                                                                                                 
+         test_msg <= pad_string("Test case 1 : AES128 Encryption", ' ', STRING_LENGTH);                                                                                                                                                                                                 
          wait for 0 ns;                                                                                                                                                                                                                                                                 
          report lf & lf & test_msg & lf;
-         test(f_128_vectors, CMD_128_FILE, t_ready, clk, in_word, key_handle,t_last, t_valid, rst );
+         test(f_128_vectors, CMD_128_FILE, t_ready, clk, in_word, key_handle,t_last, t_valid, rst, t_keep );
       end if;
       
       ------------------------------------------------------------------------------------
-      ---- Test case 3
+      ---- Test case 2
       ------------------------------------------------------------------------------------
-      if g_test_cases(3) = '1' then                                                                                                                                                                                                                         
-         file_open(status, f_ct_vectors   , CT_128_FILE);                                                                                                                                                                                       
-         test_msg <= pad_string(" Test case 3 : AES128 decryption ", ' ', STRING_LENGTH);                                            
-         wait for 0 ns;                                                                                                                       
-         report lf & lf & test_msg & lf;                                                                                                                                                                                                                          
-         rst       <= '1';                                                                                                                    
-         t_last    <= '0';                                                                                                                    
-         t_valid   <= '0';                                                                                                                    
-         wait for RESET_DURATION;                                                                                                             
-         rst       <= '0';                                                                                              
-         key_handle  <= std_logic_vector(to_unsigned(0,10)); -- load key                                                                                                                                                                                                                                     
-         wait until t_ready = '1';                                                                                                                                                                                                                                                                                                                                                                        
-         while not endfile(f_ct_vectors) loop -- run at full speed                                                                         
-            if t_ready = '1' then                                                                                                          
-               t_valid   <= '1';
-               get_inputs(f_ct_vectors, in_word, key_handle, t_last); -- get data from test vectors                                                                                                                                           
-            end if; 
-         wait until rising_edge(clk);                                                                                                                       
-         end loop;
-         wait for clk_period*600;                                                                                                       
-         file_close(f_ct_vectors);                                                                                                                                                  
+      if g_test_cases(3) = '1' then                                                                                                                                                                                                                                                                                                                                                                                                               
+         test_msg <= pad_string("Test case 2 : AES128 Decryption", ' ', STRING_LENGTH);
+         wait for 0 ns;                                                                                                                                                                                                                                                                 
+         report lf & lf & test_msg & lf;
+         test(f_ct_vectors, CT_128_FILE, t_ready, clk, in_word, key_handle,t_last, t_valid, rst, t_keep );                                                                                                                                                          
       end if;                                                                                                                                                      
                                                                                                                                                                    
-      --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                                                                  
-      -- AES 192                                                                                                                                                                                                                                                                             
-      --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                                                                  
+   -- AES 192                                                                                                                                                                                                                                                                             
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      ------------------------------------------------------------------------------------
+      ---- Test case 3
+      ------------------------------------------------------------------------------------
+      if g_test_cases(4) = '1' then                                                                                                                                                                                                                                                                                                                                                                                                                                         
+         test_msg <= pad_string("Test case 3 : AES192 Encryption", ' ', STRING_LENGTH);
+         wait for 0 ns;                                                                                                                                                                                                                                                                 
+         report lf & lf & test_msg & lf;                                                          
+         test(f_192_vectors, CMD_192_FILE, t_ready, clk, in_word, key_handle,t_last, t_valid, rst, t_keep );                                                                                                                                                                  
+      end if;                                                                                                                                                                                                                                                                                                                                                                                           
       ------------------------------------------------------------------------------------
       ---- Test case 4
       ------------------------------------------------------------------------------------
-      if g_test_cases(4) = '1' then                                                                                                               
-         file_open(status, f_192_vectors, CMD_192_FILE);                                                                                                                                                                                                                                                                                                                          
-         test_msg <= pad_string(" Test case 5 : AES192 ", ' ', STRING_LENGTH);                                                          
-         wait for 0 ns;                                                                                                                          
-         report lf & lf & test_msg & lf;                                                                                                                                                                                                                                        
-         rst       <= '1';                                                                                                                       
-         t_last    <= '0';                                                                                                                       
-         t_valid   <= '0';                                                                                                                       
-         wait for RESET_DURATION;                                                                                                                
-         rst       <= '0';                                                                                                                       
-         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key                                                                                                                                                                                                         
-         wait until t_ready = '1';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-         while not endfile(f_192_vectors) loop -- run at full speed                                                                           
-            if t_ready = '1' then                                                                                                             
-               t_valid   <= '1';                                                                                           
-               get_inputs(f_192_vectors, in_word, key_handle, t_last); -- get data from test vectors                                                                                                                                           
-            end if;                                                                                                        
-         wait until rising_edge(clk);                                                                                                                       
-         end loop;
-         wait for clk_period*600;                                                                                                       
-         file_close(f_192_vectors);                                                                                                                                                                                 
-      end if;                                                                                                                                                                                                                                                                                                                                                                                           
+      if g_test_cases(7) = '1' then                                                                                                                                                                                                                                                                                                                                                                
+         test_msg <= pad_string("Test case 4 : AES192 Decryption", ' ', STRING_LENGTH);
+         wait for 0 ns;                                                                                                                                                                                                                                                                 
+         report lf & lf & test_msg & lf;                                       
+         test(f_192_ct_vectors, CT_192_FILE, t_ready, clk, in_word, key_handle,t_last, t_valid, rst, t_keep );                                                                                                                                                                                                
+      end if;                                                                                                                             
+      
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   -- AES 256
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
       ------------------------------------------------------------------------------------
       ---- Test case 5
       ------------------------------------------------------------------------------------
-      if g_test_cases(7) = '1' then                                                                                                                                                                                     
-         file_open(status, f_192_ct_vectors   , CT_192_FILE);                                                                                                                                                                            
-         test_msg <= pad_string(" Test case 5 : AES192 decryption ", ' ', STRING_LENGTH);                                        
-         wait for 0 ns;                                                                                             
-         report lf & lf & test_msg & lf;                                                                            
-         rst       <= '1';                                                                                          
-         t_last    <= '0';                                                                                          
-         t_valid   <= '0';                                                                                          
-         wait for RESET_DURATION;                                                                                   
-         rst       <= '0';                                                                                          
-         key_handle  <= std_logic_vector(to_unsigned(150,10)); -- load key                                            
-         wait until t_ready = '1';                                                                                                                              
-         while not endfile(f_192_ct_vectors) loop -- run at full speed                               
-            if t_ready = '1' then                                                                                 
-               t_valid   <= '1';                                                                                    
-               get_inputs(f_192_ct_vectors, in_word, key_handle, t_last); -- get data from test vectors                         
-            end if;                                                                                                 
-            wait until rising_edge(clk);                                                                            
-         end loop;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-         wait for clk_period*600;                                                                                                       
-         file_close(f_192_vectors);                                                                                                                                                                                                
-      end if;                                                                                                                             
-      
-      --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      -- AES 256
-      --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
-      ------------------------------------------------------------------------------------
-      ---- Test case 6
-      ------------------------------------------------------------------------------------
-      if g_test_cases(8) = '1' then                                                                                                            
-         file_open(status, f_256_vectors      , CMD_256_FILE);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-         test_msg <= pad_string(" Test case 6 : AES256 key  ", ' ', STRING_LENGTH);                                                                                                                                                                                                                                                                                                                                                                                                                               
-         wait for 0 ns;                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-         report lf & lf & test_msg & lf;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-         rst       <= '1';                                                                                                                
-         t_last    <= '0';                                                                                                                
-         t_valid   <= '0';                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-         wait for RESET_DURATION;                                                                                                                                                                                                                                                                                                                                                                                                                                          
-         rst       <= '0';                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-         key_handle<= std_logic_vector(to_unsigned(367,10)); -- load key                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-         wait until t_ready = '1';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-         while not endfile(f_256_vectors) loop                                                                                                                                                                                                                                                                                                                                                                                
-            if t_ready = '1' then                                                                                                      
-               t_valid   <= '1';                                                                                                       
-               get_inputs(f_256_vectors, in_word, key_handle, t_last); -- get data from test vectors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-            end if;                                                                                                                    
-         wait until rising_edge(clk);                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-         end loop;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-         wait for clk_period*600;                                                                                                       
-         file_close(f_256_vectors);                                                                                                                                                                                                                              
-      end if;                                                                                                                                                                                                                                                                                                                                                                                                       
-                                                                                                                                                                               
+      if g_test_cases(8) = '1' then                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+         test_msg <= pad_string("Test case 5 : AES256 Encryption", ' ', STRING_LENGTH);                                                                                                                                                                                                                                                                                                                                                                                                                               
+         wait for 0 ns;
+         report lf & lf & test_msg & lf;                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+         test(f_256_vectors, CMD_256_FILE, t_ready, clk, in_word, key_handle,t_last, t_valid, rst, t_keep );                                                                                                                                                                                                                                                                                                                                                                                              
+      end if;                                                                                                                                                                          
       ------------------------------------------------------------------------------------                                                                                     
-      ---- Test case 7                                                                                                                                                        
+      ---- Test case 6                                                                                                                                                        
       ------------------------------------------------------------------------------------                                                                                     
-      if g_test_cases(11) = '1' then                                                                                                                                                               
-         file_open(status, f_256_ct_vectors   , CT_256_FILE);                                                                                                                                                                            
-         test_msg <= pad_string(" Test case 5 : AES256 decryption ", ' ', STRING_LENGTH);                                        
+      if g_test_cases(11) = '1' then                                                                                                                                                                                                                                                                                                                                        
+         test_msg <= pad_string("Test case 6 : AES256 Decryption", ' ', STRING_LENGTH);                                        
          wait for 0 ns;                                                                                             
-         report lf & lf & test_msg & lf;                                                                            
-         rst       <= '1';                                                                                          
-         t_last    <= '0';                                                                                          
-         t_valid   <= '0';                                                                                          
-         wait for RESET_DURATION;                                                                                   
-         rst       <= '0';                                                                                          
-         key_handle  <= std_logic_vector(to_unsigned(367,10)); -- load key                                            
-         wait until t_ready = '1';                                                                                                                              
-         while not endfile(f_256_ct_vectors) loop -- run at full speed                               
-            if t_ready = '1' then                                                                                 
-               t_valid   <= '1';                                                                                    
-               get_inputs(f_256_ct_vectors, in_word, key_handle, t_last); -- get data from test vectors                         
-            end if;                                                                                                 
-            wait until rising_edge(clk);                                                                            
-         end loop;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-         wait for clk_period*600;                                                                                                       
-         file_close(f_256_vectors);                                                                                                                                                                             
+         report lf & lf & test_msg & lf;
+         test(f_256_ct_vectors, CT_256_FILE, t_ready, clk, in_word, key_handle,t_last, t_valid, rst, t_keep );                                                                                                                                                                                                                                                          
       end if;                                                                                                                                              
                                                                                                                                                                
       ------------------------------------------------------------------------------------                                   
@@ -433,7 +376,6 @@ begin
       -- stop simulation
       assert false report "END OF SIMULATION!" severity failure;
       wait;
-      
    end process;
    
    
