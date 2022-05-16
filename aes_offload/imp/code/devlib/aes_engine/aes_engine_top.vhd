@@ -30,12 +30,13 @@ entity aes_engine_top IS
       i_t_valid         : in  std_logic;
       i_t_last          : in  std_logic;
       i_t_keep          : in  std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
-      o_t_ready         : out std_logic;
+      i_t_ready         : in  std_logic;
       -- AXI stream S2M
       o_t_valid         : out std_logic;
       o_t_last          : out std_logic;
       o_t_keep          : out std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
       o_t_data          : out std_logic_vector(AXI_T_DATA-1 downto 0);
+      o_t_ready         : out std_logic;
       -- Keys
       i_key_handle      : in  std_logic_vector(9 downto 0);
       -- status
@@ -507,7 +508,7 @@ begin
       end if;
    end process;
    
-   o_t_ready  <= '0'                   when state = newkey or speed_en = '0' or (mode = GCM_MODE_C and ((new_key = '1') or en_cnt <= gen_mode)) else '1';
+   o_t_ready  <= '0'                   when i_t_ready = '0' or (state = newkey or speed_en = '0' or (mode = GCM_MODE_C and ((new_key = '1') or en_cnt <= gen_mode))) else '1';
    
    o_t_valid  <= t_valid(gen_mode+1)   when  g_speed_sel = '0' and en_cnt > gen_mode  and ini_key_cnt >= gen_mode*3 and mode /= GCM_MODE_C else
                  t_valid(0)            when  g_speed_sel = '1' and speed_en_q = '1'   and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 and mode /= GCM_MODE_C else

@@ -156,6 +156,7 @@ begin
          o_t_last          => t_lasto  ,
          o_t_keep          => t_keepo  ,
          o_t_data          => t_datao  ,
+         i_t_ready         => '1'  ,
          -- Keys
          i_key_handle      => key_handle,
          o_done            => o_done 

@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases   : std_logic_vector(31 downto 0) := x"00001000"; -- select 1 test at a time,128/192/256, 1/1/1 encryp, 8/8/8 = decryption. 1/0/0/0 = gcm mode test
+      g_test_cases   : std_logic_vector(31 downto 0) := x"00001000"; -- select 1 test at a time,128/192/256, 1/1/1 encryp, 8/8/8 = decryption. 1/0/0/0 = gcm mode 256 test
       g_asyncronous  : std_logic := '0';
       g_decryption   : std_logic := '0';
       g_speed_select : std_logic := '1' -- 1 = Lo speed
@@ -39,24 +39,23 @@ architecture sim of aes_engine_top_tb is
    constant pad               : string := "                                                                     ";
    
    -- Signals
-   signal out_word, out_word_q, out_word_qq, in_word, fifo_to_engine_data   : std_logic_vector(DATA_WIDTH_128-1 downto 0) := (others => '0');
-   signal test_msg                                             : string(1 to STRING_LENGTH);
-   signal rst, clk, clk_100, engine_clk                        : std_logic := '0';
-   signal test_id                                              : string(1 to 4);                        
-   signal pt                                                   : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
-   signal key_handle                                           : std_logic_vector(9 downto 0):= (others => '0');
-   signal exp_ct,exp_ct_128,exp_ct_192,exp_ct_256,gcm_ct_exp   : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
-   signal test_done, t_valid, valid_out, valid_out_q, o_t_valid: std_logic := '0';
-   signal t_last, fifo_to_engine_t_last, o_t_ready             : std_logic := '0';
-   signal t_keep, fifo_to_engine_keep                          : std_logic_vector((WIDTH_BYTE*2)-1 downto 0):= (others => '1');
-   signal t_ready                                              : std_logic := '0';
-   signal mode,leng_pt                                         : integer;
-   signal en_cnt                                               : unsigned(4 downto 0);
-   signal iv                                                   : std_logic_vector(95 downto 0):= (others => '0'); 
+   signal out_word, out_word_q, out_word_qq, in_word, fifo_to_engine_data: std_logic_vector(DATA_WIDTH_128-1 downto 0) := (others => '0');
+   signal test_msg                                                       : string(1 to STRING_LENGTH);
+   signal rst, clk, clk_100, engine_clk                                  : std_logic := '0';
+   signal test_id                                                        : string(1 to 4);                        
+   signal pt                                                             : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   signal key_handle                                                     : std_logic_vector(9 downto 0):= (others => '0');
+   signal exp_ct,exp_ct_128,exp_ct_192,exp_ct_256,gcm_ct_exp             : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   signal test_done, t_valid, valid_out, valid_out_q, o_t_valid          : std_logic := '0';
+   signal t_last, fifo_to_engine_t_last, o_t_ready, i_t_ready, o_t_last  : std_logic := '0';
+   signal t_keep, fifo_to_engine_keep                                    : std_logic_vector((WIDTH_BYTE*2)-1 downto 0):= (others => '1');
+   signal t_ready                                                        : std_logic := '0';
+   signal mode,leng_pt                                                   : integer;
+   signal en_cnt                                                         : unsigned(4 downto 0);
+   signal iv                                                             : std_logic_vector(95 downto 0):= (others => '0'); 
+   signal o_t_keep                                                       : std_logic_vector(15 downto 0) := x"0000";
    
    -- assertions/ result
-   type T_CT_ARRAY   is array (0 to 100) of std_logic_vector(DATA_WIDTH_128-1 downto 0);
-   signal ct_del : T_CT_ARRAY;
    signal ct_gcm_arr, out_word_arr : T_GCM_EXP;
    
    -- BRAM
@@ -78,13 +77,16 @@ begin
          i_clk          => engine_clk,
          i_rst          => rst,
          i_t_data       => fifo_to_engine_data, 
+         i_t_ready      => i_t_ready, 
          o_t_data       => out_word,
          o_t_ready      => o_t_ready,
          o_t_valid      => valid_out,
+         o_t_keep       => o_t_keep, 
+         o_t_last       => o_t_last, 
          o_done         => open
       );
       
-   u_fifo : entity xil_defaultlib.axis_data_fifo_0
+   u_fifo_in : entity xil_defaultlib.axis_data_fifo_0
       PORT MAP (
          s_axis_aresetn => not rst,
          s_axis_aclk    => clk,
@@ -101,6 +103,28 @@ begin
          m_axis_tdata   => fifo_to_engine_data,
          m_axis_tkeep   => fifo_to_engine_keep,
          m_axis_tlast   => fifo_to_engine_t_last,
+         
+         almost_empty   => open,
+         almost_full    => open
+      );
+      
+   u_fifo_out : entity xil_defaultlib.axis_data_fifo_0
+      PORT MAP (
+         s_axis_aresetn => not rst,
+         s_axis_aclk    => clk,
+         
+         s_axis_tvalid  => valid_out,
+         s_axis_tready  => i_t_ready,
+         s_axis_tdata   => out_word,
+         s_axis_tkeep   => o_t_keep,
+         s_axis_tlast   => o_t_last,
+         
+         m_axis_aclk    => engine_clk,
+         m_axis_tvalid  => open,
+         m_axis_tready  => '1',
+         m_axis_tdata   => open,
+         m_axis_tkeep   => open,
+         m_axis_tlast   => open,
          
          almost_empty   => open,
          almost_full    => open
