@@ -45,6 +45,8 @@ package aes_engine_pkg is
    -- axi
    type     T_AXI_STREAM    is array(0 to 16)           of std_logic;
    type     T_AXI_TKEEP     is array(0 to AES256)             of std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
+      
+   function mult(v1, v2 : in std_logic_vector) return std_logic_vector;
    
    -- Encrpytion
    -- Sbox used for encryption
@@ -155,4 +157,41 @@ package aes_engine_pkg is
    -- G function Rj constants                                                      
    constant ROUND_CONSTS              : T_RND_CONST     :=  (x"00000001",x"00000002",x"00000004",x"00000008",x"00000010",x"00000020",x"00000040",x"00000080",x"0000001B",x"00000036",x"0000006C", x"000000D8", x"000000AB", x"0000004D");
    
-end package;
+end package aes_engine_pkg; 
+
+package body aes_engine_pkg is
+   
+   -- Galois Multiplier (GF(2^128) poly = x^128 + x^7 + x^2 + x + 1
+   function mult(v1, v2 : in std_logic_vector) return std_logic_vector is
+      constant m              : integer := AXI_T_DATA;  
+      variable dummy          : std_logic;
+      variable v_temp         : std_logic_vector(m-1 downto 0);
+      variable ret            : std_logic_vector(m-1 downto 0);
+   begin
+      v_temp       := (others=>'0');   -- x^128 + x^7 + x^2 + x + 1
+      for i in 0 to m-1 loop 
+      
+      dummy        := v_temp(127);
+      
+      gen_gf : for i in 8 to 126 loop
+        v_temp(i ) := v_temp(i-1);
+      end loop;
+     
+        v_temp(7 ) := v_temp(6 ) xor dummy;
+        v_temp(6 ) := v_temp(5 );
+        v_temp(5 ) := v_temp(4 );
+        v_temp(4 ) := v_temp(3 );
+        v_temp(3 ) := v_temp(2 );
+        v_temp(2 ) := v_temp(1 ) xor dummy;
+        v_temp(1 ) := v_temp(0 ) xor dummy;
+        v_temp(0 ) := dummy;
+        
+        for j in 0 to m-1 loop
+          v_temp(j) := v_temp(j) xor (v1(j) and v2(m-i-1));
+        end loop;
+      end loop;
+      ret := v_temp;
+      return ret;
+   end mult;
+   
+end package body aes_engine_pkg;

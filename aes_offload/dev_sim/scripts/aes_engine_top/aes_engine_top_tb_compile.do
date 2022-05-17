@@ -22,10 +22,10 @@ vlog  -incr -mfcu -work xil_defaultlib \
 "../../../imp/code/vendor/aes_engine_fifo/aes_engine_fifo.gen/sources_1/ip/aes_engine_key_bram_blk_mem_gen_0_0/sim/aes_engine_key_bram_blk_mem_gen_0_0.v" \
 
 vcom  -2008 -work aes_engine  \
-"../../../imp/code/vendor/aes_engine_fifo/aes_engine_fifo.srcs/sources_1/imports/aes_engine/aes_engine_pkg.vhd" \
-"../../../imp/code/vendor/aes_engine_fifo/aes_engine_fifo.srcs/sources_1/imports/aes_engine/aes_engine_decrypt.vhd" \
-"../../../imp/code/vendor/aes_engine_fifo/aes_engine_fifo.srcs/sources_1/imports/aes_engine/aes_engine_key_expansion.vhd" \
-"../../../imp/code/vendor/aes_engine_fifo/aes_engine_fifo.srcs/sources_1/imports/aes_engine/aes_engine_round.vhd" \
+"../../../imp/code/devlib/aes_engine/aes_engine_pkg.vhd" \
+"../../../imp/code/devlib/aes_engine/aes_engine_decrypt.vhd" \
+"../../../imp/code/devlib/aes_engine/aes_engine_key_expansion.vhd" \
+"../../../imp/code/devlib/aes_engine/aes_engine_round.vhd" \
 
 vcom  -2008 -work tb_lib  \
 "../../../dev_sim/code/aes_engine_tb_pkg.vhd" \

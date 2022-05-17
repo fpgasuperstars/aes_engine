@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases   : std_logic_vector(31 downto 0) := x"00001000"; -- select 1 test at a time,128/192/256, 1/1/1 encryp, 8/8/8 = decryption. 1/0/0/0 = gcm mode 256 test
+      g_test_cases   : std_logic_vector(31 downto 0) := x"00000001"; -- select 1 test at a time,128/192/256, 1/1/1 encryp, 8/8/8 = decryption. 1/0/0/0 = gcm mode 256 test
       g_asyncronous  : std_logic := '0';
       g_decryption   : std_logic := '0';
       g_speed_select : std_logic := '1' -- 1 = Lo speed
@@ -55,6 +55,9 @@ architecture sim of aes_engine_top_tb is
    signal iv                                                             : std_logic_vector(95 downto 0):= (others => '0'); 
    signal o_t_keep                                                       : std_logic_vector(15 downto 0) := x"0000";
    
+   -- GCM
+   signal auth_data                                                      : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   
    -- assertions/ result
    signal ct_gcm_arr, out_word_arr : T_GCM_EXP;
    
@@ -64,26 +67,33 @@ architecture sim of aes_engine_top_tb is
    signal keys_256            : std_logic_vector(DATA_WIDTH_256-1 downto 0);
    
 begin
+   
    dut : entity aes_engine.aes_engine_top
       generic map(
          g_speed_sel       => g_speed_select, 
          g_decryption_sel  => g_decryption
       )
       port map(
-         i_key_handle   => key_handle,
-         i_t_valid      => o_t_valid,
-         i_t_last       => fifo_to_engine_t_last,
-         i_t_keep       => fifo_to_engine_keep,
-         i_clk          => engine_clk,
-         i_rst          => rst,
-         i_t_data       => fifo_to_engine_data, 
-         i_t_ready      => i_t_ready, 
-         o_t_data       => out_word,
-         o_t_ready      => o_t_ready,
-         o_t_valid      => valid_out,
-         o_t_keep       => o_t_keep, 
-         o_t_last       => o_t_last, 
-         o_done         => open
+         i_clk               => engine_clk,
+         i_rst               => rst,       
+         -- AXI stream M2S 
+         i_t_data            => fifo_to_engine_data,
+         i_t_valid           => o_t_valid, 
+         i_t_last            => fifo_to_engine_t_last, 
+         i_t_keep            => fifo_to_engine_keep,
+         i_t_ready           => i_t_ready,   
+         -- AXI stream S2M 
+         o_t_valid           => valid_out, 
+         o_t_last            => o_t_last,
+         o_t_keep            => o_t_keep, 
+         o_t_data            => out_word, 
+         o_t_ready           => o_t_ready,  
+         -- Keys           
+         i_key_handle        => key_handle,  
+         -- GCM            
+         i_auth_data         => auth_data,   
+         -- status         
+         o_done              => open   
       );
       
    u_fifo_in : entity xil_defaultlib.axis_data_fifo_0

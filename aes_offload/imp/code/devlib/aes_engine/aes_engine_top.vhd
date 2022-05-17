@@ -39,20 +39,25 @@ entity aes_engine_top IS
       o_t_ready         : out std_logic;
       -- Keys
       i_key_handle      : in  std_logic_vector(9 downto 0);
+      -- GCM
+      i_auth_data       : in std_logic_vector(AXI_T_DATA-1 downto 0);
       -- status
       o_done            : out std_logic
    );
 end entity;
 
 architecture mixed of aes_engine_top is
+   
+   -- this value gets encrypted for use in the gcm GHASH function
+   constant GHASH_ZEROS               : std_logic_vector(AXI_T_DATA-1 downto 0) := x"00000000000000000000000000000000";
 
    -- Types
    type  T_CIPHER_TXT    is array (0 to AES256) of std_logic_vector(AXI_T_DATA-1 downto 0); -- array containing the cipher text output from each round
-   type  T_STATES        is (newkey, normal, config, last);
+   type  T_STATES        is (newkey, normal, config, last, ek0);
       
    -- Signals
    -- State
-   signal state,state_q                                                                  : T_STATES;
+   signal state                                                                          : T_STATES;
                                                                                          
    -- Data                                                                               
    signal encrypt, decrypt                                                               : T_CIPHER_TXT;
@@ -72,6 +77,7 @@ architecture mixed of aes_engine_top is
                                                                                          
    -- GCM                                                                                
    signal nonce_cnt, nonce_cnt_rev                                                       : unsigned((BYTE_WIDTH*4-1) downto 0);
+   signal gf_out, ek0_ghash                                                              : std_logic_vector(AXI_T_DATA-1 downto 0);
                                                                                          
    -- Configuration                                                                      
    signal mode                                                                           : std_logic_vector(MODE_C-1 downto 0);
@@ -110,7 +116,6 @@ begin
             o_done       <= '0';
             config_cnt   <= (others  => '0');
          else
-            state_q <= state;
             en_cnt_rst  <= '0';
          case state is
             when config =>
@@ -146,8 +151,18 @@ begin
                elsif new_key then
                   state       <= newkey;
                elsif i_t_valid then
-                  t_data_q <= encrypt_input_data; 
+                  t_data_q    <= encrypt_input_data; 
                   state       <= normal;
+               end if;
+               
+            when ek0  =>
+               en_cnt_rst  <= '0';
+               if en_cnt = 0 then
+                  t_data_q    <= GHASH_ZEROS;
+               elsif en_cnt >= gen_mode then
+                  en_cnt_rst <= '1';
+                  ek0_ghash  <= o_t_data; 
+                  state      <= normal;
                end if;
                
             when newkey =>
@@ -160,12 +175,16 @@ begin
                elsif last_flag = '1' and  flushout_cnt = (gen_mode *2)+1 then
                   expanded_key_q <= expanded_key; -- register the expanded keys 
                   state       <=  last;
-                  t_data_q  <= t_data_last;
+                  t_data_q    <= t_data_last;
                   en_cnt_rst  <= '1';
+               elsif flushout_cnt = (gen_mode *2)+1 and mode = GCM_MODE_C then
+                  expanded_key_q <= expanded_key; -- register the expanded keys 
+                  state          <=  ek0;
+                  en_cnt_rst     <= '1';
                elsif flushout_cnt = (gen_mode *2)+1 then
                   expanded_key_q <= expanded_key; -- register the expanded keys 
                   state          <=  normal;
-                  en_cnt_rst     <= '1';
+                  en_cnt_rst     <= '1';      
                else
                   state  <= newkey;
                end if;
@@ -468,11 +487,14 @@ begin
          nonce_cnt  <= nonce_cnt + 1;
       end if;
    end process;
+   
    -- all values must be reversed byte order due to the input data entering the engine having the lsB at the msB side
    gen_rev_byte : for i in 0 to (nonce_cnt'length/BYTE_WIDTH)-1 generate
       nonce_cnt_rev((i + 1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH)  <=  nonce_cnt(((nonce_cnt'length/BYTE_WIDTH)-i)*BYTE_WIDTH-1 downto ((nonce_cnt'length/BYTE_WIDTH-1)-i)*BYTE_WIDTH);
    end generate;
    
+   -- Authenticated data tag generation
+   gf_out  <= mult(i_auth_data, ek0_ghash);
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    -- Output registers at selected speed
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -508,20 +530,20 @@ begin
       end if;
    end process;
    
-   o_t_ready  <= '0'                   when i_t_ready = '0' or (state = newkey or speed_en = '0' or (mode = GCM_MODE_C and ((new_key = '1') or en_cnt <= gen_mode))) else '1';
+   o_t_ready  <= '0'                   when state = ek0 or i_t_ready = '0' or (state = newkey or speed_en = '0' or (mode = GCM_MODE_C and ((new_key = '1') or en_cnt <= gen_mode))) else '1';
    
-   o_t_valid  <= t_valid(gen_mode+1)   when  g_speed_sel = '0' and en_cnt > gen_mode  and ini_key_cnt >= gen_mode*3 and mode /= GCM_MODE_C else
-                 t_valid(0)            when  g_speed_sel = '1' and speed_en_q = '1'   and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 and mode /= GCM_MODE_C else
+   o_t_valid  <= t_valid(gen_mode+1)   when  g_speed_sel = '0' and en_cnt > gen_mode  and ini_key_cnt >= gen_mode*3 and mode /= GCM_MODE_C else -- hi speed
+                 t_valid(0)            when  g_speed_sel = '1' and speed_en_q = '1'   and en_cnt >= gen_mode and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 and mode /= GCM_MODE_C else -- lo speed
                  i_t_valid             when  en_cnt > gen_mode and mode = GCM_MODE_C  and speed_en = '1' and nonce_cnt > 1 else
                  '0';
                  
-   o_t_last   <= t_last(gen_mode+1)    when o_t_valid = '1' and g_speed_sel = '0' and mode /= GCM_MODE_C else              
-                 t_last(0)             when o_t_valid = '1' and g_speed_sel = '1' and mode /= GCM_MODE_C else
+   o_t_last   <= t_last(gen_mode+1)    when o_t_valid = '1' and g_speed_sel = '0' and mode /= GCM_MODE_C else  -- GCM hi speed             
+                 t_last(0)             when o_t_valid = '1' and g_speed_sel = '1' and mode /= GCM_MODE_C else  -- GCM lo speed 
                  i_t_last              when mode = GCM_MODE_C and last_flag = '1'                        else
                  '0';
    
    -- route data to output depending on mode
-   o_t_data   <= encrypt(gen_mode) xor i_t_data when mode = GCM_MODE_C and en_cnt >  gen_mode and g_speed_sel = '0' else -- GCM hi speed
+   o_t_data   <= encrypt(gen_mode) xor i_t_data when mode = GCM_MODE_C and en_cnt >  gen_mode and g_speed_sel = '0' else                    -- GCM hi speed
                  encrypt(1)        xor i_t_data when mode = GCM_MODE_C and en_cnt >= gen_mode and g_speed_sel = '1' and speed_en = '1' else -- GCM lo speed
                  t_data; -- ECB,  as more modes are added this will change
    
