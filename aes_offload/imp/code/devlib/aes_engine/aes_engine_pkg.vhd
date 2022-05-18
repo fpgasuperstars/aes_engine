@@ -23,6 +23,8 @@ package aes_engine_pkg is
    constant IV_C            : natural := 96;           -- length of the iv in the configuration data
    constant AES_MODE_C      : natural := 2;            -- length of aes mode in the configuration data
    constant GCM_MODE_C      : std_logic_vector(BYTE_WIDTH-1 downto 0) := x"01";            -- GCM mode value
+   constant AAD_DONE_C      : std_logic_vector(AXI_T_DATA-1 downto 0) := x"EFBEEFBEEFBEEFBEEFBEEFBEEFBEEFBE"; -- Value to signify end of authentication data
+   constant GHASH_ZEROS     : std_logic_vector(AXI_T_DATA-1 downto 0) := x"00000000000000000000000000000000"; -- this value gets encrypted for use in the gcm GHASH function
    
    type T_jindex is array (natural range<>) of integer;
    constant j : T_jindex := (0,4,8,12);           -- used for generation of the mixed column logic
@@ -32,7 +34,7 @@ package aes_engine_pkg is
    constant r : T_jindex := (0,2,4,6,8);          -- used for converting 192 to 128
    -- types
    type     T_EXPANDED_KEYS is array (0 to AES256+1)          of std_logic_vector(AXI_T_DATA-1 downto 0);   -- array containing the expanded keys for 128/256
-   type     T_DEC_EXPANDED_KEYS is array (AES256+1 downto 0)          of std_logic_vector(AXI_T_DATA-1 downto 0);   -- array containing the expanded keys for 128/256
+   type     T_DEC_EXPANDED_KEYS is array (AES256+1 downto 0)  of std_logic_vector(AXI_T_DATA-1 downto 0);   -- array containing the expanded keys for 128/256
    type     T_EXP_KEYS_192  is array (0 to AES256+1)          of std_logic_vector(AES192_KEY-1 downto 0);   -- array containing the expanded keys for 192
    type     T_TEMP_192      is array (0 to AES256+1)          of std_logic_vector(BYTE_WIDTH*8-1 downto 0); -- array containing the temp signals for the last two words of a 192 bit key
    type     T_RND_CONST     is array (0 to AES256-1)          of std_logic_vector(BYTE_WIDTH*4-1 downto 0); -- array containing the round constans for key expansion
@@ -170,13 +172,10 @@ package body aes_engine_pkg is
    begin
       v_temp       := (others=>'0');   -- x^128 + x^7 + x^2 + x + 1
       for i in 0 to m-1 loop 
-      
-      dummy        := v_temp(127);
-      
-      gen_gf : for i in 8 to 126 loop
-        v_temp(i ) := v_temp(i-1);
-      end loop;
-     
+        dummy        := v_temp(127);
+        gen_gf : for i in 8 to 126 loop
+          v_temp(i ) := v_temp(i-1);
+        end loop;
         v_temp(7 ) := v_temp(6 ) xor dummy;
         v_temp(6 ) := v_temp(5 );
         v_temp(5 ) := v_temp(4 );
@@ -185,7 +184,6 @@ package body aes_engine_pkg is
         v_temp(2 ) := v_temp(1 ) xor dummy;
         v_temp(1 ) := v_temp(0 ) xor dummy;
         v_temp(0 ) := dummy;
-        
         for j in 0 to m-1 loop
           v_temp(j) := v_temp(j) xor (v1(j) and v2(m-i-1));
         end loop;

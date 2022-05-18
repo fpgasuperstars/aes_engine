@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases   : std_logic_vector(31 downto 0) := x"00000001"; -- select 1 test at a time,128/192/256, 1/1/1 encryp, 8/8/8 = decryption. 1/0/0/0 = gcm mode 256 test
+      g_test_cases   : std_logic_vector(31 downto 0) := x"00001000"; -- select 1 test at a time,128/192/256, 1/1/1 encryp, 8/8/8 = decryption. 1/0/0/0 = gcm mode 256 test
       g_asyncronous  : std_logic := '0';
       g_decryption   : std_logic := '0';
       g_speed_select : std_logic := '1' -- 1 = Lo speed
@@ -89,9 +89,7 @@ begin
          o_t_data            => out_word, 
          o_t_ready           => o_t_ready,  
          -- Keys           
-         i_key_handle        => key_handle,  
-         -- GCM            
-         i_auth_data         => auth_data,   
+         i_key_handle        => key_handle,   
          -- status         
          o_done              => open   
       );
@@ -326,8 +324,8 @@ begin
       ------------------------------------------------------------------------------------                                   
       if g_test_cases(12) = '1' then                                                                                         
          file_open(status, f_gcm_vectors      , CMD_GCM_FILE);                                                               
-         file_open(status, f_gcm_ct_vectors   , CT_GCM_FILE);                                                                
-         leng_pt     <= 1024;   --"payloadLen": 1024                                                                                                 
+         file_open(status, f_gcm_ct_vectors   , CT_GCM_FILE);                                                                                                                               
+         leng_pt     <= 2048;   --"payloadLen": 1024 + aad 1024                                                                                                 
          key_handle  <= (others  =>  '0');                                                                                   
          test_msg    <= pad_string(" Test case 12 : GCM mode AES 256", ' ', STRING_LENGTH);                                  
          wait for 0 ns;                                                                                                      
