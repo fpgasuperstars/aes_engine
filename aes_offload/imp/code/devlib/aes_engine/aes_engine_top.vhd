@@ -72,8 +72,9 @@ architecture mixed of aes_engine_top is
                                                                                          
    -- GCM                                                                                
    signal nonce_cnt, nonce_cnt_rev                                                       : unsigned((BYTE_WIDTH*4-1) downto 0);
-   signal gf_out, ek0_ghash, aad_ct_xor                                                  : std_logic_vector(AXI_T_DATA-1 downto 0);
-   signal aad_done, done_0_enc                                                           : std_logic;
+   signal gf_out, ek0_ghash, aad_ct_xor, auth_b4_gf, auth_gf, pre_tag_xor, tag           : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal add_length, pt_length                                                          : std_logic_vector((AXI_T_DATA/2)-1 downto 0);
+   signal aad_done, done_0_enc, initial_nonce_cnt, aad_done_q, aad_done_en               : std_logic;
                                                                                          
    -- Configuration                                                                      
    signal mode                                                                           : std_logic_vector(MODE_C-1 downto 0);
@@ -106,19 +107,21 @@ begin
          if i_rst  then
             state  <=  config;
             expanded_key_q <= (others  => (others  => '0'));
-            t_data_q     <= (others  => '0');
-            t_data_last  <= (others  => '0');
-            last_flag    <= '0';
-            o_done       <= '0';
-            config_cnt   <= (others  => '0');
-            done_0_enc   <= '0';
+            t_data_q       <= (others  => '0');
+            t_data_last    <= (others  => '0');
+            last_flag      <= '0';
+            o_done         <= '0';
+            config_cnt     <= (others  => '0');
+            done_0_enc     <= '0';
+            add_length     <= (others  => '0');
+            pt_length      <= (others  => '0');
          else
             en_cnt_rst  <= '0';
          case state is
             when config =>
                done_0_enc <= '0';
-               config_cnt  <= config_cnt + 1;
                if i_t_valid = '1' and i_t_last = '0' then
+                  config_cnt  <= config_cnt + 1;
                   mode        <= encrypt_input_data(MODE_C-1 downto 0);
                   iv          <= encrypt_input_data((IV_C+MODE_C)-1 downto MODE_C);
                   aes_mode    <= encrypt_input_data((AES_MODE_C+IV_C+MODE_C)-1 downto IV_C+MODE_C);
@@ -148,6 +151,11 @@ begin
                   end loop;
                elsif new_key then
                   state       <= newkey;
+               elsif config_cnt = 1 and mode = GCM_MODE_C and t_ready_q = '1' then
+                  add_length  <= encrypt_input_data((AXI_T_DATA/2)-1 downto 0);
+                  pt_length   <= encrypt_input_data((AXI_T_DATA)-1 downto (AXI_T_DATA/2));
+                  config_cnt  <= config_cnt + 1;
+                  state       <= normal;
                elsif i_t_valid then
                   t_data_q    <= encrypt_input_data; 
                   state       <= normal;
@@ -227,7 +235,7 @@ begin
    new_key     <= '1'      when key_handle_q /= i_key_handle else '0';
 
    -- input data control     
-   encrypt_input_data  <= std_logic_vector(nonce_cnt_rev) & iv when config_cnt > 0 and mode = GCM_MODE_C else -- IV concatenated with nonce after config data is fed into engine for GCM
+   encrypt_input_data  <= std_logic_vector(nonce_cnt_rev) & iv when config_cnt > 1 and mode = GCM_MODE_C else -- IV concatenated with nonce after config data is fed into engine for GCM
                           i_t_data;
          
    p_rnd_dec : process
@@ -486,9 +494,15 @@ begin
    begin
       wait until rising_edge(i_clk);
       if i_rst then
-         nonce_cnt           <= to_unsigned(1,32); 
-      elsif aad_done  = '1' and ((state = normal and g_speed_sel = '0') or (state = normal and g_speed_sel = '1' and speed_en = '1' and en_cnt >= gen_mode)) then
+         nonce_cnt    <= to_unsigned(0,32); 
+         pre_tag_xor  <= (others  => '0'); 
+      elsif initial_nonce_cnt = '1' and aad_done  = '1' and ((state = normal and g_speed_sel = '0') or (state = normal and g_speed_sel = '1' and speed_en = '1' and en_cnt >= gen_mode)) then
          nonce_cnt  <= nonce_cnt + 1;
+      elsif aad_done  = '1' and ((state = normal and g_speed_sel = '0') or (state = normal and g_speed_sel = '1' and speed_en = '1' and en_cnt >= gen_mode)) then
+         nonce_cnt  <= nonce_cnt + 2;
+         initial_nonce_cnt  <= '1';
+      elsif aad_done_en  = '1' then
+         pre_tag_xor  <= t_data;
       end if;
    end process;
    
@@ -501,15 +515,17 @@ begin
    p_gf_mult : process
    begin
       wait until rising_edge(i_clk);
+      aad_done_q  <= aad_done;
       if i_rst = '1' then
          gf_out    <= (others  => '0'); 
-         aad_done  <= '0';
-      elsif i_t_data = AAD_DONE_C then
-         aad_done  <= '1';
       else
-         gf_out    <= mult(aad_ct_xor, ek0_ghash);
+         gf_out     <= mult(aad_ct_xor, ek0_ghash);
+         auth_b4_gf <= (add_length & pt_length) xor gf_out;
+         auth_gf    <= mult(auth_b4_gf, ek0_ghash);
       end if;
    end process;
+   
+   aad_done_en <= '1' when aad_done_q /= aad_done else '0';
    
    -- send correct data into GF multiply block
    p_aad_done : process
@@ -517,18 +533,22 @@ begin
       wait until rising_edge(i_clk);
       if i_rst = '1' then
          aad_ct_xor  <= (others  => '0');
+         aad_done  <= '0';
+      elsif i_t_data = AAD_DONE_C then
+         aad_done  <= '1';
       elsif aad_done <= '1' and o_t_valid = '1' then
          aad_ct_xor  <= gf_out xor o_t_data;
       elsif done_0_enc = '1' and aad_done = '0' and t_ready_qq = '1' then
          aad_ct_xor  <= gf_out xor i_t_data;
       end if;
    end process;
+   tag  <= auth_gf xor pre_tag_xor;
    
       
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    -- Output registers at selected speed
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   p_data_outputs : process
+   p_outputs : process
    begin
       wait until rising_edge(i_clk);
          key_handle_q       <= i_key_handle;

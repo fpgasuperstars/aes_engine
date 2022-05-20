@@ -39,34 +39,41 @@ add wave -noupdate -expand -group {AES Engine} -group BRAM /aes_engine_top_tb/du
 add wave -noupdate -expand -group {AES Engine} -group BRAM -radix unsigned /aes_engine_top_tb/dut/u_bram_keys/addra
 add wave -noupdate -expand -group {AES Engine} -group BRAM /aes_engine_top_tb/dut/u_bram_keys/douta
 add wave -noupdate -expand -group {AES Engine} -group BRAM -radix unsigned /aes_engine_top_tb/dut/i_key_handle
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/aad_done
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/done_0_enc
 add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/gf_out
 add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/ek0_ghash
 add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/aad_ct_xor
-add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/aad_done
-add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/done_0_enc
-add wave -noupdate -expand -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/s_axis_tvalid
-add wave -noupdate -expand -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/s_axis_tready
-add wave -noupdate -expand -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold -radix hexadecimal /aes_engine_top_tb/u_fifo_in/s_axis_tdata
-add wave -noupdate -expand -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold -radix hexadecimal /aes_engine_top_tb/u_fifo_in/s_axis_tkeep
-add wave -noupdate -expand -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/s_axis_tlast
-add wave -noupdate -expand -group {FIFO IN} -expand -group master -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/m_axis_tvalid
-add wave -noupdate -expand -group {FIFO IN} -expand -group master -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/m_axis_tready
-add wave -noupdate -expand -group {FIFO IN} -expand -group master -color Gold -itemcolor Gold -radix hexadecimal /aes_engine_top_tb/u_fifo_in/m_axis_tdata
-add wave -noupdate -expand -group {FIFO IN} -expand -group master -color Gold -itemcolor Gold -radix hexadecimal /aes_engine_top_tb/u_fifo_in/m_axis_tkeep
-add wave -noupdate -expand -group {FIFO IN} -expand -group master -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/m_axis_tlast
-add wave -noupdate -expand -group {FIFO OUT} -expand -group slave -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/s_axis_tvalid
-add wave -noupdate -expand -group {FIFO OUT} -expand -group slave -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/s_axis_tready
-add wave -noupdate -expand -group {FIFO OUT} -expand -group slave -color {Medium Blue} -itemcolor {Medium Blue} -radix hexadecimal /aes_engine_top_tb/u_fifo_out/s_axis_tdata
-add wave -noupdate -expand -group {FIFO OUT} -expand -group slave -color {Medium Blue} -itemcolor {Medium Blue} -radix hexadecimal /aes_engine_top_tb/u_fifo_out/s_axis_tkeep
-add wave -noupdate -expand -group {FIFO OUT} -expand -group slave -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/s_axis_tlast
-add wave -noupdate -expand -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/m_axis_tvalid
-add wave -noupdate -expand -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/m_axis_tready
-add wave -noupdate -expand -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} -radix hexadecimal /aes_engine_top_tb/u_fifo_out/m_axis_tdata
-add wave -noupdate -expand -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} -radix hexadecimal /aes_engine_top_tb/u_fifo_out/m_axis_tkeep
-add wave -noupdate -expand -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/m_axis_tlast
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/pt_length
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/add_length
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/tag
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/pre_tag_xor
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/auth_gf
+add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/s_axis_tvalid
+add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/s_axis_tready
+add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold -radix hexadecimal /aes_engine_top_tb/u_fifo_in/s_axis_tdata
+add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold -radix hexadecimal /aes_engine_top_tb/u_fifo_in/s_axis_tkeep
+add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/s_axis_tlast
+add wave -noupdate -group {FIFO IN} -expand -group master -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/m_axis_tvalid
+add wave -noupdate -group {FIFO IN} -expand -group master -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/m_axis_tready
+add wave -noupdate -group {FIFO IN} -expand -group master -color Gold -itemcolor Gold -radix hexadecimal /aes_engine_top_tb/u_fifo_in/m_axis_tdata
+add wave -noupdate -group {FIFO IN} -expand -group master -color Gold -itemcolor Gold -radix hexadecimal /aes_engine_top_tb/u_fifo_in/m_axis_tkeep
+add wave -noupdate -group {FIFO IN} -expand -group master -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/m_axis_tlast
+add wave -noupdate -group {FIFO OUT} -expand -group slave -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/s_axis_tvalid
+add wave -noupdate -group {FIFO OUT} -expand -group slave -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/s_axis_tready
+add wave -noupdate -group {FIFO OUT} -expand -group slave -color {Medium Blue} -itemcolor {Medium Blue} -radix hexadecimal /aes_engine_top_tb/u_fifo_out/s_axis_tdata
+add wave -noupdate -group {FIFO OUT} -expand -group slave -color {Medium Blue} -itemcolor {Medium Blue} -radix hexadecimal /aes_engine_top_tb/u_fifo_out/s_axis_tkeep
+add wave -noupdate -group {FIFO OUT} -expand -group slave -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/s_axis_tlast
+add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/m_axis_tvalid
+add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/m_axis_tready
+add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} -radix hexadecimal /aes_engine_top_tb/u_fifo_out/m_axis_tdata
+add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} -radix hexadecimal /aes_engine_top_tb/u_fifo_out/m_axis_tkeep
+add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/m_axis_tlast
+add wave -noupdate /aes_engine_top_tb/dut/config_cnt
+add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/auth_b4_gf
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {19519355133 fs} 0} {{Cursor 2} {93917752 fs} 0} {{Cursor 3} {2005000000 fs} 0} {{Cursor 4} {105437663 fs} 0} {{Cursor 5} {582224128 fs} 0} {{Cursor 6} {32126601446 fs} 0}
-quietly wave cursor active 5
+WaveRestoreCursors {{Cursor 1} {19519355133 fs} 0} {{Cursor 2} {93917752 fs} 0} {{Cursor 3} {2482083333 fs} 0} {{Cursor 4} {354420938 fs} 0} {{Cursor 5} {1093458333 fs} 0} {{Cursor 6} {32126601446 fs} 0}
+quietly wave cursor active 3
 configure wave -namecolwidth 179
 configure wave -valuecolwidth 526
 configure wave -justifyvalue left
@@ -81,4 +88,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 fs} {1416187500 fs}
+WaveRestoreZoom {0 fs} {6037500 ps}

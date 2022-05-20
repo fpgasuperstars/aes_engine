@@ -173,8 +173,8 @@ package body aes_engine_pkg is
       v_temp       := (others=>'0');   -- x^128 + x^7 + x^2 + x + 1
       for i in 0 to m-1 loop 
         dummy        := v_temp(127);
-        gen_gf : for i in 8 to 126 loop
-          v_temp(i ) := v_temp(i-1);
+        gen_gf : for a in 8 to 126 loop
+          v_temp(a ) := v_temp(a-1);
         end loop;
         v_temp(7 ) := v_temp(6 ) xor dummy;
         v_temp(6 ) := v_temp(5 );

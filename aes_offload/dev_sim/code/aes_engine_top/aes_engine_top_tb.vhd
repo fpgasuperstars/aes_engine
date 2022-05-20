@@ -44,6 +44,7 @@ architecture sim of aes_engine_top_tb is
    signal rst, clk, clk_100, engine_clk                                  : std_logic := '0';
    signal test_id                                                        : string(1 to 4);                        
    signal pt                                                             : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   signal poly_dec                                                       : std_logic_vector(DATA_WIDTH_128 downto 0):= (others => '0');
    signal key_handle                                                     : std_logic_vector(9 downto 0):= (others => '0');
    signal exp_ct,exp_ct_128,exp_ct_192,exp_ct_256,gcm_ct_exp             : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
    signal test_done, t_valid, valid_out, valid_out_q, o_t_valid          : std_logic := '0';
@@ -67,7 +68,6 @@ architecture sim of aes_engine_top_tb is
    signal keys_256            : std_logic_vector(DATA_WIDTH_256-1 downto 0);
    
 begin
-   
    dut : entity aes_engine.aes_engine_top
       generic map(
          g_speed_sel       => g_speed_select, 
@@ -325,7 +325,7 @@ begin
       if g_test_cases(12) = '1' then                                                                                         
          file_open(status, f_gcm_vectors      , CMD_GCM_FILE);                                                               
          file_open(status, f_gcm_ct_vectors   , CT_GCM_FILE);                                                                                                                               
-         leng_pt     <= 2048;   --"payloadLen": 1024 + aad 1024                                                                                                 
+         leng_pt     <= 2176;   --"payloadLen": 1024 + aad 1024                                                                                                 
          key_handle  <= (others  =>  '0');                                                                                   
          test_msg    <= pad_string(" Test case 12 : GCM mode AES 256", ' ', STRING_LENGTH);                                  
          wait for 0 ns;                                                                                                      
