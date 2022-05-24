@@ -39,16 +39,18 @@ add wave -noupdate -expand -group {AES Engine} -group BRAM /aes_engine_top_tb/du
 add wave -noupdate -expand -group {AES Engine} -group BRAM -radix unsigned /aes_engine_top_tb/dut/u_bram_keys/addra
 add wave -noupdate -expand -group {AES Engine} -group BRAM /aes_engine_top_tb/dut/u_bram_keys/douta
 add wave -noupdate -expand -group {AES Engine} -group BRAM -radix unsigned /aes_engine_top_tb/dut/i_key_handle
-add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/aad_done
-add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/done_0_enc
 add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/gf_out
 add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/ek0_ghash
 add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/aad_ct_xor
 add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/tag
 add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/pre_tag_xor
-add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/auth_gf
 add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/add_pt_length
-add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/auth_b4_gf
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix unsigned /aes_engine_top_tb/dut/aad_length
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix unsigned /aes_engine_top_tb/dut/pt_length
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/aad_done
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/done_0_enc
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/ct_done
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/aad_done_en
 add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/s_axis_tvalid
 add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/s_axis_tready
 add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold -radix hexadecimal /aes_engine_top_tb/u_fifo_in/s_axis_tdata
@@ -69,13 +71,11 @@ add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} 
 add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} -radix hexadecimal /aes_engine_top_tb/u_fifo_out/m_axis_tdata
 add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} -radix hexadecimal /aes_engine_top_tb/u_fifo_out/m_axis_tkeep
 add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/m_axis_tlast
-add wave -noupdate /aes_engine_top_tb/dut/config_cnt
-add wave -noupdate /aes_engine_top_tb/dut/t_ready_qq
-add wave -noupdate -radix unsigned /aes_engine_top_tb/dut/aad_length
-add wave -noupdate -radix unsigned /aes_engine_top_tb/dut/pt_length
+add wave -noupdate /aes_engine_top_tb/dut/nonce_cnt
+add wave -noupdate /aes_engine_top_tb/dut/initial_nonce_cnt
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {19519355133 fs} 0} {{Cursor 2} {236931894 fs} 0} {{Cursor 3} {1909124302 fs} 0} {{Cursor 4} {1202885002 fs} 0} {{Cursor 5} {3114978703 fs} 0} {{Cursor 6} {32126601446 fs} 0}
-quietly wave cursor active 2
+WaveRestoreCursors {{Cursor 1} {19519355133 fs} 0} {{Cursor 2} {236931894 fs} 0} {{Cursor 3} {1590000000 fs} 0} {{Cursor 4} {1202885002 fs} 0} {{Cursor 5} {4980516008 fs} 0} {{Cursor 6} {32126601446 fs} 0}
+quietly wave cursor active 3
 configure wave -namecolwidth 179
 configure wave -valuecolwidth 526
 configure wave -justifyvalue left
@@ -90,4 +90,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 fs} {6121500 ps}
+WaveRestoreZoom {900024528 fs} {2318837028 fs}

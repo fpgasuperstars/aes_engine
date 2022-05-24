@@ -65,7 +65,7 @@ package aes_engine_tb_pkg is
    file f_gcm_vectors             : text;
    file f_gcm_ad                  : text;
    
-   type T_GCM_EXP  is array (0 TO T_DATA_BYTES+1) of std_logic_vector(DATA_WIDTH_128-1 downto 0);
+   type T_GCM_EXP  is array (0 TO T_DATA_BYTES+2) of std_logic_vector(DATA_WIDTH_128-1 downto 0);
    signal ct_gcm_arr : T_GCM_EXP;
    function pad_string(i_s                 : string; pad_char_i : character; i_n : positive) RETURN string;
    function trim(source                    : string) return string;
@@ -73,7 +73,7 @@ package aes_engine_tb_pkg is
    procedure assertion(test_msg_i          : string; assertion_msg_i : string; expected_i : std_logic_vector; received_i : std_logic_vector);
    procedure get_inputs(file f_vectors     : text; signal in_word, key: out std_logic_vector;signal last : out std_logic; signal t_keep : out std_logic_vector  );
    procedure get_ct(file f_vectors         : text; signal exp_ct      : out std_logic_vector);
-   procedure get_gcm_inputs(file f_vectors, f_ct : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic; signal ct_result : in std_logic_vector;  signal in_word, key, exp_ct: out std_logic_vector; signal ct_gcm_arr: out T_GCM_EXP);
+   procedure get_gcm_inputs(file f_vectors, f_ct : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic; signal ct_result : in std_logic_vector;  signal in_word, key, exp_ct: out std_logic_vector; signal ct_gcm_arr: out T_GCM_EXP; signal t_last : out std_logic);
    procedure assertion_array(test_msg_i : string; assertion_msg_i : string; expected_i : T_GCM_EXP; received_i : T_GCM_EXP);   
    procedure test(file f_vectors : text; PATH : string; signal t_ready, clk : in std_logic; signal in_word : out std_logic_vector; signal key_handle : out std_logic_vector; signal t_last, t_valid, rst : out std_logic; signal t_keep : out std_logic_vector);
 end package aes_engine_tb_pkg;
@@ -207,7 +207,7 @@ package body aes_engine_tb_pkg is
    end;
    
    -- extract input data from FIPS test vectors
-   procedure get_gcm_inputs(file f_vectors, f_ct : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic; signal ct_result : in std_logic_vector;  signal in_word, key, exp_ct : out std_logic_vector; signal ct_gcm_arr: out T_GCM_EXP) is
+   procedure get_gcm_inputs(file f_vectors, f_ct : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic; signal ct_result : in std_logic_vector;  signal in_word, key, exp_ct : out std_logic_vector; signal ct_gcm_arr: out T_GCM_EXP; signal t_last : out std_logic) is
       variable v_iline,v_line_ct       : line;
       variable v_test_id, v_test_id_ct : string(1 to 4);
       variable v_space, v_space_ct     : character;
@@ -224,7 +224,7 @@ package body aes_engine_tb_pkg is
       read(v_line_ct,  v_space_ct); 
       wait for 0 ns;          
       key       <=  std_logic_vector(to_unsigned(v_key,10)); -- get key handle
-      for i in 0 to (leng_pt/128)+1 loop
+      for i in 0 to (leng_pt/128) loop
          if t_valid and t_ready then   
             hread(v_iline, v_pt);
             in_word   <=  reverse_byte_order(v_pt);  -- reverse order of plain text
@@ -237,6 +237,16 @@ package body aes_engine_tb_pkg is
             wait until rising_edge(clk) and t_ready = '1';
          end if;
       end loop;
+            
+      hread(v_iline, v_pt);
+      t_last    <= '1';
+      in_word   <=  reverse_byte_order(v_pt);  -- reverse order of plain text
+      wait until rising_edge(clk);
+      hread(v_line_ct, v_ct);
+      exp_ct    <=  reverse_byte_order(v_ct);
+      wait for 0 ns; 
+      v_ct_array((leng_pt/128)+1) := exp_ct; 
+      
       ct_gcm_arr <= v_ct_array;
    end;
 end package body aes_engine_tb_pkg;

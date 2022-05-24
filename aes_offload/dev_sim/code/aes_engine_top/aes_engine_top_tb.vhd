@@ -27,7 +27,7 @@ entity aes_engine_top_tb is
       g_test_cases   : std_logic_vector(31 downto 0) := x"00001000"; -- select 1 test at a time,128/192/256, 1/1/1 encryp, 8/8/8 = decryption. 1/0/0/0 = gcm mode 256 test
       g_asyncronous  : std_logic := '0';
       g_decryption   : std_logic := '0';
-      g_speed_select : std_logic := '1' -- 1 = Lo speed
+      g_speed_select : std_logic := '0' -- 1 = Lo speed
    );
 end entity;
 
@@ -337,12 +337,10 @@ begin
          wait until t_ready = '1';
          wait until rising_edge(clk);
          t_valid <= '1'; 
-         get_gcm_inputs(f_gcm_vectors, f_gcm_ct_vectors, leng_pt, clk, t_valid, t_ready, out_word, in_word, key_handle, gcm_ct_exp, ct_gcm_arr);  
-         in_word  <= (AES128-1 => '1', others => '0');                                                                                                               
-         t_last   <= '1';                                                                                                                                    
-         wait until rising_edge(clk);                                                                                                                       
+         get_gcm_inputs(f_gcm_vectors, f_gcm_ct_vectors, leng_pt, clk, t_valid, t_ready, out_word, in_word, key_handle, gcm_ct_exp, ct_gcm_arr, t_last);                                                                                                                                                                                                                                                 
          t_valid  <= '0'; 
-         t_last   <= '0';                  
+         t_last   <= '0'; 
+         wait until rising_edge(clk);                                                                                                                                        
          wait for clk_period*1000;
          assertion_array(test_msg, "compare output cipher with text file FIPS cipher", ct_gcm_arr, out_word_arr);
          file_close(f_gcm_vectors);
