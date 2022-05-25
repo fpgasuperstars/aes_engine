@@ -162,8 +162,11 @@ begin
       wait for clk_period_100/2;
    end process;
    -- change to asyncronous clocks when mode selected
-   engine_clk <= clk when g_asyncronous = '0' else clk_100;
-
+engine_clk <= clk when g_asyncronous = '0' else clk_100;
+      
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   -- Assertions
+   --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
    p_assertions : process -- used to align the expected data with the output data for testing values are the same
       variable status : file_open_status;
    begin
@@ -235,7 +238,6 @@ begin
       end if;
       wait;
    end process;
-   
    
    p_assert_gcm : process
    begin
