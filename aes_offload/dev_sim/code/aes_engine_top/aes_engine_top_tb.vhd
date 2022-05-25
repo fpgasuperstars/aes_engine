@@ -27,7 +27,7 @@ entity aes_engine_top_tb is
       g_test_cases   : std_logic_vector(31 downto 0) := x"00001000"; -- select 1 test at a time,128/192/256, 1/1/1 encryp, 8/8/8 = decryption. 1/0/0/0 = gcm mode 256 test
       g_asyncronous  : std_logic := '0';
       g_decryption   : std_logic := '0';
-      g_speed_select : std_logic := '0' -- 1 = Lo speed
+      g_speed_select : std_logic := '1' -- 1 = Lo speed
    );
 end entity;
 
@@ -41,7 +41,7 @@ architecture sim of aes_engine_top_tb is
    -- Signals
    signal out_word, out_word_q, out_word_qq, in_word, fifo_to_engine_data: std_logic_vector(DATA_WIDTH_128-1 downto 0) := (others => '0');
    signal test_msg                                                       : string(1 to STRING_LENGTH);
-   signal rst, clk, clk_100, engine_clk                                  : std_logic := '0';
+   signal rst, clk, clk_100, engine_clk, speed_sel                       : std_logic := '0';
    signal test_id                                                        : string(1 to 4);                        
    signal pt                                                             : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
    signal poly_dec                                                       : std_logic_vector(DATA_WIDTH_128 downto 0):= (others => '0');
@@ -57,7 +57,11 @@ architecture sim of aes_engine_top_tb is
    signal o_t_keep                                                       : std_logic_vector(15 downto 0) := x"0000";
    
    -- GCM
-   signal auth_data                                                      : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   signal auth_data, gcm_ct_data                           : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   
+   --AXIS
+   signal  m_axis_tdata                                    : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   signal  m_axis_tlast, m_axis_tvalid                     : std_logic;
    
    -- assertions/ result
    signal ct_gcm_arr, out_word_arr : T_GCM_EXP;
@@ -68,6 +72,7 @@ architecture sim of aes_engine_top_tb is
    signal keys_256            : std_logic_vector(DATA_WIDTH_256-1 downto 0);
    
 begin
+   speed_sel <= g_speed_select;
    dut : entity aes_engine.aes_engine_top
       generic map(
          g_speed_sel       => g_speed_select, 
@@ -128,11 +133,11 @@ begin
          s_axis_tlast   => o_t_last,
          
          m_axis_aclk    => engine_clk,
-         m_axis_tvalid  => open,
+         m_axis_tvalid  => m_axis_tvalid,
          m_axis_tready  => '1',
-         m_axis_tdata   => open,
+         m_axis_tdata   => m_axis_tdata,
          m_axis_tkeep   => open,
-         m_axis_tlast   => open,
+         m_axis_tlast   => m_axis_tlast,
          
          almost_empty   => open,
          almost_full    => open
@@ -165,7 +170,8 @@ begin
       if g_decryption = '0' then
          file_open(status, f_ct_vectors    , CT_128_FILE ); 
          file_open(status, f_192_ct_vectors, CT_192_FILE );   
-         file_open(status, f_256_ct_vectors, CT_256_FILE ); 
+         file_open(status, f_256_ct_vectors, CT_256_FILE );        
+                                                   
          while not endfile(f_ct_vectors) loop 
             if valid_out = '1' then
                if test_msg = "Test case 1 : AES128 Encryption" & pad then
@@ -193,10 +199,11 @@ begin
          file_close(f_ct_vectors);
          file_close(f_192_ct_vectors);
          file_close(f_256_ct_vectors);
-      else
+      elsif  g_decryption = '1' then
          file_open(status, f_128_vectors, CMD_128_FILE ); 
          file_open(status, f_192_vectors, CMD_192_FILE );   
          file_open(status, f_256_vectors, CMD_256_FILE );
+                                                                         
          while not endfile(f_128_vectors) loop 
             if valid_out = '1' then
                if test_msg = "Test case 2 : AES128 Decryption" & pad then
@@ -224,16 +231,19 @@ begin
          file_close(f_128_vectors);
          file_close(f_192_vectors);
          file_close(f_256_vectors);
+
       end if;
       wait;
    end process;
-
-   p_form_array_gcm : process
+   
+   
+   p_assert_gcm : process
    begin
-      for i in 0 to out_word_arr'high loop
-         wait until valid_out = '1';
-            out_word_arr(i) <= out_word;
-      end loop;
+      wait for clk_period;
+      if g_test_cases = x"00001000" then
+         get_gcm_ct(f_gcm_ct_vectors, CT_GCM_FILE, test_msg, leng_pt, m_axis_tvalid, clk, speed_sel, m_axis_tdata, gcm_ct_data);
+      end if;
+
    end process;
    
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -312,39 +322,14 @@ begin
       end if;                                                                                                                                              
                                                                                                                                                                
       ------------------------------------------------------------------------------------                                   
-      ---- Test case 12 
-      ----"tgId"    : 15,               
-      ----"direction": "encrypt",  
-      ----"keyLen": 256,           
-      ----"ivLen": 96,                
-      ----"ivGenMode": "8.2.2",    
-      ----"payloadLen": 1024,      
-      ----"aadLen": 1024,          
-      ----"tagLen": 104,                                                                                                                              
+      ---- Test case 12                                                                                                                               
       ------------------------------------------------------------------------------------                                   
-      if g_test_cases(12) = '1' then                                                                                         
-         file_open(status, f_gcm_vectors      , CMD_GCM_FILE);                                                               
-         file_open(status, f_gcm_ct_vectors   , CT_GCM_FILE);                                                                                                                               
-         leng_pt     <= 2176;   --"payloadLen": 1024 + aad 1024                                                                                                 
-         key_handle  <= (others  =>  '0');                                                                                   
-         test_msg    <= pad_string(" Test case 12 : GCM mode AES 256", ' ', STRING_LENGTH);                                  
+      if g_test_cases(12) = '1' then                                                                                                                                                                                                                                                                                     
+         leng_pt     <= 2176;   --"payloadLen": 1024 + aad 1024  + length of ad and CT                                                                                                                                                                                 
+         test_msg    <= pad_string("Test case 12 : GCM mode AES 256 Encryption", ' ', STRING_LENGTH);                                  
          wait for 0 ns;                                                                                                      
          report lf & lf & test_msg & lf;                                                                                                                                                                                   
-         rst       <= '1';             
-         wait for RESET_DURATION;
-         rst       <= '0';           
-         wait until rising_edge(clk);
-         wait until t_ready = '1';
-         wait until rising_edge(clk);
-         t_valid <= '1'; 
-         get_gcm_inputs(f_gcm_vectors, f_gcm_ct_vectors, leng_pt, clk, t_valid, t_ready, out_word, in_word, key_handle, gcm_ct_exp, ct_gcm_arr, t_last);                                                                                                                                                                                                                                                 
-         t_valid  <= '0'; 
-         t_last   <= '0'; 
-         wait until rising_edge(clk);                                                                                                                                        
-         wait for clk_period*1000;
-         assertion_array(test_msg, "compare output cipher with text file FIPS cipher", ct_gcm_arr, out_word_arr);
-         file_close(f_gcm_vectors);
-         file_close(f_gcm_ct_vectors);
+         test_gcm(f_gcm_vectors, CMD_GCM_FILE, clk_period, leng_pt, clk, t_ready, in_word, key_handle, t_keep, t_last, rst, t_valid);
       end if;
       
       ------------------------------------------------------------------------------------                                                                                     

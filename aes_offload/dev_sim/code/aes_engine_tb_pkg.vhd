@@ -73,9 +73,11 @@ package aes_engine_tb_pkg is
    procedure assertion(test_msg_i          : string; assertion_msg_i : string; expected_i : std_logic_vector; received_i : std_logic_vector);
    procedure get_inputs(file f_vectors     : text; signal in_word, key: out std_logic_vector;signal last : out std_logic; signal t_keep : out std_logic_vector  );
    procedure get_ct(file f_vectors         : text; signal exp_ct      : out std_logic_vector);
-   procedure get_gcm_inputs(file f_vectors, f_ct : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic; signal ct_result : in std_logic_vector;  signal in_word, key, exp_ct: out std_logic_vector; signal ct_gcm_arr: out T_GCM_EXP; signal t_last : out std_logic);
+   procedure get_gcm_inputs(file f_vectors : text; PATH : string; signal leng_pt : in integer; signal clk, t_ready : in std_logic; signal in_word, key, t_keep : out std_logic_vector; signal t_last : out std_logic);
    procedure assertion_array(test_msg_i : string; assertion_msg_i : string; expected_i : T_GCM_EXP; received_i : T_GCM_EXP);   
    procedure test(file f_vectors : text; PATH : string; signal t_ready, clk : in std_logic; signal in_word : out std_logic_vector; signal key_handle : out std_logic_vector; signal t_last, t_valid, rst : out std_logic; signal t_keep : out std_logic_vector);
+   procedure test_gcm(file f_vectors : text; PATH : string;  clk_period : time;  signal leng_pt : in integer; signal clk, t_ready : in std_logic; signal in_word, key, t_keep : out std_logic_vector; signal t_last, rst, t_valid : out std_logic);
+   procedure get_gcm_ct(file f_vectors : text; PATH, test_msg : string; signal leng_pt : in integer; signal valid_out, clk, speed_sel : in std_logic; signal out_word : in std_logic_vector; signal in_word: out std_logic_vector);
 end package aes_engine_tb_pkg;
 
 package body aes_engine_tb_pkg is
@@ -207,46 +209,84 @@ package body aes_engine_tb_pkg is
    end;
    
    -- extract input data from FIPS test vectors
-   procedure get_gcm_inputs(file f_vectors, f_ct : text; signal leng_pt : in integer; signal clk, t_valid, t_ready : in std_logic; signal ct_result : in std_logic_vector;  signal in_word, key, exp_ct : out std_logic_vector; signal ct_gcm_arr: out T_GCM_EXP; signal t_last : out std_logic) is
-      variable v_iline,v_line_ct       : line;
-      variable v_test_id, v_test_id_ct : string(1 to 4);
-      variable v_space, v_space_ct     : character;
-      variable v_pt, v_ct              : std_logic_vector(in_word'length-1 downto 0);
-      variable v_key                   : integer;
-      variable v_ct_array              : T_GCM_EXP;
-   begin
-      readline(f_vectors, v_iline);
-      readline(f_ct, v_line_ct);
-      read(v_iline,  v_test_id);
-      read(v_line_ct,  v_test_id_ct);
-      read(v_iline,  v_key);
-      read(v_iline,  v_space); 
-      read(v_line_ct,  v_space_ct); 
-      wait for 0 ns;          
-      key       <=  std_logic_vector(to_unsigned(v_key,10)); -- get key handle
-      for i in 0 to (leng_pt/128) loop
-         if t_valid and t_ready then   
-            hread(v_iline, v_pt);
-            in_word   <=  reverse_byte_order(v_pt);  -- reverse order of plain text
-            wait until rising_edge(clk);
-            hread(v_line_ct, v_ct);
-            exp_ct   <=  reverse_byte_order(v_ct);
-            wait for 0 ns; 
-            v_ct_array(i) := exp_ct; 
-         else
-            wait until rising_edge(clk) and t_ready = '1';
-         end if;
+   procedure get_gcm_inputs(file f_vectors : text; PATH : string; signal leng_pt : in integer; signal clk, t_ready : in std_logic; signal in_word, key, t_keep : out std_logic_vector; signal t_last : out std_logic) is
+      variable v_iline                 : line;                                                                                                                                                                                                                                                  
+      variable v_test_id               : string(1 to 4);                                                                                                                                                                                                                                        
+      variable v_space                 : character;                                                                                                                                                                                                                                             
+      variable v_pt                    : std_logic_vector(in_word'length-1 downto 0);                                                                                                                                                                                                           
+      variable v_key                   : integer;                                                                                                                                                                                                                                               
+      variable status               : file_open_status;                                                                                                                                                                                                                                         
+   begin                                                                                                                                                                                                                                                                                        
+      file_open(status, f_vectors, PATH);                                                                                                                                                                                                                                                       
+      readline(f_vectors, v_iline);                                                                                                                                                                                                                                                             
+      read(v_iline,  v_test_id);                                                                                                                                                                                                                                                                
+      read(v_iline,  v_key);                                                                                                                                                                                                                                                                    
+      read(v_iline,  v_space);
+      key       <=  std_logic_vector(to_unsigned(v_key,10)); -- get key handle                                                                                                                                                                                                                  
+      wait for 0 ns;                                                                                                                                                                                                                                                                            
+      for i in 0 to (leng_pt/128) loop                                                                                                                                                                                                                                                          
+         if t_ready then                                                                                                                                                                                                                                                                        
+            hread(v_iline, v_pt);                                                                                                                                                                                                                                                               
+            in_word   <=  reverse_byte_order(v_pt);  -- reverse order of plain text                                                                                                                                                                                                             
+         end if;                                                                                                                                                                                                                                                                                
+         wait until rising_edge(clk);                                                                                                                                                                                                                                                           
+      end loop;                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                
+      hread(v_iline, v_pt);                                                                                                                                                                                                                                                                     
+      t_keep    <= x"FFFF";                                                                                                                                                                                                                                                                     
+      t_last    <= '1';                                                                                                                                                                                                                                                                         
+      in_word   <=  reverse_byte_order(v_pt);  -- reverse order of plain text                                                                                                                                                                                                                   
+      wait until rising_edge(clk);                                                                                                                                                                                                                                                              
+      file_close(f_vectors);                                                                                                                                                                                                                                                                    
+   end;                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                
+   procedure test_gcm(file f_vectors : text; PATH : string; clk_period : time; signal leng_pt : in integer; signal clk, t_ready : in std_logic; signal in_word, key, t_keep : out std_logic_vector; signal t_last, rst, t_valid : out std_logic) is                                             
+   begin                                                                                                                                                                                                                                                                                        
+      rst       <= '1';                                                                                                                                                                                                                                                                      
+      t_last    <= '0';
+      t_valid   <= '0';                                                                                                                                                                                                                                                              
+      wait for RESET_DURATION;                                                                                                                                                                                                                                                       
+      rst       <= '0';     
+      key<= std_logic_vector(to_unsigned(0,10)); -- load key        
+      wait until t_ready = '1';
+      t_valid <= '1'; 
+      get_gcm_inputs(f_vectors, PATH, leng_pt, clk, t_ready, in_word, key, t_keep,  t_last);                                                                                                                                                                                                                                                 
+      t_valid  <= '0'; 
+      t_last   <= '0'; 
+      wait until rising_edge(clk);                                                                                                                                        
+      wait for clk_period*1000;
+   end procedure;
+   
+   -- compare gcm values
+   procedure get_gcm_ct(file f_vectors : text; PATH, test_msg : string; signal leng_pt : in integer; signal valid_out, clk, speed_sel : in std_logic; signal out_word : in std_logic_vector; signal in_word: out std_logic_vector) is
+      variable v_iline                 : line;                                                                                                                                                                                                                                                  
+      variable v_test_id               : string(1 to 4);                                                                                                                                                                                                                                        
+      variable v_space                 : character;                                                                                                                                                                                                                                             
+      variable v_ct                    : std_logic_vector(in_word'length-1 downto 0);                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+      variable status                  : file_open_status;                                                                                                                                                                                                                                         
+   begin                                                                                                                                                                                                                                                                                        
+      file_open(status, f_vectors, PATH);                                                                                                                                                                                                                                                       
+      readline(f_vectors, v_iline);                                                                                                                                                                                                                                                             
+      read(v_iline,  v_test_id);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+      read(v_iline,  v_space);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+      for i in 0 to 15 loop
+         if speed_sel = '0' then
+            if valid_out = '1' then                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+               hread(v_iline, v_ct);                                                                                                                                                                                                                                                               
+               in_word   <=  reverse_byte_order(v_ct);  -- reverse order of plain text 
+               wait for 0 ns;
+               assertion(test_msg, "compare output cipher with text file FIPS cipher",  in_word, out_word);  
+            end if; 
+         elsif speed_sel = '1' then
+            wait until valid_out = '1';
+            hread(v_iline, v_ct);                                                                                                                                                                                                                                                               
+            in_word   <=  reverse_byte_order(v_ct);  -- reverse order of plain text 
+            wait for 0 ns;
+            assertion(test_msg, "compare output cipher with text file FIPS cipher",  in_word, out_word);  
+         end if;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
       end loop;
-            
-      hread(v_iline, v_pt);
-      t_last    <= '1';
-      in_word   <=  reverse_byte_order(v_pt);  -- reverse order of plain text
-      wait until rising_edge(clk);
-      hread(v_line_ct, v_ct);
-      exp_ct    <=  reverse_byte_order(v_ct);
-      wait for 0 ns; 
-      v_ct_array((leng_pt/128)+1) := exp_ct; 
-      
-      ct_gcm_arr <= v_ct_array;
-   end;
+      file_close(f_vectors); 
+   end procedure;
+   
 end package body aes_engine_tb_pkg;

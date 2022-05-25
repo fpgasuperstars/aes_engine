@@ -523,7 +523,9 @@ begin
       if i_rst = '1' then
          gf_out <= (others  => '0'); 
       else
-         gf_out <= mult(aad_ct_xor, ek0_ghash);
+         for i in 0 to 15 loop
+            gf_out((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= mult(aad_ct_xor((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH), ek0_ghash((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH));
+         end loop;
       end if;
    end process;
    

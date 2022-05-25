@@ -50,7 +50,6 @@ add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix unsigne
 add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/aad_done
 add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/done_0_enc
 add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/ct_done
-add wave -noupdate -expand -group {AES Engine} -expand -group GCM /aes_engine_top_tb/dut/aad_done_en
 add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/s_axis_tvalid
 add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/s_axis_tready
 add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold -radix hexadecimal /aes_engine_top_tb/u_fifo_in/s_axis_tdata
@@ -73,9 +72,11 @@ add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} 
 add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/m_axis_tlast
 add wave -noupdate /aes_engine_top_tb/dut/nonce_cnt
 add wave -noupdate /aes_engine_top_tb/dut/initial_nonce_cnt
+add wave -noupdate /aes_engine_top_tb/exp_ct_128
+add wave -noupdate /aes_engine_top_tb/gcm_ct_data
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {19519355133 fs} 0} {{Cursor 2} {236931894 fs} 0} {{Cursor 3} {1590000000 fs} 0} {{Cursor 4} {1202885002 fs} 0} {{Cursor 5} {4980516008 fs} 0} {{Cursor 6} {32126601446 fs} 0}
-quietly wave cursor active 3
+WaveRestoreCursors {{Cursor 1} {19519355133 fs} 0} {{Cursor 2} {316289054 fs} 0} {{Cursor 3} {1590000000 fs} 0} {{Cursor 4} {1202885002 fs} 0} {{Cursor 5} {4980516008 fs} 0} {{Cursor 6} {32126601446 fs} 0}
+quietly wave cursor active 2
 configure wave -namecolwidth 179
 configure wave -valuecolwidth 526
 configure wave -justifyvalue left
@@ -90,4 +91,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {900024528 fs} {2318837028 fs}
+WaveRestoreZoom {4052128125 fs} {5470940625 fs}
