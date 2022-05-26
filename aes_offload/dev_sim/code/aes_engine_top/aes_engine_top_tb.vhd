@@ -27,7 +27,7 @@ entity aes_engine_top_tb is
       g_test_cases   : std_logic_vector(31 downto 0) := x"00001000"; -- select 1 test at a time,128/192/256, 1/1/1 encryp, 8/8/8 = decryption. 1/0/0/0 = gcm mode 256 test
       g_asyncronous  : std_logic := '0';
       g_decryption   : std_logic := '0';
-      g_speed_select : std_logic := '1' -- 1 = Lo speed
+      g_speed_select : std_logic := '0' -- 1 = Lo speed
    );
 end entity;
 
@@ -43,7 +43,7 @@ architecture sim of aes_engine_top_tb is
    signal test_msg                                                       : string(1 to STRING_LENGTH);
    signal rst, clk, clk_100, engine_clk, speed_sel                       : std_logic := '0';
    signal test_id                                                        : string(1 to 4);                        
-   signal pt                                                             : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   signal pt, test_valu                                                             : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
    signal poly_dec                                                       : std_logic_vector(DATA_WIDTH_128 downto 0):= (others => '0');
    signal key_handle                                                     : std_logic_vector(9 downto 0):= (others => '0');
    signal exp_ct,exp_ct_128,exp_ct_192,exp_ct_256,gcm_ct_exp             : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
@@ -72,6 +72,7 @@ architecture sim of aes_engine_top_tb is
    signal keys_256            : std_logic_vector(DATA_WIDTH_256-1 downto 0);
    
 begin
+   test_valu <= x"0E000000000000000000000000000087" ;
    speed_sel <= g_speed_select;
    dut : entity aes_engine.aes_engine_top
       generic map(
@@ -332,7 +333,7 @@ engine_clk <= clk when g_asyncronous = '0' else clk_100;
          wait for 0 ns;                                                                                                      
          report lf & lf & test_msg & lf;                                                                                                                                                                                   
          test_gcm(f_gcm_vectors, CMD_GCM_FILE, clk_period, leng_pt, clk, t_ready, in_word, key_handle, t_keep, t_last, rst, t_valid);
-      end if;
+      end if; 
       
       ------------------------------------------------------------------------------------                                                                                     
       ---- print memory .coe file for keys                                                                                                                                                        

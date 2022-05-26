@@ -48,11 +48,13 @@ architecture mixed of aes_engine_top is
 
    -- Types
    type  T_CIPHER_TXT    is array (0 to AES256) of std_logic_vector(AXI_T_DATA-1 downto 0); -- array containing the cipher text output from each round
-   type  T_STATES        is (newkey, normal, config, last, ek0);
+   type  T_STATES        is (newkey, normal, config, last, ek0, payload_length);
+   type  T_GHASH_STATES  is (xor_s, add_length, tag_out);
 
    -- Signals
    -- State
    signal state                                                                               : T_STATES;
+   signal ghash_state                                                                         : T_GHASH_STATES;
                                                                                               
    -- Data                                                                                    
    signal encrypt, decrypt                                                                    : T_CIPHER_TXT;
@@ -73,6 +75,7 @@ architecture mixed of aes_engine_top is
    -- GCM                                                                                
    signal nonce_cnt, nonce_cnt_rev                                                            : unsigned((BYTE_WIDTH*4-1) downto 0);
    signal gf_out, ek0_ghash, aad_ct_xor, auth_b4_gf, auth_gf, pre_tag_xor, tag, add_pt_length : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal gf_out_rev, ek0_ghash_rev, aad_ct_xor_rev, i_t_data_rev, o_t_data_rev               : std_logic_vector(AXI_T_DATA-1 downto 0);
    signal aad_length, pt_length                                                               : std_logic_vector((AXI_T_DATA/2)-1 downto 0);
    signal aad_done, done_0_enc, initial_nonce_cnt, aad_done_q, ct_done                        : std_logic;                                                
                                                                                          
@@ -114,6 +117,7 @@ begin
             config_cnt     <= (others  => '0');
             done_0_enc     <= '0';
             add_pt_length  <= (others  => '0');
+            ek0_ghash      <= (others  => '0');
          else
             en_cnt_rst  <= '0';
          case state is
@@ -150,12 +154,6 @@ begin
                   end loop;
                elsif new_key then
                   state       <= newkey;
-               elsif config_cnt = 1 and mode = GCM_MODE_C and t_ready_q = '1' then
-                  add_pt_length  <= encrypt_input_data(AXI_T_DATA-1 downto 0);
-                  pt_length   <= encrypt_input_data(AXI_T_DATA-1 downto (AXI_T_DATA/2));
-                  aad_length  <= encrypt_input_data((AXI_T_DATA/2)-1 downto 0);
-                  config_cnt  <= config_cnt + 1;
-                  state       <= normal;
                elsif config_cnt = 2 and mode = GCM_MODE_C and t_ready_q = '1' then
                   config_cnt  <= config_cnt + 1;
                   state       <= normal;
@@ -169,12 +167,12 @@ begin
                if en_cnt >= gen_mode and g_speed_sel = '1' and speed_en = '1' then
                   en_cnt_rst <= '1';
                   ek0_ghash  <= encrypt(1); 
-                  state      <= normal;
+                  state      <= payload_length;
                   done_0_enc <= '1';
                elsif en_cnt >= gen_mode and g_speed_sel = '0' then
                   en_cnt_rst <= '1';
                   ek0_ghash  <= encrypt(gen_mode);
-                  state      <= normal;
+                  state      <= payload_length;
                   done_0_enc <= '1';
                end if;
                
@@ -203,6 +201,12 @@ begin
                   state  <= newkey;
                end if;
             
+            when payload_length =>
+               add_pt_length  <= i_t_data(AXI_T_DATA-1 downto 0);
+               pt_length      <= i_t_data(AXI_T_DATA-1 downto (AXI_T_DATA/2));
+               aad_length     <= i_t_data((AXI_T_DATA/2)-1 downto 0);
+               config_cnt     <= config_cnt + 1;
+               state          <=  normal;
             when last =>
                last_cnt_rst  <= '0';
                if last_cnt = gen_mode-2 and g_speed_sel = '0' then
@@ -238,7 +242,7 @@ begin
 
    -- input data control     
    encrypt_input_data  <= x"02000000" & iv                     when aad_done = '1' else
-                          std_logic_vector(nonce_cnt_rev) & iv when config_cnt > 1 and mode = GCM_MODE_C else -- IV concatenated with nonce after config data is fed into engine for GCM
+                          std_logic_vector(nonce_cnt_rev) & iv when config_cnt >= 1 and mode = GCM_MODE_C else -- IV concatenated with nonce after config data is fed into engine for GCM
                           i_t_data;
          
    p_rnd_dec : process
@@ -497,11 +501,11 @@ begin
    begin
       wait until rising_edge(i_clk);
       if i_rst then
-         nonce_cnt    <= to_unsigned(1,32); 
-         pre_tag_xor  <= (others  => '0'); 
+         nonce_cnt          <= to_unsigned(1,32); 
+         pre_tag_xor        <= (others  => '0'); 
          initial_nonce_cnt  <=  '0';
       elsif initial_nonce_cnt = '1' and ((state = normal and g_speed_sel = '0') or (state = normal and g_speed_sel = '1' and speed_en = '1' and en_cnt >= gen_mode)) then
-         nonce_cnt  <= nonce_cnt + 1;
+         nonce_cnt          <= nonce_cnt + 1;
       elsif aad_done  = '1' and ((state = normal and g_speed_sel = '0') or (state = normal and g_speed_sel = '1' and speed_en = '1' and en_cnt >= gen_mode)) then
          nonce_cnt          <= nonce_cnt + 1;
          initial_nonce_cnt  <= '1';
@@ -516,41 +520,47 @@ begin
       nonce_cnt_rev((i + 1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <=  nonce_cnt(((nonce_cnt'length/BYTE_WIDTH)-i)*BYTE_WIDTH-1 downto ((nonce_cnt'length/BYTE_WIDTH-1)-i)*BYTE_WIDTH);
    end generate;
    
-   -- GF multiply   
-   p_gf_mult : process
+   --I think I need to swap the bit-order of H, V and Y_out
+   bit_reverse : for i in 0 to AXI_T_DATA-1 generate
+      aad_ct_xor_rev(i) <= aad_ct_xor((AXI_T_DATA-1)-i);
+      gf_out_rev(i)     <= gf_out((AXI_T_DATA-1)-i);
+      ek0_ghash_rev(i)  <= ek0_ghash((AXI_T_DATA-1)-i);
+      i_t_data_rev(i)   <= i_t_data((AXI_T_DATA-1)-i);
+      o_t_data_rev(i)   <= o_t_data((AXI_T_DATA-1)-i);
+   end generate;                                                                                                                                                         
+                                                                                                                                                                                   
+   gf_out <= mult(x"00000000000000000000000000000087", x"02000000000000000000000000000000");                                                                                                                                          
+                                                                                                                                                                                   
+   p_ghash : process
    begin
       wait until rising_edge(i_clk);
       if i_rst = '1' then
-         gf_out <= (others  => '0'); 
+         ghash_state  <= xor_s;
+         aad_ct_xor   <= (others  => '0');   
+         tag          <= (others  => '0');   
       else
-         for i in 0 to 15 loop
-            gf_out((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= mult(aad_ct_xor((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH), ek0_ghash((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH));
-         end loop;
+         case ghash_state is 
+            when xor_s =>
+               if (config_cnt > 1) and o_t_ready = '1' and i_t_valid = '1' and o_t_valid = '0' then
+                  aad_ct_xor  <= i_t_data xor gf_out;
+               elsif o_t_valid = '1' then
+                  aad_ct_xor  <= o_t_data xor gf_out;
+               elsif o_t_valid = '0' and o_t_last = '1' then
+                  ghash_state  <= add_length;
+               end if;
+               
+            when add_length =>
+               aad_ct_xor  <= add_pt_length xor gf_out;
+               ghash_state <= tag_out;
+               
+            when tag_out =>
+               tag  <= pre_tag_xor xor gf_out;
+               if o_t_last = '0' then
+                  ghash_state <= xor_s;
+               end if;       
+         end case;
       end if;
    end process;
-   
-   -- send correct data into GF multiply block
-   p_aad_done : process
-   begin
-      wait until rising_edge(i_clk);
-      if i_rst = '1' then
-         aad_ct_xor  <= (others  => '0');
-         ct_done     <= '0';
-      elsif o_t_last = '0' and initial_nonce_cnt = '1' and o_t_valid = '1' then
-         aad_ct_xor  <= gf_out xor o_t_data;
-      elsif o_t_last = '1' and o_t_valid = '1' then
-         aad_ct_xor  <= gf_out xor o_t_data;
-         ct_done     <= '1';
-      elsif config_cnt > 2 and done_0_enc = '1' and initial_nonce_cnt = '0' and o_t_ready = '1' then
-         aad_ct_xor  <= gf_out xor i_t_data;
-      elsif ct_done = '1' and speed_en = '1' then
-         aad_ct_xor  <= add_pt_length xor gf_out;
-         ct_done     <= '0';
-      end if;
-   end process;
-   
-   tag  <= gf_out xor pre_tag_xor;
-   
       
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    -- Output registers at selected speed
@@ -589,7 +599,7 @@ begin
       end if;
    end process;
    
-   o_t_ready  <= '0'                   when  state = ek0 or i_t_ready = '0' or (state = newkey or speed_en = '0'  or (mode = GCM_MODE_C and ((new_key = '1') or en_cnt <= gen_mode))) else '1';
+   o_t_ready  <= '0'                   when  (state = ek0 and en_cnt <= gen_mode) or i_t_ready = '0' or (state = newkey or speed_en = '0'  or (mode = GCM_MODE_C and ((new_key = '1') or en_cnt <= gen_mode))) else '1';
    
    o_t_valid  <= t_valid(gen_mode+1)   when  g_speed_sel = '0' and en_cnt > gen_mode  and ini_key_cnt >= gen_mode*3 and mode /= GCM_MODE_C                                                     else -- hi speed
                  t_valid(0)            when  g_speed_sel = '1' and speed_en_q = '1'   and en_cnt >= gen_mode        and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 and mode /= GCM_MODE_C else -- lo speed

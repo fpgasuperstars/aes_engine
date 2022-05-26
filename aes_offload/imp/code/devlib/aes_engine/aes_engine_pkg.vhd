@@ -48,7 +48,7 @@ package aes_engine_pkg is
    type     T_AXI_STREAM    is array(0 to 16)           of std_logic;
    type     T_AXI_TKEEP     is array(0 to AES256)             of std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
       
-   function mult(v1, v2 : in std_logic_vector(7 downto 0)) return std_logic_vector;
+   function mult(v1, v2 : in std_logic_vector) return std_logic_vector;
    
    -- Encrpytion
    -- Sbox used for encryption
@@ -163,33 +163,63 @@ end package aes_engine_pkg;
 
 package body aes_engine_pkg is
    
+   ---- Galois Multiplier (GF(2^8)) x8+x4+x3+x+1 
+   --function mult(v1, v2 : in std_logic_vector(7 downto 0)) return std_logic_vector is
+   --   constant m              : integer := 8;  
+   --   variable dummy          : std_logic;
+   --   variable v_temp         : std_logic_vector(m-1 downto 0);
+   --   variable ret            : std_logic_vector(m-1 downto 0);
+   --begin
+   --   v_temp       := (others=>'0');  --x8+x4+x3+x+1                
+   --   for i in 0 to m-1 loop                                        
+   --     dummy      := v_temp(7);                                    
+   --     v_temp(7 ) := v_temp(6 );                                   
+   --     v_temp(6 ) := v_temp(5 );                                   
+   --     v_temp(5 ) := v_temp(4 );                                   
+   --     v_temp(4 ) := v_temp(3 ) xor dummy;                         
+   --     v_temp(3 ) := v_temp(2 ) xor dummy;                         
+   --     v_temp(2 ) := v_temp(1 );                                   
+   --     v_temp(1 ) := v_temp(0 ) xor dummy;                         
+   --     v_temp(0 ) := dummy;                                        
+   --     for j in 0 to m-1 loop                                      
+   --       v_temp(j) := v_temp(j) xor (v1(j) and v2(m-i-1));         
+   --     end loop;                                                   
+   --   end loop;                                                                                                                 
+   --
+   --   ret := v_temp;
+   --   return ret;
+   --end mult;                                                
+                                                                
    -- Galois Multiplier (GF(2^128) poly = x^128 + x^7 + x^2 + x + 1
-   function mult(v1, v2 : in std_logic_vector(7 downto 0)) return std_logic_vector is
-      constant m              : integer := 8;  
+   function mult(v1, v2 : in std_logic_vector) return std_logic_vector is
+      constant m              : integer := 128;  
       variable dummy          : std_logic;
       variable v_temp         : std_logic_vector(m-1 downto 0);
       variable ret            : std_logic_vector(m-1 downto 0);
    begin
-        v_temp       := (others=>'0');  --x8+x4+x3+x+1                                           -- x^128 + x^7 + x^2 + x + 1
-        for i in 0 to m-1 loop                                                                         --for i in 0 to m-1 loop 
-          dummy      := v_temp(7);                                                                        --  dummy := v_temp(127);
-          v_temp(7 ) := v_temp(6 );                                                                        --  --gen_gf : for a in 127 downto 8 loop
-          v_temp(6 ) := v_temp(5 );                                                                        --  --  v_temp(a ) := v_temp(a-1);
-          v_temp(5 ) := v_temp(4 );                                                                        --  --end loop;
-          v_temp(4 ) := v_temp(3 ) xor dummy;                                                                        --  v_temp(7 ) := v_temp(6 ) xor dummy;
-          v_temp(3 ) := v_temp(2 ) xor dummy;                                                                        --  v_temp(6 ) := v_temp(5 );
-          v_temp(2 ) := v_temp(1 );                                                                        --  v_temp(5 ) := v_temp(4 );
-          v_temp(1 ) := v_temp(0 ) xor dummy;                                                                        --  v_temp(4 ) := v_temp(3 );
-          v_temp(0 ) := dummy;                                                                        --  v_temp(3 ) := v_temp(2 );
-          for j in 0 to m-1 loop                                                                        --  v_temp(2 ) := v_temp(1 ) xor dummy;
-            v_temp(j) := v_temp(j) xor (v1(j) and v2(m-i-1));                                                                        --  v_temp(1 ) := v_temp(0 ) xor dummy;
-          end loop;                                                                                           --  v_temp(0 ) := dummy;
-        end loop;                                                                                           --  for j in 0 to m-1 loop
-                                                                                                     --    v_temp(j) := v_temp(j) xor (v1(j) and v2(m-i-1));
-                                                                                                     --  end loop;
-                                                                                                     --end loop;
+      -- x^128 + x^7 + x^2 + x + 1
+      v_temp   := (others=>'0');                                                                                  
+      for i in 0 to m-1 loop                                                                                         
+         dummy := v_temp(127);                                                                                       
+         gen_gf : for a in 127 downto 8 loop                                                                         
+           v_temp(a ) := v_temp(a-1);                                                                                
+         end loop;                                                                          
+         v_temp(7 ) := v_temp(6 ) xor dummy;                                                                         
+         v_temp(6 ) := v_temp(5 );                                                                                   
+         v_temp(5 ) := v_temp(4 );                                                                                   
+         v_temp(4 ) := v_temp(3 );                                                                                   
+         v_temp(3 ) := v_temp(2 );                                                                                   
+         v_temp(2 ) := v_temp(1 ) xor dummy;                                                                         
+         v_temp(1 ) := v_temp(0 ) xor dummy;                                                                         
+         v_temp(0 ) := dummy;    
+                                                                                             
+         for j in 0 to m-1 loop                                                                                                                                                                                                                                                                                    
+            v_temp(j) := v_temp(j) xor (v1(j) and v2(m-i-1));                  
+         end loop;
+                                                                      
+      end loop;                                                                
+   
       ret := v_temp;
       return ret;
-   end mult;
-   
+   end mult;                                                                
 end package body aes_engine_pkg;
