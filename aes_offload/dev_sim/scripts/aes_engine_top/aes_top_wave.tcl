@@ -78,10 +78,11 @@ add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/add_pt_leng
 add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/ghash_tag_c
 add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/y_prev_c
 add wave -noupdate /aes_engine_top_tb/dut/ghash_u/y_val_c
-add wave -noupdate /aes_engine_top_tb/dut/ghash_u/x_data_c
-add wave -noupdate /aes_engine_top_tb/dut/ghash_u/ghash_text_i
+add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/x_data_c
+add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/ghash_text_i
+add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/x_data_c
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {19519355133 fs} 0} {{Cursor 2} {432687215 fs} 0} {{Cursor 3} {1590000000 fs} 0} {{Cursor 4} {140470228 fs} 0} {{Cursor 5} {5181443954 fs} 0} {{Cursor 6} {32126601446 fs} 0}
+WaveRestoreCursors {{Cursor 1} {19519355133 fs} 0} {{Cursor 2} {655000000 fs} 0} {{Cursor 3} {1590000000 fs} 0} {{Cursor 4} {140470228 fs} 0} {{Cursor 5} {4669882685 fs} 0} {{Cursor 6} {32126601446 fs} 0}
 quietly wave cursor active 2
 configure wave -namecolwidth 179
 configure wave -valuecolwidth 526
@@ -97,4 +98,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {307575973 fs} {1006482223 fs}
+WaveRestoreZoom {308096186 fs} {1007002436 fs}

@@ -541,8 +541,8 @@ begin
     
 ghash_u :entity aes_engine.gcm_ghash 
     port map(
-        rst_i                       => i_clk,
-        clk_i                       => i_rst,
+        rst_i                       => i_rst,
+        clk_i                       => i_clk,
         ghash_pkt_val_i             => '1',
                                              
         ghash_text_i                => ghash_in_rev,
@@ -591,6 +591,7 @@ ghash_u :entity aes_engine.gcm_ghash
                end if;
                
             when add_length =>
+               ghash_in  <= x"80000000000000000000000000000000";
                ghash_state <= tag_out;
                
             when tag_out =>

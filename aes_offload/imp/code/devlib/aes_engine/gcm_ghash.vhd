@@ -92,19 +92,17 @@ begin
     --------------------------------------------------------------------------------
     --! Ghash next packet
     --------------------------------------------------------------------------------
-    ghash_next_pkt_p : process(rst_i, clk_i)
+    ghash_next_pkt_p : process
     begin
-        if(rst_i = '1') then
+       wait until rising_edge(clk_i);
+        if rst_i = '1' then
             y_s <= (others => '0');
-        elsif(rising_edge(clk_i)) then
+        else
             --! Save Y to xor with the next incoming X value
-            if(y_val_c = '1') then
-                y_s <= y_c;
-            end if;
+            y_s <= y_c;
         end if;
     end process;
 
-    y_val_c <= '1';
 
     --------------------------------------------------------------------------------
     --! Bit counter: minimum size increment is 1 byte
@@ -114,7 +112,7 @@ begin
     x_data_c    <= ghash_text_i;
 
     --! Output from the previous gfmul
-    y_prev_c    <= (others => '0') when (sop_c = '1') else y_s;
+    y_prev_c    <=  y_s;
 
     --! gfmul: X input
     x_c         <= x_data_c xor y_prev_c;
@@ -129,12 +127,13 @@ begin
     --------------------------------------------------------------------------------
     --! Sample the ghash tag
     --------------------------------------------------------------------------------
-    sample_tag_p : process(rst_i, clk_i)
+    sample_tag_p : process
     begin
+       wait until rising_edge(clk_i);
         if(rst_i = '1') then
             ghash_tag_s <= (others => '0');
-        elsif(rising_edge(clk_i)) then
-                ghash_tag_s <= ghash_tag_c;
+        else
+            ghash_tag_s <= ghash_tag_c;
         end if;
     end process;
 
