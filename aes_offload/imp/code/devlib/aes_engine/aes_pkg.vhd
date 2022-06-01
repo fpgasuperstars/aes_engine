@@ -1,16 +1,12 @@
 --------------------------------------------------------------------------------
 --! @File name:     aes_pkg
---! @Date:          04/03/2016
---! @Description:   the package contains the constant for the AES algorithm
---! @Reference:     FIPS PUB 197, November 26, 2001
---! @Source:        http://csrc.nist.gov/publications/fips/fips197/fips-197.pdf
 --------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 --------------------------------------------------------------------------------
---! package: aes_pkg
+-- package: aes_pkg
 --------------------------------------------------------------------------------
 package aes_pkg is
 

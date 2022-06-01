@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 --! @File name:     ghash_gfmul
---! @Date:          29/04/2019
+--! @Date:          01/06/2022
 --! @Description:   The module performs the GF multiplication
 --! @Reference:     FIPS PUB 197, November 26, 2001
 --! @Source:        https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf
@@ -22,18 +22,17 @@ end entity;
 --------------------------------------------------------------------------------
 architecture arch_ghash_gfmul of ghash_gfmul is
 
-    --! Constants
 
-    --! Types
+    -- Types
     type gf_array_t is array ((GCM_DATA_WIDTH_C-1) downto 0) of std_logic_vector(GCM_DATA_WIDTH_C-1 downto 0);
 
-    --! Signals
+    -- Signals
     signal z_c : std_logic_vector(GCM_DATA_WIDTH_C-1 downto 0);
 
 begin
 
     --------------------------------------------------------------------------------
-    --! GF Multiplications
+    -- GF Multiplications
     --------------------------------------------------------------------------------
     gf_mult_p   : process(gf_mult_x_i, gf_mult_h_i)
         variable tmp_v : std_logic_vector(GCM_DATA_WIDTH_C-1 downto 0);
@@ -43,13 +42,13 @@ begin
         tmp_v := gf_mult_h_i;
 
         for i in GCM_DATA_WIDTH_C-1 downto 0 loop
-            --! Save tmp_v vertically in the array
+            -- Save tmp_v vertically in the array
             for j in GCM_DATA_WIDTH_C-1 downto 0 loop
                 acc_v(j)(i) := gf_mult_x_i(i) and tmp_v(j);
             end loop;
 
             vec_v := tmp_v;
-            --! (V_i >> 1) xor R = ('11100001 || 0^120')
+            -- (V_i >> 1) xor R = ('11100001 || 0^120')
             tmp_v(127)              := vec_v(0);
             tmp_v(126)              := vec_v(127) xor vec_v(0);
             tmp_v(125)              := vec_v(126) xor vec_v(0);
@@ -58,7 +57,7 @@ begin
             tmp_v(119 downto 0)     := vec_v(120 downto 1);
         end loop;
 
-        --! Z_i xor V_i
+        -- Z_i xor V_i
         for i in 0 to GCM_DATA_WIDTH_C-1 loop
             z_c(i) <= xor_reduce(acc_v(i));
         end loop;

@@ -77,7 +77,7 @@ architecture mixed of aes_engine_top is
    signal gf_out, gf_out_q, ek0_ghash, aad_ct_xor, auth_b4_gf, auth_gf, pre_tag_xor, tag, add_pt_length,o_t_data_q, o_t_data_q_rev, H, Si, o_t_data_rev_byte, ek0_ghash_rev_byte, ghash_in, ghash_in_rev : std_logic_vector(AXI_T_DATA-1 downto 0);
    signal gf_out_rev, ek0_ghash_rev, ek0_ghash_rev_2, aad_ct_xor_rev, i_t_data_rev, o_t_data_rev, o_t_data_rev_2,  tag_rev, add_pt_length_rev, pre_tag_xor_rev      : std_logic_vector(AXI_T_DATA-1 downto 0);
    signal aad_length, pt_length                                                               : std_logic_vector((AXI_T_DATA/2)-1 downto 0);
-   signal aad_done, done_0_enc, initial_nonce_cnt, aad_done_q, ct_done, aad_done_en           : std_logic;                                                
+   signal aad_done, done_0_enc, initial_nonce_cnt, aad_done_q, ct_done, aad_done_en,tag_done, tag_done_q, tag_done_en  : std_logic;                                                
                                                                                          
    -- Configuration                                                                      
    signal mode                                                                                : std_logic_vector(MODE_C-1 downto 0);
@@ -531,8 +531,9 @@ begin
       end if;
    end process;
    
-   aad_done     <= '1' when i_t_data = AAD_DONE_C else '0';
+   aad_done     <= '1' when i_t_data  = AAD_DONE_C else '0';
    aad_done_en  <= '1' when aad_done /= aad_done_q else '0';
+   tag_done_en  <= '1' when tag_done /= tag_done_q else '0';
    
    -- all values must be reversed byte order due to the input data entering the engine having the lsB at the msB side
    gen_rev_byte : for i in 0 to (nonce_cnt'length/BYTE_WIDTH)-1 generate
@@ -543,16 +544,12 @@ ghash_u :entity aes_engine.gcm_ghash
     port map(
         rst_i                       => i_rst,
         clk_i                       => i_clk,
-        ghash_pkt_val_i             => '1',
-                                             
+        
+        ghash_pkt_val_i             => '1',                               
         ghash_text_i                => ghash_in_rev,
         j0_i                        => pre_tag_xor_rev,
-        h_s                         => ek0_ghash_rev,
-        add_pt_length               => add_pt_length,
-                                             
-        ghash_h_loaded_o            => open,
-        ghash_j0_loaded_o           => open,
-        ghash_tag_val_o             => open,
+        h_i                         => ek0_ghash_rev,
+        tag_done_i                  => tag_done_en,
         ghash_tag_o                 => tag
 );                                          
                
@@ -561,11 +558,13 @@ ghash_u :entity aes_engine.gcm_ghash
    ek0_ghash_rev    <= reverse_byte_order(ek0_ghash);
    pre_tag_xor_rev  <= reverse_byte_order(pre_tag_xor);          
    ghash_in_rev     <= reverse_byte_order(ghash_in);       
+   add_pt_length_rev <= reverse_byte_order(add_pt_length);       
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
    p_ghash : process
    begin
       wait until rising_edge(i_clk);
       aad_done_q  <=  aad_done;
+      tag_done_q  <=  tag_done;
       if i_rst = '1' then
          ghash_state  <= xor_s;  
          ghash_in  <=  (others  =>  '0');
@@ -591,10 +590,11 @@ ghash_u :entity aes_engine.gcm_ghash
                end if;
                
             when add_length =>
-               ghash_in  <= x"80000000000000000000000000000000";
+               ghash_in  <= add_pt_length_rev;
                ghash_state <= tag_out;
                
             when tag_out =>
+               tag_done  <= '1';
                if o_t_last = '0' then
                   ghash_state <= xor_s;
                end if;       
