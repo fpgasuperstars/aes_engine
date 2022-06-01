@@ -43,7 +43,8 @@ architecture sim of aes_engine_top_tb is
    signal test_msg                                                       : string(1 to STRING_LENGTH);
    signal rst, clk, clk_100, engine_clk, speed_sel                       : std_logic := '0';
    signal test_id                                                        : string(1 to 4);                        
-   signal pt, test_valu                                                             : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   signal pt, test_valu                                                  : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   signal test_valu2                                                     : unsigned(DATA_WIDTH_128-1 downto 0):= (others => '0');
    signal poly_dec                                                       : std_logic_vector(DATA_WIDTH_128 downto 0):= (others => '0');
    signal key_handle                                                     : std_logic_vector(9 downto 0):= (others => '0');
    signal exp_ct,exp_ct_128,exp_ct_192,exp_ct_256,gcm_ct_exp             : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
@@ -57,7 +58,7 @@ architecture sim of aes_engine_top_tb is
    signal o_t_keep                                                       : std_logic_vector(15 downto 0) := x"0000";
    
    -- GCM
-   signal auth_data, gcm_ct_data                           : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   signal auth_data, gcm_ct_data, bit_reversal, bit_reversal2, H, Si                           : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
    
    --AXIS
    signal  m_axis_tdata                                    : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
@@ -72,6 +73,8 @@ architecture sim of aes_engine_top_tb is
    signal keys_256            : std_logic_vector(DATA_WIDTH_256-1 downto 0);
    
 begin
+   test_valu2(127 downto 64)  <= x"B03E5326BDF75F8A";
+   test_valu2(63 downto 0)  <= x"9DD50A47C17F5DE8";
    test_valu <= x"0E000000000000000000000000000087" ;
    speed_sel <= g_speed_select;
    dut : entity aes_engine.aes_engine_top
@@ -328,7 +331,7 @@ engine_clk <= clk when g_asyncronous = '0' else clk_100;
       ---- Test case 12                                                                                                                               
       ------------------------------------------------------------------------------------                                   
       if g_test_cases(12) = '1' then                                                                                                                                                                                                                                                                                     
-         leng_pt     <= 2176;   --"payloadLen": 1024 + aad 1024  + length of ad and CT                                                                                                                                                                                 
+         leng_pt     <= 256;   --"payloadLen": 1024 + aad 1024  + length of ad and CT                                                                                                                                                                                 
          test_msg    <= pad_string("Test case 12 : GCM mode AES 256 Encryption", ' ', STRING_LENGTH);                                  
          wait for 0 ns;                                                                                                      
          report lf & lf & test_msg & lf;                                                                                                                                                                                   
@@ -395,6 +398,9 @@ engine_clk <= clk when g_asyncronous = '0' else clk_100;
       assert false report "END OF SIMULATION!" severity failure;
       wait;
    end process;
-   
-   
+  -- H   <= X"66e94bd4ef8a2c3b884cfa59ca342b2e"; 
+   --Si  <= X"0388dace60b6a392f328c2b971b2fe78";
+--   H   <= X"2E2B34CA59FA4C883B2C8AEFD44BE966"; --0x3B2C8AEFD44BE966L0x2E2B34CA59FA4C88L
+--   Si  <= X"78FEB271B9C228F392A3B660CEDA8803"; --0xf328c2b971b2fe78L0x0388dace60b6a392L
+
 end sim;
