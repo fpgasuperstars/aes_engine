@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases   : std_logic_vector(31 downto 0) := x"00001000"; -- select 1 test at a time,128/192/256, 1/1/1 encryp, 8/8/8 = decryption. 1/0/0/0 = gcm mode 256 test
+      g_test_cases   : std_logic_vector(31 downto 0) := GCM; -- select tests : GCM/AES_ENCRYPT/AES_DECRYPT
       g_asyncronous  : std_logic := '0';
       g_decryption   : std_logic := '0';
       g_speed_select : std_logic := '0' -- 1 = Lo speed
@@ -73,9 +73,7 @@ architecture sim of aes_engine_top_tb is
    signal keys_256            : std_logic_vector(DATA_WIDTH_256-1 downto 0);
    
 begin
-   test_valu2(127 downto 64)  <= x"B03E5326BDF75F8A";
-   test_valu2(63 downto 0)  <= x"9DD50A47C17F5DE8";
-   test_valu <= x"0E000000000000000000000000000087" ;
+
    speed_sel <= g_speed_select;
    dut : entity aes_engine.aes_engine_top
       generic map(
@@ -166,7 +164,7 @@ begin
       wait for clk_period_100/2;
    end process;
    -- change to asyncronous clocks when mode selected
-engine_clk <= clk when g_asyncronous = '0' else clk_100;
+   engine_clk <= clk when g_asyncronous = '0' else clk_100;
       
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    -- Assertions

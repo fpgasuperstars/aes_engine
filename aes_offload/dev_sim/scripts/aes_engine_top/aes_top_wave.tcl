@@ -39,11 +39,10 @@ add wave -noupdate -expand -group {AES Engine} -group BRAM /aes_engine_top_tb/du
 add wave -noupdate -expand -group {AES Engine} -group BRAM -radix unsigned /aes_engine_top_tb/dut/u_bram_keys/addra
 add wave -noupdate -expand -group {AES Engine} -group BRAM /aes_engine_top_tb/dut/u_bram_keys/douta
 add wave -noupdate -expand -group {AES Engine} -group BRAM -radix unsigned /aes_engine_top_tb/dut/i_key_handle
-add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/gf_out
-add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/ek0_ghash_rev
-add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/o_t_data_rev
-add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/aad_ct_xor
-add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/pre_tag_xor_rev
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/ghash_in
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/ek0_ghash
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/pre_tag_xor
+add wave -noupdate -expand -group {AES Engine} -expand -group GCM -radix hexadecimal /aes_engine_top_tb/dut/tag
 add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/s_axis_tvalid
 add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold /aes_engine_top_tb/u_fifo_in/s_axis_tready
 add wave -noupdate -group {FIFO IN} -expand -group slave -color Gold -itemcolor Gold -radix hexadecimal /aes_engine_top_tb/u_fifo_in/s_axis_tdata
@@ -64,25 +63,8 @@ add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} 
 add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} -radix hexadecimal /aes_engine_top_tb/u_fifo_out/m_axis_tdata
 add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} -radix hexadecimal /aes_engine_top_tb/u_fifo_out/m_axis_tkeep
 add wave -noupdate -group {FIFO OUT} -expand -group master -color {Medium Blue} -itemcolor {Medium Blue} /aes_engine_top_tb/u_fifo_out/m_axis_tlast
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/gf_out_q
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_in
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ek0_ghash
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/pre_tag_xor
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/tag
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/j0_i
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/x_c
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/h_s
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/y_s
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/y_c
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/add_pt_length
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/ghash_tag_c
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/y_prev_c
-add wave -noupdate /aes_engine_top_tb/dut/ghash_u/y_val_c
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/x_data_c
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/ghash_text_i
-add wave -noupdate -radix hexadecimal /aes_engine_top_tb/dut/ghash_u/x_data_c
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {19519355133 fs} 0} {{Cursor 2} {655000000 fs} 0} {{Cursor 3} {1590000000 fs} 0} {{Cursor 4} {140470228 fs} 0} {{Cursor 5} {4669882685 fs} 0} {{Cursor 6} {32126601446 fs} 0}
+WaveRestoreCursors {{Cursor 1} {19519355133 fs} 0} {{Cursor 2} {652118359 fs} 0} {{Cursor 3} {1590000000 fs} 0} {{Cursor 4} {140470228 fs} 0} {{Cursor 5} {4734812501 fs} 0} {{Cursor 6} {32126601446 fs} 0}
 quietly wave cursor active 2
 configure wave -namecolwidth 179
 configure wave -valuecolwidth 526
@@ -98,4 +80,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {308096186 fs} {1007002436 fs}
+WaveRestoreZoom {4993019531 fs} {5342472657 fs}

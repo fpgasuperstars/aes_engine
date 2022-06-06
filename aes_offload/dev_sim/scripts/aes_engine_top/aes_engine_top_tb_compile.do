@@ -26,9 +26,6 @@ vcom  -2008 -work aes_engine  \
 "../../../imp/code/devlib/aes_engine/aes_engine_decrypt.vhd" \
 "../../../imp/code/devlib/aes_engine/aes_engine_key_expansion.vhd" \
 "../../../imp/code/devlib/aes_engine/aes_engine_round.vhd" \
-"../../../imp/code/devlib/aes_engine/aes_pkg.vhd" \
-"../../../imp/code/devlib/aes_engine/gcm_pkg.vhd" \
-"../../../imp/code/devlib/aes_engine/ghash_gfmul.vhd" \
 "../../../imp/code/devlib/aes_engine/gcm_ghash.vhd" \
 
 vcom  -2008 -work tb_lib  \

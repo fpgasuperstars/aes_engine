@@ -8,31 +8,36 @@
 ---------------------------------------------------------------------------------------
 library ieee;
 use     ieee.std_logic_1164.all;
-
+use     ieee.std_logic_misc.xor_reduce;
 package aes_engine_pkg is
-   -- constants and types
-   constant AES128          : integer := 10;           -- number or rounds depending on setting
-   constant AES192          : integer := 12;           -- number or rounds depending on setting
-   constant AES256          : integer := 14;           -- number or rounds depending on setting
-   constant BYTE_WIDTH      : natural := 8;            -- To be used where a byte is declared
-   constant AXI_T_DATA      : natural := 128;          -- T_data bit width
-   constant AES192_KEY      : natural := 192;          -- AES 192 KEY bit width
-   constant AES256_KEY      : natural := 256;          -- AES 256 KEY bit width
-   constant LO              : natural := 10;           -- Low speed mode duty cycle setting. every 10 rounds le tthe next input enter 
-   constant MODE_C          : natural := 8;            -- length of mode field in the configuration data 
-   constant IV_C            : natural := 96;           -- length of the iv in the configuration data
-   constant AES_MODE_C      : natural := 2;            -- length of aes mode in the configuration data
-   constant GCM_MODE_C      : std_logic_vector(BYTE_WIDTH-1 downto 0) := x"01";            -- GCM mode value
-   constant AAD_DONE_C      : std_logic_vector(AXI_T_DATA-1 downto 0) := x"EFBEEFBEEFBEEFBEEFBEEFBEEFBEEFBE"; -- Value to signify end of authentication data
-   constant GHASH_ZEROS     : std_logic_vector(AXI_T_DATA-1 downto 0) := x"00000000000000000000000000000000"; -- this value gets encrypted for use in the gcm GHASH function
    
-   type T_jindex is array (natural range<>) of integer;
-   constant j : T_jindex := (0,4,8,12);           -- used for generation of the mixed column logic
-   constant l : T_jindex := (0,3,6,9,12);         -- used for generation of the mixed column logic
-   constant g : T_jindex := (1,3,5,7,9,11,13,15); -- used for generation of the 256 key expansion g function
-   constant h : T_jindex := (0,2,4,6,8,10,12,14); -- used for generation of the 256 key expansion h function
-   constant r : T_jindex := (0,2,4,6,8);          -- used for converting 192 to 128
-   -- types
+   -- Constants
+   constant AES128          : integer := 10;                                                                      -- number or rounds depending on setting
+   constant AES192          : integer := 12;                                                                      -- number or rounds depending on setting
+   constant AES256          : integer := 14;                                                                      -- number or rounds depending on setting
+   constant BYTE_WIDTH      : natural := 8;                                                                       -- To be used where a byte is declared
+   constant AXI_T_DATA      : natural := 128;                                                                     -- T_data bit width
+   constant AES192_KEY      : natural := 192;                                                                     -- AES 192 KEY bit width
+   constant AES256_KEY      : natural := 256;                                                                     -- AES 256 KEY bit width
+   constant LO              : natural := 10;                                                                      -- Low speed mode duty cycle setting. every 10 rounds le tthe next input enter 
+   constant MODE_C          : natural := 8;                                                                       -- length of mode field in the configuration data 
+   constant IV_C            : natural := 96;                                                                      -- length of the iv in the configuration data
+   constant AES_MODE_C      : natural := 2;                                                                       -- length of aes mode in the configuration data
+   constant GCM_MODE_C      : std_logic_vector(BYTE_WIDTH-1 downto 0)     := x"01";                               -- GCM mode value
+   constant AAD_DONE_C      : std_logic_vector(AXI_T_DATA-1 downto 0)     := x"EFBEEFBEEFBEEFBEEFBEEFBEEFBEEFBE"; -- Value to signify end of authentication data
+   constant GHASH_ZEROS     : std_logic_vector(AXI_T_DATA-1 downto 0)     := x"00000000000000000000000000000000"; -- this value gets encrypted for use in the gcm GHASH function
+   constant IV_CNT_0        : std_logic_vector((BYTE_WIDTH*4)-1 downto 0) := x"01000000";                         -- Initial counter value for GCTR mode
+   constant IV_CNT_1        : std_logic_vector((BYTE_WIDTH*4)-1 downto 0) := x"02000000";                         -- First value used for encryption in GCTR mode
+      
+   -- Types
+   -- AES
+   type T_JINDEX is array (natural range<>) of integer;
+   constant j : T_JINDEX := (0,4,8,12);                                                                     -- used for generation of the mixed column logic
+   constant l : T_JINDEX := (0,3,6,9,12);                                                                   -- used for generation of the mixed column logic
+   constant g : T_JINDEX := (1,3,5,7,9,11,13,15);                                                           -- used for generation of the 256 key expansion g function
+   constant h : T_JINDEX := (0,2,4,6,8,10,12,14);                                                           -- used for generation of the 256 key expansion h function
+   constant r : T_JINDEX := (0,2,4,6,8);                                                                    -- used for converting 192 to 128
+
    type     T_EXPANDED_KEYS is array (0 to AES256+1)          of std_logic_vector(AXI_T_DATA-1 downto 0);   -- array containing the expanded keys for 128/256
    type     T_DEC_EXPANDED_KEYS is array (AES256+1 downto 0)  of std_logic_vector(AXI_T_DATA-1 downto 0);   -- array containing the expanded keys for 128/256
    type     T_EXP_KEYS_192  is array (0 to AES256+1)          of std_logic_vector(AES192_KEY-1 downto 0);   -- array containing the expanded keys for 192
@@ -44,12 +49,16 @@ package aes_engine_pkg is
    type     T_G_SBOX_ARRAY  is array (0 to AES256-1)          of T_G_SBOX;
    type     T_SBOX_ARRAY    is array (0 to (2**BYTE_WIDTH)-1) of std_logic_vector(BYTE_WIDTH-1 downto 0);   -- contains the Sbox data
    type     T_COLUMN_32     is array (0 to 3)                 of std_logic_vector(BYTE_WIDTH-1 downto 0);   -- column data for mix column function
-   -- axi
-   type     T_AXI_STREAM    is array(0 to 16)           of std_logic;
-   type     T_AXI_TKEEP     is array(0 to AES256)             of std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
       
-   function mult(v1, v2 : in std_logic_vector) return std_logic_vector;
+   -- AXI
+   type     T_AXI_STREAM    is array(0 to 16)                 of std_logic;
+   type     T_AXI_TKEEP     is array(0 to AES256)             of std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
+   
+   -- GCM
+   type     T_GF_ARRAY is array ((AXI_T_DATA-1) downto 0) of std_logic_vector(AXI_T_DATA-1 downto 0);
+      
    function reverse_byte_order(a : std_logic_vector) return std_logic_vector;
+   function gf_mul_2128(x, h : std_logic_vector)    return std_logic_vector;
    
    -- Encrpytion
    -- Sbox used for encryption
@@ -164,38 +173,9 @@ end package aes_engine_pkg;
 
 package body aes_engine_pkg is                                            
                                                                 
-  -- Galois Multiplier (GF(2^128) poly = x^128 + x^7 + x^2 + x + 1
-  function mult(v1, v2 : in std_logic_vector) return std_logic_vector is
-     constant m              : integer := 128;  
-     variable dummy          : std_logic;
-     variable v_temp         : std_logic_vector(m-1 downto 0);
-     variable ret            : std_logic_vector(m-1 downto 0);
-  begin
-     -- x^128 + x^7 + x^2 + x + 1
-     v_temp   := (others=>'0');                                                                                  
-     for i in 0 to m-1 loop                                                                                                                                                                                
-        dummy        := v_temp(127);
-        gen_gf : for a in 127 downto 8 loop                                                                         
-           v_temp(a ) := v_temp(a-1);                                                                                
-        end loop;
-        v_temp(7 )   := v_temp(6  ) xor dummy;                                                                         
-        v_temp(6 )   := v_temp(5  );                                                                                   
-        v_temp(5 )   := v_temp(4  );                                                                                   
-        v_temp(4 )   := v_temp(3  );                                                                                   
-        v_temp(3 )   := v_temp(2  );                                                                                   
-        v_temp(2 )   := v_temp(1  ) xor dummy;                                                                         
-        v_temp(1 )   := v_temp(0  ) xor dummy;                                                                         
-        v_temp(0 )   := dummy;    
-                                                                                            
-        for j in 0 to m-1 loop                                                                                                                                                                                                                                                                                    
-           v_temp(j) := v_temp(j) xor (v1(j) and v2(m-i-1));                  
-        end loop;                                                             
-     end loop;                                                                
-  
-     ret := v_temp;
-     return ret;
-  end mult;      
-  
+   --------------------------------------------------------------------------------
+   -- Byte order reversal 
+   --------------------------------------------------------------------------------
    function reverse_byte_order(a : std_logic_vector) return std_logic_vector is
       variable in_word : std_logic_vector(a'length-1 downto 0);
    begin
@@ -203,6 +183,40 @@ package body aes_engine_pkg is
             in_word((i + 1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) := a(((a'length/BYTE_WIDTH)-i)*BYTE_WIDTH-1 downto ((a'length/BYTE_WIDTH-1)-i)*BYTE_WIDTH);
          end loop;
       return in_word;
+   end function;
+   
+   --------------------------------------------------------------------------------
+   -- GF Multiplication
+   --------------------------------------------------------------------------------
+   function gf_mul_2128 (x, h : std_logic_vector) return std_logic_vector is 
+       variable tmp_v : std_logic_vector(AXI_T_DATA-1 downto 0);
+       variable vec_v : std_logic_vector(AXI_T_DATA-1 downto 0);
+       variable acc_v : T_GF_ARRAY;
+       variable v_z   : std_logic_vector(AXI_T_DATA-1 downto 0);
+   begin
+       tmp_v := h;
+
+       for i in AXI_T_DATA-1 downto 0 loop
+           
+           for j in AXI_T_DATA-1 downto 0 loop
+               acc_v(j)(i) := x(i) and tmp_v(j);
+           end loop;
+
+           vec_v := tmp_v;
+           -- (V_i >> 1) xor R = ('11100001 || 0^120')
+           tmp_v(127)              := vec_v(0);
+           tmp_v(126)              := vec_v(127) xor vec_v(0);
+           tmp_v(125)              := vec_v(126) xor vec_v(0);
+           tmp_v(124 downto 121)   := vec_v(125 downto 122);
+           tmp_v(120)              := vec_v(121) xor vec_v(0);
+           tmp_v(119 downto 0)     := vec_v(120 downto 1);
+       end loop;
+
+       -- Z_i xor V_i
+       for i in 0 to AXI_T_DATA-1 loop
+           v_z(i) := xor_reduce(acc_v(i));
+       end loop;
+       return v_z;
    end function;
   
                                                             

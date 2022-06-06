@@ -53,51 +53,51 @@ architecture mixed of aes_engine_top is
 
    -- Signals
    -- State
-   signal state                                                                               : T_STATES;
-   signal ghash_state                                                                         : T_GHASH_STATES;
-                                                                                              
-   -- Data                                                                                    
-   signal encrypt, decrypt                                                                    : T_CIPHER_TXT;
-   signal encrypt_input_data                                                                  : std_logic_vector(AXI_T_DATA-1 downto 0);
-                                                                                              
-   -- AXI-S                                                                                   
-   signal t_data_q, t_data_last, t_data                                                       : std_logic_vector(AXI_T_DATA-1 downto 0);
-   signal t_keep_q ,t_valid, t_last                                                           : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
-   signal t_keep                                                                              : T_AXI_TKEEP;
-   signal t_valid_q, t_last_q, t_ready_q, t_ready_qq                                          : std_logic;
-                                                                                              
-   -- Engine control                                                                          
-   signal last_rnd                                                                            : std_logic_vector(AES256-1 downto 0);
-   signal last_rnd_dec                                                                        : std_logic_vector(0 to AES256-1);
-   signal gen_mode                                                                            : integer:= AES256;
-   signal en_decr, last_flag, speed_en, speed_en_q, last_rnd_enc_lo, last_rnd_dec_lo          : std_logic;
-                                                                                         
-   -- GCM                                                                                
-   signal nonce_cnt, nonce_cnt_rev                                                            : unsigned((BYTE_WIDTH*4-1) downto 0);
-   signal gf_out, gf_out_q, ek0_ghash, aad_ct_xor, auth_b4_gf, auth_gf, pre_tag_xor, tag, add_pt_length,o_t_data_q, o_t_data_q_rev, H, Si, o_t_data_rev_byte, ek0_ghash_rev_byte, ghash_in, ghash_in_rev : std_logic_vector(AXI_T_DATA-1 downto 0);
-   signal gf_out_rev, ek0_ghash_rev, ek0_ghash_rev_2, aad_ct_xor_rev, i_t_data_rev, o_t_data_rev, o_t_data_rev_2,  tag_rev, add_pt_length_rev, pre_tag_xor_rev      : std_logic_vector(AXI_T_DATA-1 downto 0);
-   signal aad_length, pt_length                                                               : std_logic_vector((AXI_T_DATA/2)-1 downto 0);
-   signal aad_done, done_0_enc, initial_nonce_cnt, aad_done_q, ct_done, aad_done_en,tag_done, tag_done_q, tag_done_en  : std_logic;                                                
+   signal state                                                                                               : T_STATES;
+   signal ghash_state                                                                                         : T_GHASH_STATES;
+                                                                                                              
+   -- Data                                                                                                    
+   signal encrypt, decrypt                                                                                    : T_CIPHER_TXT;
+   signal encrypt_input_data                                                                                  : std_logic_vector(AXI_T_DATA-1 downto 0);
+                                                                                                              
+   -- AXI-S                                                                                                   
+   signal t_data_q, t_data_last, t_data                                                                       : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal t_keep_q ,t_valid, t_last                                                                           : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
+   signal t_keep                                                                                              : T_AXI_TKEEP;
+   signal t_valid_q, t_last_q, t_ready_q, t_ready_qq                                                          : std_logic;
+                                                                                                              
+   -- Engine control                                                                                          
+   signal last_rnd                                                                                            : std_logic_vector(AES256-1 downto 0);
+   signal last_rnd_dec                                                                                        : std_logic_vector(0 to AES256-1);
+   signal gen_mode                                                                                            : integer:= AES256;
+   signal en_decr, last_flag, speed_en, speed_en_q, last_rnd_enc_lo, last_rnd_dec_lo                          : std_logic;
+                                                                                                              
+   -- GCM                                                                                                     
+   signal nonce_cnt, nonce_cnt_rev                                                                            : unsigned((BYTE_WIDTH*4-1) downto 0);
+   signal ek0_ghash, pre_tag_xor, tag, add_pt_length, ghash_in, ghash_in_rev                                  : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal ek0_ghash_rev, add_pt_length_rev, pre_tag_xor_rev                                                   : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal aad_length, pt_length                                                                               : std_logic_vector((AXI_T_DATA/2)-1 downto 0);
+   signal aad_done, done_0_enc, initial_nonce_cnt, aad_done_q, aad_done_en,tag_done, tag_done_q, tag_done_en  : std_logic;                                                
                                                                                          
    -- Configuration                                                                      
-   signal mode                                                                                : std_logic_vector(MODE_C-1 downto 0);
-   signal iv                                                                                  : std_logic_vector(IV_C-1 downto 0);
-   signal aes_mode                                                                            : std_logic_vector(AES_MODE_C-1 downto 0):= (others  => '0');
-                                                                                              
-   -- Key Expansion                                                                           
-   signal new_key                                                                             : std_logic;
-   signal expanded_key_q, expanded_key, dec_expanded_key_q                                    : T_EXPANDED_KEYS;
-   signal expanded_key_lo, expanded_key_lo_q, dec_expanded_key_lo, dec_expanded_key_lo_q      : std_logic_vector(AXI_T_DATA-1 downto 0);
-                                                                                              
-   -- Counter signals                                                                         
-   signal en_cnt_rst, last_cnt_rst                                                            : std_logic;
-   signal duty_cycle_cnt, flushout_cnt, en_cnt, lo_spd_en_cnt, last_cnt                       : unsigned(4 downto 0);
-   signal ini_key_cnt, config_cnt                                                             : unsigned(5 downto 0);
-   signal lo_spd_cnt_dec, lo_spd_cnt_enc                                                      : integer range 0 to AES256+1 := 0;
-                                                                                              
-   -- BRAM                                                                                    
-   signal addra, key_handle_q                                                                 : std_logic_vector(BYTE_WIDTH+1 downto 0);
-   signal outdata, dina                                                                       : std_logic_vector(AES256_KEY-1 downto 0);
+   signal mode                                                                                                : std_logic_vector(MODE_C-1 downto 0);
+   signal iv                                                                                                  : std_logic_vector(IV_C-1 downto 0);
+   signal aes_mode                                                                                            : std_logic_vector(AES_MODE_C-1 downto 0):= (others  => '0');
+                                                                                                              
+   -- Key Expansion                                                                                           
+   signal new_key                                                                                             : std_logic;
+   signal expanded_key_q, expanded_key, dec_expanded_key_q                                                    : T_EXPANDED_KEYS;
+   signal expanded_key_lo, expanded_key_lo_q, dec_expanded_key_lo, dec_expanded_key_lo_q                      : std_logic_vector(AXI_T_DATA-1 downto 0);
+                                                                                                              
+   -- Counter signals                                                                                         
+   signal en_cnt_rst, last_cnt_rst                                                                            : std_logic;
+   signal duty_cycle_cnt, flushout_cnt, en_cnt, lo_spd_en_cnt, last_cnt                                       : unsigned(4 downto 0);
+   signal ini_key_cnt, config_cnt                                                                             : unsigned(5 downto 0);
+   signal lo_spd_cnt_dec, lo_spd_cnt_enc                                                                      : integer range 0 to AES256+1 := 0;
+                                                                                                              
+   -- BRAM                                                                                                    
+   signal addra, key_handle_q                                                                                 : std_logic_vector(BYTE_WIDTH+1 downto 0);
+   signal outdata, dina                                                                                       : std_logic_vector(AES256_KEY-1 downto 0);
    
 begin    
                       
@@ -260,8 +260,8 @@ begin
    new_key             <= '1'      when key_handle_q /= i_key_handle else '0';
 
    -- input data control     
-   encrypt_input_data  <= x"01000000" & iv                     when done_0_enc = '1' else
-                          x"02000000" & iv                     when aad_done_q = '1' else
+   encrypt_input_data  <= IV_CNT_0 & iv                        when done_0_enc = '1'                      else
+                          IV_CNT_1 & iv                        when aad_done_q = '1'                      else
                           std_logic_vector(nonce_cnt_rev) & iv when config_cnt >= 1 and mode = GCM_MODE_C else -- IV concatenated with nonce after config data is fed into engine for GCM
                           i_t_data;
          
@@ -540,24 +540,20 @@ begin
       nonce_cnt_rev((i + 1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <=  nonce_cnt(((nonce_cnt'length/BYTE_WIDTH)-i)*BYTE_WIDTH-1 downto ((nonce_cnt'length/BYTE_WIDTH-1)-i)*BYTE_WIDTH);
    end generate;                     
     
-ghash_u :entity aes_engine.gcm_ghash 
-    port map(
-        rst_i                       => i_rst,
-        clk_i                       => i_clk,
-        
-        ghash_pkt_val_i             => '1',                               
-        ghash_text_i                => ghash_in_rev,
-        j0_i                        => pre_tag_xor_rev,
-        h_i                         => ek0_ghash_rev,
-        tag_done_i                  => tag_done_en,
-        ghash_tag_o                 => tag
-);                                          
-               
-               
-               
-   ek0_ghash_rev    <= reverse_byte_order(ek0_ghash);
-   pre_tag_xor_rev  <= reverse_byte_order(pre_tag_xor);          
-   ghash_in_rev     <= reverse_byte_order(ghash_in);       
+   ghash_u :entity aes_engine.gcm_ghash 
+       port map(
+           i_rst                  => i_rst,
+           i_clk                  => i_clk,                              
+           i_ghash_text           => ghash_in_rev,
+           i_j0                   => pre_tag_xor_rev,
+           i_h                    => ek0_ghash_rev,
+           i_tag_done             => tag_done_en,
+           o_ghash_tag            => tag
+   );                                          
+                      
+   ek0_ghash_rev     <= reverse_byte_order(ek0_ghash);
+   pre_tag_xor_rev   <= reverse_byte_order(pre_tag_xor);          
+   ghash_in_rev      <= reverse_byte_order(ghash_in);       
    add_pt_length_rev <= reverse_byte_order(add_pt_length);       
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
    p_ghash : process
@@ -643,7 +639,7 @@ ghash_u :entity aes_engine.gcm_ghash
    
    o_t_valid  <= t_valid(gen_mode+1)   when  g_speed_sel = '0' and en_cnt > gen_mode  and ini_key_cnt >= gen_mode*3 and mode /= GCM_MODE_C                                                     else -- hi speed
                  t_valid(0)            when  g_speed_sel = '1' and speed_en_q = '1'   and en_cnt >= gen_mode        and ini_key_cnt >= gen_mode*3 and lo_spd_en_cnt > 2 and mode /= GCM_MODE_C else -- lo speed
-                 i_t_valid             when  aad_done = '0'    and en_cnt > gen_mode and mode = GCM_MODE_C  and speed_en = '1'            and initial_nonce_cnt = '1'                                                else -- gcm mode
+                 i_t_valid             when  aad_done = '0'    and en_cnt > gen_mode  and mode = GCM_MODE_C         and speed_en = '1'            and initial_nonce_cnt = '1'                  else -- gcm mode
                  '0';
                  
    o_t_last   <= t_last(gen_mode+1)    when o_t_valid = '1'   and g_speed_sel = '0' and mode /= GCM_MODE_C else  -- hi speed             
