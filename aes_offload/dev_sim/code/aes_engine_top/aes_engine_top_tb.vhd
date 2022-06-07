@@ -24,7 +24,7 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases   : std_logic_vector(31 downto 0) := GCM; -- select tests : GCM/AES_ENCRYPT/AES_DECRYPT
+      g_test_cases   : std_logic_vector(31 downto 0) := GCM; -- select tests : GCM/AES_ENCRYPT/AES_DECRYPT/BRAM_KEY
       g_asyncronous  : std_logic := '0';
       g_decryption   : std_logic := '0';
       g_speed_select : std_logic := '0' -- 1 = Lo speed
@@ -50,7 +50,7 @@ architecture sim of aes_engine_top_tb is
    signal exp_ct,exp_ct_128,exp_ct_192,exp_ct_256,gcm_ct_exp             : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
    signal test_done, t_valid, valid_out, valid_out_q, o_t_valid          : std_logic := '0';
    signal t_last, fifo_to_engine_t_last, o_t_ready, i_t_ready, o_t_last  : std_logic := '0';
-   signal t_keep, fifo_to_engine_keep                                    : std_logic_vector((WIDTH_BYTE*2)-1 downto 0):= (others => '1');
+   signal t_keep, fifo_to_engine_keep,dummy                              : std_logic_vector((WIDTH_BYTE*2)-1 downto 0):= (others => '1');
    signal t_ready                                                        : std_logic := '0';
    signal mode,leng_pt                                                   : integer;
    signal en_cnt                                                         : unsigned(4 downto 0);
@@ -58,7 +58,7 @@ architecture sim of aes_engine_top_tb is
    signal o_t_keep                                                       : std_logic_vector(15 downto 0) := x"0000";
    
    -- GCM
-   signal auth_data, gcm_ct_data, bit_reversal, bit_reversal2, H, Si                           : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
+   signal auth_data, gcm_ct_data                          : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
    
    --AXIS
    signal  m_axis_tdata                                    : std_logic_vector(DATA_WIDTH_128-1 downto 0):= (others => '0');
@@ -329,11 +329,12 @@ begin
       ---- Test case 12                                                                                                                               
       ------------------------------------------------------------------------------------                                   
       if g_test_cases(12) = '1' then                                                                                                                                                                                                                                                                                     
-         leng_pt     <= 256;   --"payloadLen": 1024 + aad 1024  + length of ad and CT                                                                                                                                                                                 
+         leng_pt     <= 896; --2176;--2176;--256;   --"payloadLen": 1024 + aad 1024  + length of ad and CT                                                                                                                                                                                 
          test_msg    <= pad_string("Test case 12 : GCM mode AES 256 Encryption", ' ', STRING_LENGTH);                                  
          wait for 0 ns;                                                                                                      
-         report lf & lf & test_msg & lf;                                                                                                                                                                                   
-         test_gcm(f_gcm_vectors, CMD_GCM_FILE, clk_period, leng_pt, clk, t_ready, in_word, key_handle, t_keep, t_last, rst, t_valid);
+         report lf & lf & test_msg & lf;                             
+         t_keep  <= x"FFF0";                                                                                                                                                      
+         test_gcm(f_gcm_vectors, CMD_GCM_FILE, clk_period, leng_pt, clk, t_ready, in_word, key_handle, dummy, t_last, rst, t_valid);
       end if; 
       
       ------------------------------------------------------------------------------------                                                                                     
@@ -396,9 +397,5 @@ begin
       assert false report "END OF SIMULATION!" severity failure;
       wait;
    end process;
-  -- H   <= X"66e94bd4ef8a2c3b884cfa59ca342b2e"; 
-   --Si  <= X"0388dace60b6a392f328c2b971b2fe78";
---   H   <= X"2E2B34CA59FA4C883B2C8AEFD44BE966"; --0x3B2C8AEFD44BE966L0x2E2B34CA59FA4C88L
---   Si  <= X"78FEB271B9C228F392A3B660CEDA8803"; --0xf328c2b971b2fe78L0x0388dace60b6a392L
-
+   
 end sim;

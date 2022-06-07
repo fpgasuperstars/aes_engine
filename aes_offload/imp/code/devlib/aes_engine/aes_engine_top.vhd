@@ -53,51 +53,52 @@ architecture mixed of aes_engine_top is
 
    -- Signals
    -- State
-   signal state                                                                                               : T_STATES;
-   signal ghash_state                                                                                         : T_GHASH_STATES;
-                                                                                                              
-   -- Data                                                                                                    
-   signal encrypt, decrypt                                                                                    : T_CIPHER_TXT;
-   signal encrypt_input_data                                                                                  : std_logic_vector(AXI_T_DATA-1 downto 0);
-                                                                                                              
-   -- AXI-S                                                                                                   
-   signal t_data_q, t_data_last, t_data                                                                       : std_logic_vector(AXI_T_DATA-1 downto 0);
-   signal t_keep_q ,t_valid, t_last                                                                           : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
-   signal t_keep                                                                                              : T_AXI_TKEEP;
-   signal t_valid_q, t_last_q, t_ready_q, t_ready_qq                                                          : std_logic;
-                                                                                                              
-   -- Engine control                                                                                          
-   signal last_rnd                                                                                            : std_logic_vector(AES256-1 downto 0);
-   signal last_rnd_dec                                                                                        : std_logic_vector(0 to AES256-1);
-   signal gen_mode                                                                                            : integer:= AES256;
-   signal en_decr, last_flag, speed_en, speed_en_q, last_rnd_enc_lo, last_rnd_dec_lo                          : std_logic;
-                                                                                                              
-   -- GCM                                                                                                     
-   signal nonce_cnt, nonce_cnt_rev                                                                            : unsigned((BYTE_WIDTH*4-1) downto 0);
-   signal ek0_ghash, pre_tag_xor, tag, add_pt_length, ghash_in, ghash_in_rev                                  : std_logic_vector(AXI_T_DATA-1 downto 0);
-   signal ek0_ghash_rev, add_pt_length_rev, pre_tag_xor_rev                                                   : std_logic_vector(AXI_T_DATA-1 downto 0);
-   signal aad_length, pt_length                                                                               : std_logic_vector((AXI_T_DATA/2)-1 downto 0);
-   signal aad_done, done_0_enc, initial_nonce_cnt, aad_done_q, aad_done_en,tag_done, tag_done_q, tag_done_en  : std_logic;                                                
+   signal state                                                                                                                : T_STATES;
+   signal ghash_state                                                                                                          : T_GHASH_STATES;
+                                                                                                                               
+   -- Data                                                                                                                     
+   signal encrypt, decrypt                                                                                                     : T_CIPHER_TXT;
+   signal encrypt_input_data                                                                                                   : std_logic_vector(AXI_T_DATA-1 downto 0);
+                                                                                                                               
+   -- AXI-S                                                                                                                    
+   signal t_data_q, t_data_last, t_data                                                                                        : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal t_keep_q ,t_valid, t_last, t_keep_rev                                                                                : std_logic_vector((BYTE_WIDTH*2)-1 downto 0);
+   signal t_keep                                                                                                               : T_AXI_TKEEP;
+   signal t_valid_q, t_last_q, t_ready_q, t_ready_qq                                                                           : std_logic;
+                                                                                                                               
+   -- Engine control                                                                                                           
+   signal last_rnd                                                                                                             : std_logic_vector(AES256-1 downto 0);
+   signal last_rnd_dec                                                                                                         : std_logic_vector(0 to AES256-1);
+   signal gen_mode                                                                                                             : integer:= AES256;
+   signal en_decr, last_flag, speed_en, speed_en_q, last_rnd_enc_lo, last_rnd_dec_lo                                           : std_logic;
+                                                                                                                               
+   -- GCM                                                                                                                      
+   signal nonce_cnt, nonce_cnt_rev                                                                                             : unsigned((BYTE_WIDTH*4-1) downto 0);
+   signal ek0_ghash, pre_tag_xor, tag, add_pt_length, ghash_in, ghash_in_rev                                                   : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal ek0_ghash_rev, add_pt_length_rev, pre_tag_xor_rev                                                                    : std_logic_vector(AXI_T_DATA-1 downto 0);
+   signal aad_length, pt_length                                                                                                : std_logic_vector((AXI_T_DATA/2)-1 downto 0);
+   signal aad_done, done_0_enc, initial_nonce_cnt, aad_done_q, aad_done_en,tag_done, tag_done_q, tag_done_en, aad_data_present, aad_data_present_q : std_logic;
+   signal t_keep_int                                                                                                           : integer;                                                
                                                                                          
    -- Configuration                                                                      
-   signal mode                                                                                                : std_logic_vector(MODE_C-1 downto 0);
-   signal iv                                                                                                  : std_logic_vector(IV_C-1 downto 0);
-   signal aes_mode                                                                                            : std_logic_vector(AES_MODE_C-1 downto 0):= (others  => '0');
-                                                                                                              
-   -- Key Expansion                                                                                           
-   signal new_key                                                                                             : std_logic;
-   signal expanded_key_q, expanded_key, dec_expanded_key_q                                                    : T_EXPANDED_KEYS;
-   signal expanded_key_lo, expanded_key_lo_q, dec_expanded_key_lo, dec_expanded_key_lo_q                      : std_logic_vector(AXI_T_DATA-1 downto 0);
-                                                                                                              
-   -- Counter signals                                                                                         
-   signal en_cnt_rst, last_cnt_rst                                                                            : std_logic;
-   signal duty_cycle_cnt, flushout_cnt, en_cnt, lo_spd_en_cnt, last_cnt                                       : unsigned(4 downto 0);
-   signal ini_key_cnt, config_cnt                                                                             : unsigned(5 downto 0);
-   signal lo_spd_cnt_dec, lo_spd_cnt_enc                                                                      : integer range 0 to AES256+1 := 0;
-                                                                                                              
-   -- BRAM                                                                                                    
-   signal addra, key_handle_q                                                                                 : std_logic_vector(BYTE_WIDTH+1 downto 0);
-   signal outdata, dina                                                                                       : std_logic_vector(AES256_KEY-1 downto 0);
+   signal mode                                                                                                                 : std_logic_vector(MODE_C-1 downto 0);
+   signal iv                                                                                                                   : std_logic_vector(IV_C-1 downto 0);
+   signal aes_mode                                                                                                             : std_logic_vector(AES_MODE_C-1 downto 0):= (others  => '0');
+                                                                                                                               
+   -- Key Expansion                                                                                                            
+   signal new_key                                                                                                              : std_logic;
+   signal expanded_key_q, expanded_key, dec_expanded_key_q                                                                     : T_EXPANDED_KEYS;
+   signal expanded_key_lo, expanded_key_lo_q, dec_expanded_key_lo, dec_expanded_key_lo_q                                       : std_logic_vector(AXI_T_DATA-1 downto 0);
+                                                                                                                               
+   -- Counter signals                                                                                                          
+   signal en_cnt_rst, last_cnt_rst                                                                                             : std_logic;
+   signal duty_cycle_cnt, flushout_cnt, en_cnt, lo_spd_en_cnt, last_cnt                                                        : unsigned(4 downto 0);
+   signal ini_key_cnt, config_cnt                                                                                              : unsigned(5 downto 0);
+   signal lo_spd_cnt_dec, lo_spd_cnt_enc                                                                                       : integer range 0 to AES256+1 := 0;
+                                                                                                                               
+   -- BRAM                                                                                                                     
+   signal addra, key_handle_q                                                                                                  : std_logic_vector(BYTE_WIDTH+1 downto 0);
+   signal outdata, dina                                                                                                        : std_logic_vector(AES256_KEY-1 downto 0);
    
 begin    
                       
@@ -118,6 +119,7 @@ begin
             done_0_enc     <= '0';
             add_pt_length  <= (others  => '0');
             ek0_ghash      <= (others  => '0');
+            pre_tag_xor    <= (others  => '0');
          else
             en_cnt_rst  <= '0';
          case state is
@@ -217,14 +219,19 @@ begin
             when payload_length =>
                if g_speed_sel = '0' then
                   pre_tag_xor  <= encrypt(gen_mode);
-               else
-                  pre_tag_xor  <= encrypt(1); 
+                  add_pt_length  <= i_t_data(AXI_T_DATA-1 downto 0);
+                  pt_length      <= i_t_data(AXI_T_DATA-1 downto (AXI_T_DATA/2));
+                  aad_length     <= i_t_data((AXI_T_DATA/2)-1 downto 0);
+                  config_cnt     <= config_cnt + 1;
+                  state          <=  normal; 
+               elsif speed_en = '1' then
+                  pre_tag_xor    <= encrypt(1);
+                  add_pt_length  <= i_t_data(AXI_T_DATA-1 downto 0);
+                  pt_length      <= i_t_data(AXI_T_DATA-1 downto (AXI_T_DATA/2));
+                  aad_length     <= i_t_data((AXI_T_DATA/2)-1 downto 0);
+                  config_cnt     <= config_cnt + 1;
+                  state          <=  normal; 
                end if;
-               add_pt_length  <= i_t_data(AXI_T_DATA-1 downto 0);
-               pt_length      <= i_t_data(AXI_T_DATA-1 downto (AXI_T_DATA/2));
-               aad_length     <= i_t_data((AXI_T_DATA/2)-1 downto 0);
-               config_cnt     <= config_cnt + 1;
-               state          <=  normal;
                
             when last =>
                last_cnt_rst  <= '0';
@@ -548,33 +555,48 @@ begin
            i_j0                   => pre_tag_xor_rev,
            i_h                    => ek0_ghash_rev,
            i_tag_done             => tag_done_en,
+           i_speed_en             => speed_en, 
+           i_t_ready              => o_t_ready, 
+           i_t_last               => o_t_last, 
+           i_aad_done             => aad_done, 
            o_ghash_tag            => tag
    );                                          
                       
    ek0_ghash_rev     <= reverse_byte_order(ek0_ghash);
    pre_tag_xor_rev   <= reverse_byte_order(pre_tag_xor);          
    ghash_in_rev      <= reverse_byte_order(ghash_in);       
-   add_pt_length_rev <= reverse_byte_order(add_pt_length);       
+   add_pt_length_rev <= reverse_byte_order(add_pt_length); 
+   
+   t_keep_rev <= reverse_bits(i_t_keep);    
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
    p_ghash : process
    begin
       wait until rising_edge(i_clk);
       aad_done_q  <=  aad_done;
       tag_done_q  <=  tag_done;
+      aad_data_present_q  <= aad_data_present;
       if i_rst = '1' then
          ghash_state  <= xor_s;  
          ghash_in  <=  (others  =>  '0');
-      else
+      elsif speed_en = '1' then
          case ghash_state is 
             when xor_s =>
                if en_decr = '0' then
                   if o_t_last = '1' then
                      ghash_state  <= add_length;
-                     ghash_in  <= o_t_data;
-                  elsif (config_cnt > 1) and o_t_ready = '1' and i_t_valid = '1' and o_t_valid = '0' and aad_done = '0' then
+                     for i in 0 to (BYTE_WIDTH*2)-1 loop
+                        if t_keep_rev(i) = '1' then
+                           ghash_in((i+1)*BYTE_WIDTH -1 downto (i*BYTE_WIDTH)) <= o_t_data((i+1)*BYTE_WIDTH -1 downto (i*BYTE_WIDTH));
+                        else
+                           ghash_in((i+1)*BYTE_WIDTH -1 downto (i*BYTE_WIDTH)) <= (others  => '0');
+                        end if;
+                     end loop;
+                  elsif g_speed_sel = '1' and aad_data_present_q = '1' and aad_done = '0' then
                      ghash_in  <= i_t_data; 
+                  elsif g_speed_sel = '0' and aad_data_present = '1' then
+                     ghash_in  <= i_t_data;
                   elsif o_t_valid = '1' then
-                     ghash_in  <= o_t_data ;
+                     ghash_in  <= o_t_data;
                   end if;
                else
                   if i_t_last = '1' then
@@ -586,7 +608,7 @@ begin
                end if;
                
             when add_length =>
-               ghash_in  <= add_pt_length_rev;
+               ghash_in  <= add_pt_length;
                ghash_state <= tag_out;
                
             when tag_out =>
@@ -597,6 +619,8 @@ begin
          end case;
       end if;
    end process;
+   
+   aad_data_present  <= '1' when (config_cnt > 1) and o_t_ready = '1' and i_t_valid = '1' and o_t_valid = '0' and aad_done = '0' else '0';
       
    --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    -- Output registers at selected speed

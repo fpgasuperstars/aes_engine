@@ -59,6 +59,7 @@ package aes_engine_pkg is
       
    function reverse_byte_order(a : std_logic_vector) return std_logic_vector;
    function gf_mul_2128(x, h : std_logic_vector)    return std_logic_vector;
+   function reverse_bits(a : std_logic_vector) return std_logic_vector;
    
    -- Encrpytion
    -- Sbox used for encryption
@@ -184,6 +185,19 @@ package body aes_engine_pkg is
          end loop;
       return in_word;
    end function;
+   
+   --------------------------------------------------------------------------------
+   -- Byte order reversal 
+   --------------------------------------------------------------------------------
+   function reverse_bits(a : std_logic_vector) return std_logic_vector is
+      variable in_word : std_logic_vector(a'length-1 downto 0);
+   begin
+         for i in 0 to (a'length)-1 loop
+            in_word(i) := a((a'length-1)-i);
+         end loop;
+      return in_word;
+   end function;
+   
    
    --------------------------------------------------------------------------------
    -- GF Multiplication

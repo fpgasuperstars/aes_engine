@@ -18,6 +18,7 @@ package aes_engine_tb_pkg is
    constant AES_ENCRYPT           : std_logic_vector(31 downto 0) := x"00000111";
    constant AES_DECRYPT           : std_logic_vector(31 downto 0) := x"00000888";
    constant GCM                   : std_logic_vector(31 downto 0) := x"00001000";
+   constant BRAM_KEY              : std_logic_vector(31 downto 0) := x"80000000";
    
    constant STRING_LENGTH         : positive:= 100;
    constant T_DATA_BYTES          : INTEGER := 16;

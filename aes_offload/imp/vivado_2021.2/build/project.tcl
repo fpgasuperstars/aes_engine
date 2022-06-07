@@ -8,5 +8,6 @@ read_vhdl -vhdl2008 -library aes_engine ../../code/devlib/aes_engine/aes_engine_
 read_vhdl -vhdl2008 -library aes_engine ../../code/devlib/aes_engine/aes_engine_key_expansion.vhd
 read_vhdl -vhdl2008 -library aes_engine ../../code/devlib/aes_engine/aes_engine_round.vhd
 read_vhdl -vhdl2008 -library aes_engine ../../code/devlib/aes_engine/aes_engine_decrypt.vhd
+read_vhdl -vhdl2008 -library aes_engine ../../code/devlib/aes_engine/gcm_ghash.vhd
 read_vhdl -vhdl2008 -library aes_engine ../../code/devlib/aes_engine/aes_engine_top.vhd
 read_vhdl -vhdl2008 -library aes_engine ../../code/devlib/aes_engine/aes_engine_wrapper.vhd

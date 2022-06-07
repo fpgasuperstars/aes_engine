@@ -21,6 +21,10 @@ entity gcm_ghash is
       i_j0                     : in  std_logic_vector(AXI_T_DATA-1 downto 0);
       i_h                      : in  std_logic_vector(AXI_T_DATA-1 downto 0);
       i_tag_done               : in  std_logic;
+      i_speed_en               : in  std_logic;
+      i_t_ready                : in  std_logic;
+      i_t_last                 : in  std_logic;
+      i_aad_done               : in  std_logic;
       o_ghash_tag              : out std_logic_vector(AXI_T_DATA-1 downto 0));
 end entity;
 
@@ -42,7 +46,7 @@ begin
       wait until rising_edge(i_clk);
        if i_rst = '1' then
            y_q <= (others => '0');
-       else
+       elsif i_speed_en = '1' and (i_t_ready = '1' or i_t_last = '1') and i_aad_done = '0' then
            -- Save Y to xor with the next incoming X value
            y_q <= y;
        end if;
