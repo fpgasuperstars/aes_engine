@@ -24,10 +24,10 @@ library xpm;
 
 entity aes_engine_top_tb is
    generic (
-      g_test_cases   : std_logic_vector(31 downto 0) := GCM; -- select tests : GCM/AES_ENCRYPT/AES_DECRYPT/BRAM_KEY
+      g_test_cases   : std_logic_vector(31 downto 0) := AES_DECRYPT; -- select tests : GCM/AES_ENCRYPT/AES_DECRYPT/BRAM_KEY
       g_asyncronous  : std_logic := '0';
-      g_decryption   : std_logic := '0';
-      g_speed_select : std_logic := '0' -- 1 = Lo speed
+      g_decryption   : std_logic := '1';
+      g_speed_select : std_logic := '1' -- 1 = Lo speed
    );
 end entity;
 

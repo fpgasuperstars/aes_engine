@@ -40,6 +40,7 @@ entity aes_engine_top IS
       -- Keys
       i_key_handle      : in  std_logic_vector(9 downto 0);
       -- status
+      o_tag_status      : out std_logic;
       o_done            : out std_logic
    );
 end entity;
@@ -49,7 +50,7 @@ architecture mixed of aes_engine_top is
    -- Types
    type  T_CIPHER_TXT    is array (0 to AES256) of std_logic_vector(AXI_T_DATA-1 downto 0); -- array containing the cipher text output from each round
    type  T_STATES        is (newkey, normal, config, last, ek0, pre_tag_xo, payload_length, wait_state);
-   type  T_GHASH_STATES  is (xor_s, add_length, tag_out);
+   type  T_GHASH_STATES  is (xor_s, add_length, tag_out, tag_compare);
 
    -- Signals
    -- State
@@ -77,8 +78,8 @@ architecture mixed of aes_engine_top is
    signal ek0_ghash, pre_tag_xor, tag, add_pt_length, ghash_in, ghash_in_rev                                                   : std_logic_vector(AXI_T_DATA-1 downto 0);
    signal ek0_ghash_rev, add_pt_length_rev, pre_tag_xor_rev                                                                    : std_logic_vector(AXI_T_DATA-1 downto 0);
    signal aad_length, pt_length                                                                                                : std_logic_vector((AXI_T_DATA/2)-1 downto 0);
-   signal aad_done, done_0_enc, initial_nonce_cnt, aad_done_q, aad_done_en,tag_done, tag_done_q, tag_done_en, aad_data_present, aad_data_present_q : std_logic;
-   signal t_keep_int                                                                                                           : integer;                                                
+   signal aad_done, done_0_enc, initial_nonce_cnt, aad_done_q, aad_done_en,tag_done                                            : std_logic;  
+   signal tag_done_q, tag_done_en, aad_data_present, aad_data_present_q, ghash_t_valid_q                                       : std_logic;                                             
                                                                                          
    -- Configuration                                                                      
    signal mode                                                                                                                 : std_logic_vector(MODE_C-1 downto 0);
@@ -141,9 +142,8 @@ begin
                if i_t_last and new_key then
                   last_flag  <= '1';
                   state <= newkey;
-                  for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
-                     t_data_last((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= encrypt_input_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when i_t_keep(i) = '1' else (others  => '0'); -- pass valid bytes using the t_keep_q signal, using the delayed signal allows for configuration data to always be read as 128bit
-                  end loop;
+                  t_data_last <= encrypt_input_data;
+                  
                elsif last_flag = '1' and en_cnt >= gen_mode and g_speed_sel = '0' then
                   state       <= last;
                   last_cnt_rst<= '1';
@@ -151,9 +151,8 @@ begin
                   state       <= last;
                elsif i_t_last then
                   last_flag   <= '1';
-                  for i in 0 to i_t_keep'length-1 loop -- when the t_keep is true allow those selected bytes to enter the engine otherwise set to 0's
-                     t_data_q((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <= encrypt_input_data((i+1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) when i_t_keep(i) = '1' else (others  => '0');
-                  end loop;
+                  t_data_q <= encrypt_input_data;
+                  
                elsif new_key then
                   state       <= newkey;
                elsif config_cnt = 2 and mode = GCM_MODE_C and t_ready_q = '1' then
@@ -223,14 +222,14 @@ begin
                   pt_length      <= i_t_data(AXI_T_DATA-1 downto (AXI_T_DATA/2));
                   aad_length     <= i_t_data((AXI_T_DATA/2)-1 downto 0);
                   config_cnt     <= config_cnt + 1;
-                  state          <=  normal; 
+                  state          <= normal; 
                elsif speed_en = '1' then
                   pre_tag_xor    <= encrypt(1);
                   add_pt_length  <= i_t_data(AXI_T_DATA-1 downto 0);
                   pt_length      <= i_t_data(AXI_T_DATA-1 downto (AXI_T_DATA/2));
                   aad_length     <= i_t_data((AXI_T_DATA/2)-1 downto 0);
                   config_cnt     <= config_cnt + 1;
-                  state          <=  normal; 
+                  state          <= normal; 
                end if;
                
             when last =>
@@ -547,41 +546,49 @@ begin
       nonce_cnt_rev((i + 1)*BYTE_WIDTH-1 downto i*BYTE_WIDTH) <=  nonce_cnt(((nonce_cnt'length/BYTE_WIDTH)-i)*BYTE_WIDTH-1 downto ((nonce_cnt'length/BYTE_WIDTH-1)-i)*BYTE_WIDTH);
    end generate;                     
     
-   ghash_u :entity aes_engine.gcm_ghash 
-       port map(
-           i_rst                  => i_rst,
-           i_clk                  => i_clk,                              
-           i_ghash_text           => ghash_in_rev,
-           i_j0                   => pre_tag_xor_rev,
-           i_h                    => ek0_ghash_rev,
-           i_tag_done             => tag_done_en,
-           i_speed_en             => speed_en, 
-           i_t_ready              => o_t_ready, 
-           i_t_last               => o_t_last, 
-           i_aad_done             => aad_done, 
-           o_ghash_tag            => tag
-   );                                          
-                      
+   ghash_u :entity aes_engine.gcm_ghash
+      generic map(
+         g_speed_sel  => g_speed_sel
+         )
+      port map(
+          i_rst                  => i_rst,
+          i_clk                  => i_clk,                              
+          i_ghash_text           => ghash_in_rev,
+          i_j0                   => pre_tag_xor_rev,
+          i_h                    => ek0_ghash_rev,
+          i_tag_done             => tag_done_en,
+          i_speed_en             => speed_en_q, 
+          i_t_valid              => ghash_t_valid_q, 
+          i_t_ready              => t_ready_q, 
+          i_t_last               => o_t_last, 
+          i_aad_done             => aad_done, 
+          i_aad_data_present     => aad_data_present_q,
+          o_ghash_tag            => tag
+          );                                          
+   
+   -- Reverse byte order                   
    ek0_ghash_rev     <= reverse_byte_order(ek0_ghash);
    pre_tag_xor_rev   <= reverse_byte_order(pre_tag_xor);          
    ghash_in_rev      <= reverse_byte_order(ghash_in);       
    add_pt_length_rev <= reverse_byte_order(add_pt_length); 
    
+   -- Reevrse bit order
    t_keep_rev <= reverse_bits(i_t_keep);    
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+   
+   -- Ghash data path state machine                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
    p_ghash : process
    begin
       wait until rising_edge(i_clk);
-      aad_done_q  <=  aad_done;
-      tag_done_q  <=  tag_done;
+      aad_done_q      <=  aad_done;
+      tag_done_q      <=  tag_done;
+      ghash_t_valid_q <=  o_t_valid; 
       aad_data_present_q  <= aad_data_present;
       if i_rst = '1' then
          ghash_state  <= xor_s;  
          ghash_in  <=  (others  =>  '0');
-      elsif speed_en = '1' then
+      else
          case ghash_state is 
             when xor_s =>
-               if en_decr = '0' then
                   if o_t_last = '1' then
                      ghash_state  <= add_length;
                      for i in 0 to (BYTE_WIDTH*2)-1 loop
@@ -591,31 +598,38 @@ begin
                            ghash_in((i+1)*BYTE_WIDTH -1 downto (i*BYTE_WIDTH)) <= (others  => '0');
                         end if;
                      end loop;
-                  elsif g_speed_sel = '1' and aad_data_present_q = '1' and aad_done = '0' then
+                  elsif speed_en_q = '1' and g_speed_sel = '1' and aad_data_present_q = '1' and aad_done = '0' then
                      ghash_in  <= i_t_data; 
                   elsif g_speed_sel = '0' and aad_data_present = '1' then
                      ghash_in  <= i_t_data;
                   elsif o_t_valid = '1' then
                      ghash_in  <= o_t_data;
                   end if;
-               else
-                  if i_t_last = '1' then
-                     ghash_state  <= add_length; 
-                     ghash_in  <= i_t_data; 
-                  elsif (config_cnt > 1) and o_t_ready = '1' and i_t_valid = '1' then
-                     ghash_in  <= i_t_data;   
-                  end if;
-               end if;
                
             when add_length =>
-               ghash_in  <= add_pt_length;
+               ghash_in    <= add_pt_length;
                ghash_state <= tag_out;
                
             when tag_out =>
                tag_done  <= '1';
+               if o_t_last = '0' and en_decr = '0' then
+                  ghash_state <= xor_s;
+               elsif en_decr = '1' then
+                  ghash_state <= tag_compare;
+               end if;
+               
+            when tag_compare =>
+               
+               --if tag /= tag_in then
+               --   o_tag_status  <= FAIL;
+               --   ghash_state <= xor_s;
+               --elsif tag = tag_in then
+               --   o_tag_status  <= PASS;
+               --end if;
+               
                if o_t_last = '0' then
                   ghash_state <= xor_s;
-               end if;       
+               end if;
          end case;
       end if;
    end process;
@@ -666,10 +680,10 @@ begin
                  i_t_valid             when  aad_done = '0'    and en_cnt > gen_mode  and mode = GCM_MODE_C         and speed_en = '1'            and initial_nonce_cnt = '1'                  else -- gcm mode
                  '0';
                  
-   o_t_last   <= t_last(gen_mode+1)    when o_t_valid = '1'   and g_speed_sel = '0' and mode /= GCM_MODE_C else  -- hi speed             
-                 t_last(0)             when o_t_valid = '1'   and g_speed_sel = '1' and mode /= GCM_MODE_C else  -- lo speed 
-                 i_t_last              when mode = GCM_MODE_C and last_flag = '1'   and g_speed_sel = '1'  else  -- gcm last lo speed
-                 i_t_last              when mode = GCM_MODE_C and g_speed_sel = '0'                        else  -- gcm last hi speed
+   o_t_last   <= t_last(gen_mode+1)    when o_t_valid = '1'   and g_speed_sel = '0' and mode /= GCM_MODE_C                    else  -- hi speed             
+                 t_last(0)             when o_t_valid = '1'   and g_speed_sel = '1' and mode /= GCM_MODE_C                    else  -- lo speed 
+                 i_t_last              when mode = GCM_MODE_C and last_flag = '1'   and g_speed_sel = '1' and o_t_valid = '1' else  -- gcm last lo speed
+                 i_t_last              when mode = GCM_MODE_C and g_speed_sel = '0'                                           else  -- gcm last hi speed
                  '0';
    
    -- route data to output depending on mode

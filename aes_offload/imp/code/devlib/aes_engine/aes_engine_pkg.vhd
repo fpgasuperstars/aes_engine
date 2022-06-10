@@ -28,7 +28,8 @@ package aes_engine_pkg is
    constant GHASH_ZEROS     : std_logic_vector(AXI_T_DATA-1 downto 0)     := x"00000000000000000000000000000000"; -- this value gets encrypted for use in the gcm GHASH function
    constant IV_CNT_0        : std_logic_vector((BYTE_WIDTH*4)-1 downto 0) := x"01000000";                         -- Initial counter value for GCTR mode
    constant IV_CNT_1        : std_logic_vector((BYTE_WIDTH*4)-1 downto 0) := x"02000000";                         -- First value used for encryption in GCTR mode
-      
+   constant PASS            : std_logic                                   := '1';   
+   constant FAIL            : std_logic                                   := '0';   
    -- Types
    -- AES
    type T_JINDEX is array (natural range<>) of integer;
